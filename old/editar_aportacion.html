@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualización del cuento</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="editar-aportacion" style="overflow-y: auto; display: block;">
+    <!-- Return to index.html -->
+        <button type="button" method="post" onclick="return guardarAportacion()">
+      Guardar aportacion
+    </button>
+    <button
+      type="button"
+      onclick="window.location.href = './vista_cuento.html'"
+    >
+      Cancelar
+    </button>
+    <a class="links" href="./vista_cuento.html">Visualizar cuento</a>
+
+    <br />
+    <h3>Tu Aportación</h3>
+    <br />
+    <textarea id="aportacion" name="aportacion" rows="4" cols="50"></textarea>
+    <br />
+    <script src="./script.js"></script>
+  </body>
+</html>
