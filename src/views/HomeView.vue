@@ -1,89 +1,125 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+
+// Reactive state
+const showRegister = ref(false);
+const registerData = ref({ username: '', password: '' });
+const loginData = ref({ username: '', password: '' });
+
+// Router
+const router = useRouter();
+
+// Methods
+function register() {
+  axios
+    .post('./php/insert_alumno.php', new URLSearchParams(registerData.value))
+    .then((response) => {
+      if (response.data.trim() !== 'El usuario ya existe') {
+        alert(
+          `Creación de cuenta exitosa para: ${registerData.value.username}, haga click para continuar`
+        );
+        localStorage.setItem('id_alumno', response.data.trim());
+        router.push('/dashboard');
+      } else {
+        alert(response.data);
+      }
+    })
+    .catch((error) => {
+      console.error('Error en registro:', error);
+    });
+}
+
+function login() {
+  axios
+    .post('./php/login_alumno.php', new URLSearchParams(loginData.value))
+    .then((response) => {
+      const datos = response.data;
+      if (datos.length > 0) {
+        alert(
+          `¡Bienvenido: ${loginData.value.username}! Haga click para continuar`
+        );
+        localStorage.setItem('id_alumno', datos[0].id_alumno);
+        router.push('/dashboard');
+      } else {
+        alert('ERROR: Usuario o contraseña incorrectos');
+      }
+    })
+    .catch((error) => {
+      console.error('Error en inicio de sesión:', error);
+    });
+}
+</script>
+
 <template>
-  <div>
-    <div v-if="showRegister">
-      <form @submit.prevent="register">
-        <h1>Registro de cuenta</h1>
-        <label for="username">Usuario:</label>
-        <input type="text" id="username" v-model="registerData.username" required /><br />
+  <v-container class="fill-height d-flex align-center justify-center">
+    <v-card class="pa-5" width="400" elevation="10">
+      <v-slide-x-transition mode="out-in">
+        <div v-if="showRegister" key="register">
+          <v-card-title class="text-center text-h5">Registro de cuenta</v-card-title>
+          <v-card-text>
+            <v-form @submit.prevent="register">
+              <v-text-field
+                label="Usuario"
+                prepend-inner-icon="mdi-account"
+                v-model="registerData.username"
+                outlined
+                required
+              />
+              <v-text-field
+                label="Contraseña"
+                prepend-inner-icon="mdi-lock"
+                v-model="registerData.password"
+                type="password"
+                outlined
+                required
+              />
+              <v-btn block color="green-darken-3" class="mt-2" type="submit">
+                Registrarse
+              </v-btn>
+              <v-btn block variant="text" class="mt-2" @click="showRegister = false">
+                Ya tengo una cuenta
+              </v-btn>
+            </v-form>
+          </v-card-text>
+        </div>
 
-        <label for="password">Contraseña:</label>
-        <input type="password" id="password" v-model="registerData.password" required /><br />
-
-        <input type="submit" value="Registrarse" />
-        <button type="button" @click="showRegister = false">Ya tengo una cuenta</button>
-      </form>
-    </div>
-
-    <div v-else>
-      <form @submit.prevent="login">
-        <h1>Iniciar sesión</h1>
-        <label for="iniciarUsuario">Usuario:</label>
-        <input type="text" id="iniciarUsuario" v-model="loginData.username" required /><br />
-
-        <label for="iniciarPass">Contraseña:</label>
-        <input type="password" id="iniciarPass" v-model="loginData.password" required /><br />
-
-        <input type="submit" value="Iniciar Sesión" />
-        <button type="button" @click="showRegister = true">Crear una cuenta</button>
-      </form>
-    </div>
-  </div>
+        <div v-else key="login">
+          <v-card-title class="text-center text-h5">Iniciar sesión</v-card-title>
+          <v-card-text>
+            <v-form @submit.prevent="login">
+              <v-text-field
+                label="Usuario"
+                prepend-inner-icon="mdi-account"
+                v-model="loginData.username"
+                outlined
+                required
+              />
+              <v-text-field
+                label="Contraseña"
+                prepend-inner-icon="mdi-lock"
+                v-model="loginData.password"
+                type="password"
+                outlined
+                required
+              />
+              <v-btn block color="green-darken-3" class="mt-2" type="submit">
+                Iniciar sesión
+              </v-btn>
+              <v-btn block variant="text" class="mt-2" @click="showRegister = true">
+                Crear una cuenta
+              </v-btn>
+            </v-form>
+          </v-card-text>
+        </div>
+      </v-slide-x-transition>
+    </v-card>
+  </v-container>
 </template>
 
-<script>
-import axios from 'axios';
-import { useRouter } from 'vue-router';
-
-export default {
-  setup() {
-    const router = useRouter();
-    return { router };
-  },
-  data() {
-    return {
-      showRegister: false,
-      registerData: {
-        username: '',
-        password: ''
-      },
-      loginData: {
-        username: '',
-        password: ''
-      }
-    };
-  },
-  methods: {
-    register: function () {
-      axios.post('./php/insert_alumno.php', new URLSearchParams(this.registerData))
-      .then(function (response) {
-
-        if (response.data.trim() !== 'El usuario ya existe') {
-          alert(`Creación de cuenta exitosa para: ${this.registerData.username}, haga click para continuar`);
-          localStorage.setItem('id_alumno', response.data.trim());
-          this.router.push('/dashboard');
-        } else {
-          alert(response.data);
-        }
-      }).catch(function (error) {
-        console.error('Error en registro:', error);
-      });
-    },
-
-    login: function () {
-      axios.post('./php/login_alumno.php', new URLSearchParams(this.loginData))
-      .then(function (response) {
-        const datos = response.data;
-        if (datos.length > 0) {
-          alert(`¡Bienvenido: ${this.loginData.username}! Haga click para continuar`);
-          localStorage.setItem('id_alumno', datos[0].id_alumno);
-          this.router.push('/dashboard');
-        } else {
-          alert('ERROR: Usuario o contraseña incorrectos');
-        }
-      }).catch(function (error) {
-        console.error('Error en inicio de sesión:', error);
-      });
-    }
-  }
-};
-</script>
+<style scoped>
+.fill-height {
+  height: 100vh;
+}
+</style>
