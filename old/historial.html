@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualización del cuento</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+
+  <body class="historial" style="overflow-y: auto; display: block;">
+    <a class="links"  href="./vista_cuento.html">Regresar</a>
+    <h1>Historial de cambios</h1>
+    <div method="get" action="./php/get_aportaciones.php">
+      <table id="historial-cambios">
+        <tr>
+          <th>Fecha</th>
+          <th>Descripción</th>
+        </tr>
+      </table>
+    </div>
+    <script src="./script.js"></script>
+  </body>
+</html>

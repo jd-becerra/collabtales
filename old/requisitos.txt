@@ -1,0 +1,28 @@
+x ALTA
+x MODIFICACION
+x CONSULTA 
+x BUSQUEDA
+x PROCEDIMIENTO
+x FUNCION
+X VISTAS
+x BAJA
+x TRIGGER
+
+FUNCIONALIDADES
+x -Crear cuenta
+x -Iniciar sesion
+x -Listar cuentos disponibles
+x -Ver perfil de usuario
+x -Ver aportaciones del cuento
+x -Unirse a un cuento
+x -Crear un cuento
+x -Editar tu aportacion en el cuento
+x -Ver historial de cambios en el cuento
+x -Eliminar un cuento
+x -Eliminar aportacion de un alumno
+x -Modificar tu perfil
+x -Eliminar tu cuenta de usuario
+x -Modficar cuento
+
+
+Titulo, introduccion, desarrollo, metodologia, conclusion

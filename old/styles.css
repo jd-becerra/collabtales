@@ -1,0 +1,161 @@
+body {
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 19px;
+  font-weight: 300;
+  color: white;
+  line-height: 1.5;
+  background-color: #333;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  background: url("./img/tree.jpg");
+  vertical-align: middle;
+}
+
+button,
+input[type="submit"] {
+  background-color: white;
+  border: none;
+  color: #333;
+  font-size: 1.3rem;
+  padding: 13px 23px;
+  border-radius: 6px;
+  margin-right: 1rem;
+}
+
+button:hover,
+button:focus,
+input[type="submit"]:hover,
+input[type="submit"]:focus {
+  color: #777777;
+  background-color: white;
+  scale: 1.1;
+}
+
+input[type="text"],
+input[type="password"] {
+  background-color: #eee;
+  border: none;
+  padding: 1rem;
+  font-size: 1rem;
+  width: 360px;
+  border-radius: 1rem;
+  color: black;
+  box-shadow: 0 0.4rem #dfd9d9;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+label {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  display: block;
+  margin-top: 1rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  border-radius: 6px;
+  color: black;
+  width: 390px;
+}
+
+h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  color: black;
+  border-radius: 6px;
+}
+
+h3 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-align: center;
+  background-color: #cccccccc;
+  color: black;
+  border-radius: 6px;
+}
+
+.btn-lista-cuento {
+  margin-bottom: 10px;
+  background-color: black;
+  color: white;
+  font-weight: bold;
+  width: 1000px;
+  border-radius: 6px;
+  height: 100px;
+  font-size: 2.5rem;
+}
+
+.btn-lista-cuento:hover {
+  scale: 1.05;
+}
+.links {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+a {
+  color: white;
+  font-size: 1.3rem;
+  margin-right: 1rem;
+}
+
+ul {
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  overflow-y: scroll;
+}
+
+tr {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: black;
+  font-size: 1.3rem;
+  font-weight: bold;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.aportaciones-cuento {
+  width: 1800px;
+  margin-bottom: 20px;
+  min-height: 100px;
+  border: 2px solid black;
+  border-radius: 6px;
+  padding: 6px;
+  word-break: break-all;
+  background-color: #cccccc;
+  color: black;
+  border-radius: 6px;
+}
+
+textarea {
+  width: 100%;
+  margin-bottom: 20px;
+  min-height: 100px;
+  border: 2px solid black;
+  border-radius: 6px;
+  padding: 6px;
+  word-break: break-all;
+  color: black;
+  border-radius: 6px;
+  height: 600px;
+  font-size: 1.3rem;
+}
+
+table {
+  width: 100%;
+}
+
+.delete {
+  background-color: #ff0000;
+}
+
+.popup-content {
+  background-color: #ff0000;
+}
