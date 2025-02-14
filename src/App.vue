@@ -15,7 +15,7 @@ const drawer = ref(false)
         <v-spacer></v-spacer>
 
         <div class="hidden-sm-and-down">
-          <v-btn variant="text" to="/" exact color="white">Home</v-btn>
+          <v-btn variant="text" to="/" exact color="white">Inicio</v-btn>
           <v-btn variant="text" to="/about" color="white">About</v-btn>
           <v-btn variant="text" to="/crear_cuento" color="white">Crear Cuento</v-btn>
         </div>
@@ -26,8 +26,8 @@ const drawer = ref(false)
 
     <v-navigation-drawer v-model="drawer" temporary>
       <v-list>
-        <v-list-item to="/" exact title="Home" />
-        <v-list-item to="/about" title="About" />
+        <v-list-item to="/" exact title="Inicio" />
+        <v-list-item to="/about" title=" " />
         <v-list-item to="/crear_cuento" title="Crear Cuento" />
       </v-list>
     </v-navigation-drawer>

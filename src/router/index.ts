@@ -1,6 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '../views/HomeView.vue';
-import CrearCuento from '../components/CrearCuento.vue'; // Importa el componente
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '@/views/HomeView.vue';
+import CrearCuento from '../components/CrearCuento.vue'; 
+import UserProfile from '@/views/UserProfile.vue';
 import AboutView from '../views/AboutView.vue';
 
 const router = createRouter({
@@ -20,6 +21,11 @@ const router = createRouter({
       path: '/crear_cuento',
       name: 'CrearCuento',
       component: CrearCuento,
+    },
+    {
+      path: '/user',
+      name: 'UserProfile',
+      component: UserProfile,
     },
   ],
 });
