@@ -18,14 +18,15 @@ function register() {
     .then((response) => {
       console.log(response.data);
       console.log(response);
-      if (response) {
+      alert(response);
+      if (response.data.trim() !== 'El usuario ya existe') {
         alert(
           `Creación de cuenta exitosa para: ${registerData.value.username}, haga click para continuar`
         );
         localStorage.setItem('id_alumno', response.data.trim());
         router.push('/dashboard');
       } else {
-        alert(response);
+        alert(response.data);
       }
     })
     .catch((error) => {

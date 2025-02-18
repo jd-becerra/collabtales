@@ -69,6 +69,13 @@ const vuetify = createVuetify({
 
 const app = createApp(App);
 
+
+import axios from 'axios';
+
+axios.defaults.baseURL = 'http://localhost/collabtales/backend/';
+axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
+
+
 app.use(router);
 app.use(vuetify);
 
