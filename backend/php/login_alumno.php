@@ -1,9 +1,11 @@
 <?php
-include('connect_db.php');
+include('cors_headers.php');
+include('config.php');
 
 // Assuming you're using the 'nombre' parameter in your query
-$nombre = $_POST['nombre'];
-$contrasena = $_POST['contrasena'];
+$data = json_decode(file_get_contents("php://input"), true);
+$nombre = $data['nombre'];
+$contrasena = $data['contrasena'];
 
 $sql = "SELECT id_alumno FROM Alumno WHERE nombre = '$nombre' AND contrasena = '$contrasena'";
 $result = $conn->query($sql);

@@ -8,16 +8,26 @@ const showRegister = ref(false);
 const registerData = ref({ username: '', password: '' });
 const loginData = ref({ username: '', password: '' });
 
+const PHP_URL = import.meta.env.VITE_PHP_SERVER;
+
 // Router
 const router = useRouter();
 
 // Methods
 function register() {
-  axios
-    .post('./php/insert_alumno.php', new URLSearchParams(registerData.value))
+  axios.post(`${PHP_URL}/php/insert_alumno.php`,
+      JSON.stringify({
+        nombre: loginData.value.username,
+        contrasena: loginData.value.password,
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      }
+    )
     .then((response) => {
-      console.log(response.data);
-      console.log(response);
       if (response) {
         alert(
           `Creación de cuenta exitosa para: ${registerData.value.username}, haga click para continuar`
@@ -34,10 +44,26 @@ function register() {
 }
 
 function login() {
-  axios
-    .post('./php/login_alumno.php', new URLSearchParams(loginData.value))
+  axios.post(`${PHP_URL}/php/login_alumno.php`,
+      JSON.stringify({
+        nombre: loginData.value.username,
+        contrasena: loginData.value.password,
+      }),
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      }
+    )
     .then((response) => {
       const datos = response.data;
+
+      if (datos === 'Error: campos vacios') {
+        alert(datos);
+        return;
+      }
+
       if (datos.length > 0) {
         alert(
           `¡Bienvenido: ${loginData.value.username}! Haga click para continuar`

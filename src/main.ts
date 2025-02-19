@@ -72,9 +72,14 @@ const app = createApp(App);
 
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://localhost/collabtales/backend/';
+axios.defaults.baseURL = 'http://localhost:8000/';
 axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
 
+/**  CORS
+axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+axios.defaults.headers.common['Access-Control-Allow-Headers'] = '*';
+axios.defaults.headers.common['Access-Control-Allow-Methods'] = '*';
+*/
 
 app.use(router);
 app.use(vuetify);
