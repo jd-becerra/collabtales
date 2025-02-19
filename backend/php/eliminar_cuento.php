@@ -1,7 +1,9 @@
 <?php
-include('connect_db.php');
+include('cors_headers.php');
+include('config.php');
 
-$id_cuento = $_POST['id_cuento'];
+$data = json_decode(file_get_contents("php://input"), true);
+$id_cuento = $data['id_cuento'];
 
 $sql = "DELETE FROM Cuento WHERE id_cuento = '$id_cuento';";
 

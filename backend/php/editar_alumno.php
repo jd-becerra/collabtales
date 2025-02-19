@@ -1,5 +1,6 @@
 <?php
-include('connect_db.php');
+include('cors_headers.php');
+include('config.php');
 
 $id_alumno = $_POST['id_alumno'];
 $nombre = $_POST['nombre'];
