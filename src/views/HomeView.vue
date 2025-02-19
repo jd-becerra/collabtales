@@ -5,8 +5,8 @@ import axios from 'axios';
 
 // Reactive state
 const showRegister = ref(false);
-const registerData = ref({ username: '', password: '' });
-const loginData = ref({ username: '', password: '' });
+const registerData = ref({ nombre: '', contrasena: '' });
+const loginData = ref({ nombre: '', contrasena: '' });
 
 const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 
@@ -15,15 +15,15 @@ const router = useRouter();
 
 // Methods
 function register() {
-  if (!registerData.value.username || !registerData.value.password) {
+  if (!registerData.value.nombre || !registerData.value.contrasena) {
     alert('Error: campos vacíos');
     return;
   }
 
   axios.post(`${PHP_URL}/php/insert_alumno.php`,
       JSON.stringify({
-        nombre: registerData.value.username,
-        contrasena: registerData.value.password,
+        nombre: registerData.value.nombre,
+        contrasena: registerData.value.contrasena,
       }),
       {
         headers: {
@@ -42,7 +42,7 @@ function register() {
         }
 
         alert(
-          `Creación de cuenta exitosa para: ${registerData.value.username}, haga click para continuar.`
+          `Creación de cuenta exitosa para: ${registerData.value.nombre}, haga click para continuar.`
         );
         localStorage.setItem('id_alumno', response.data.trim());
         router.push('/dashboard');
@@ -56,15 +56,15 @@ function register() {
 }
 
 function login() {
-  if (!loginData.value.username || !loginData.value.password) {
+  if (!loginData.value.nombre || !loginData.value.contrasena) {
     alert('Error: campos vacíos');
     return;
   }
 
   axios.post(`${PHP_URL}/php/login_alumno.php`,
       JSON.stringify({
-        nombre: loginData.value.username,
-        contrasena: loginData.value.password,
+        nombre: loginData.value.nombre,
+        contrasena: loginData.value.contrasena,
       }),
       {
         headers: {
