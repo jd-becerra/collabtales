@@ -29,7 +29,9 @@ import {
   VTextField,
   VIcon,
   VToolbar,
-  VToolbarTitle
+  VToolbarTitle,
+  VSlideXTransition,
+  VDialog
 } from 'vuetify/components';
 
 import { Ripple, Intersect, Scroll, Touch } from 'vuetify/directives';
@@ -57,7 +59,9 @@ const vuetify = createVuetify({
     VTextField,
     VIcon,
     VToolbar,
-    VToolbarTitle
+    VToolbarTitle,
+    VSlideXTransition,
+    VDialog
   },
   directives: {
     Ripple,

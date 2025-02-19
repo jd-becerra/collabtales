@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
-// Estado reactivo
+const router = useRouter();
 const datosAlumno = ref({ id_alumno: '', nombre: '', contrasena: '' });
 const showDeleteDialog = ref(false);
-const router = useRouter();
+const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 
-// Obtener datos del alumno al cargar la vista
 onMounted(() => {
   getDatosAlumno();
 });
 
-// Obtener datos del alumno desde PHP
 function getDatosAlumno() {
   const id_alumno = localStorage.getItem('id_alumno');
   if (!id_alumno) {
@@ -23,24 +21,23 @@ function getDatosAlumno() {
   }
 
   axios
-    .post('./php/get_alumno.php', new URLSearchParams({ id_alumno }))
-    .then((response) => {
-      if (response.data.length > 0) {
-        datosAlumno.value = response.data[0];
-      } else {
-        alert('Error: Usuario no encontrado.');
-        router.push('/');
+    .post(`${PHP_URL}/php/get_alumno.php`, { id_alumno }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       }
     })
+    .then((response) => {
+      datosAlumno.value = response.data;
+    })
     .catch((error) => {
-      console.error('Error al obtener datos:', error);
+      console.error('Error al obtener datos del alumno:', error);
     });
 }
 
-// Guardar cambios en PHP
 function editarAlumno() {
   axios
-    .post('./php/editar_alumno.php', new URLSearchParams(datosAlumno.value))
+    .post(`${PHP_URL}/php/editar_alumno.php`, datosAlumno.value)
     .then((response) => {
       if (response.data.trim() === '1') {
         alert('Datos actualizados correctamente.');
@@ -54,15 +51,14 @@ function editarAlumno() {
     });
 }
 
-// Eliminar cuenta
 function eliminarAlumno() {
   const id_alumno = localStorage.getItem('id_alumno') || '';
   axios
-    .post('./php/eliminar_alumno.php', new URLSearchParams({ id_alumno }))
+    .post(`${PHP_URL}/php/eliminar_alumno.php`, { id_alumno })
     .then(() => {
       alert('Cuenta eliminada con éxito.');
-      localStorage.removeItem('id_alumno'); // Eliminar usuario del almacenamiento
-      router.push('/'); // Redirigir a inicio
+      localStorage.removeItem('id_alumno');
+      router.push('/');
     })
     .catch((error) => {
       console.error('Error al eliminar cuenta:', error);
@@ -84,12 +80,10 @@ function eliminarAlumno() {
       </v-card-text>
     </v-card>
 
-    <!-- Botón de eliminar cuenta -->
     <v-btn color="red-darken-3" class="mt-5" @click="showDeleteDialog = true">
       Eliminar Cuenta
     </v-btn>
 
-    <!-- Popup de confirmación -->
     <v-dialog v-model="showDeleteDialog" max-width="400">
       <v-card>
         <v-card-title class="text-h6">Confirmar Eliminación</v-card-title>
