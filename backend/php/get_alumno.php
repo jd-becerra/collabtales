@@ -1,7 +1,9 @@
 <?php
-include('connect_db.php');
+include('cors_headers.php');
+include('config.php');
 
-$id_alumno = $_POST['id_alumno'];
+$data = json_decode(file_get_contents("php://input"), true);
+$id_alumno = $data['id_alumno'];
 
 $sql = "SELECT * FROM Alumno WHERE id_alumno = '$id_alumno'";
 $result = $conn->query($sql);

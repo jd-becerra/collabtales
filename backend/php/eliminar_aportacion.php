@@ -1,8 +1,15 @@
 <?php
-include('connect_db.php');
+include('cors_headers.php');
+include('config.php');
 
-$id_cuento = $_POST['id_cuento'];
-$id_alumno = $_POST['id_alumno'];
+$data = json_decode(file_get_contents("php://input"), true);
+$id_cuento = $data['id_cuento'];
+$id_alumno = $data['id_alumno'];
+
+if (empty($id_cuento) || empty($id_alumno)) {
+    echo "Error: id_cuento and id_alumno must be provided";
+    exit();
+}
 
 $sql = "CALL AbandonarCuento('$id_cuento','$id_alumno');";
 

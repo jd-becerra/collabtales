@@ -1,7 +1,14 @@
 <?php
-include('connect_db.php');
+include('cors_headers.php');
+include('config.php');
 
-$id_alumno = $_POST['id_alumno'];
+$data = json_decode(file_get_contents("php://input"), true);
+$id_alumno = $data['id_alumno'];
+
+if (empty($id_alumno)) {
+    echo "Error: id_alumno must be provided";
+    exit();
+}
 
 $sql = "CALL EliminarAlumno('$id_alumno')";
 

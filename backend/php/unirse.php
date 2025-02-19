@@ -1,9 +1,15 @@
 <?php
-include('connect_db.php');
+include('cors_headers.php');
+include('config.php');
 
+$data = json_decode(file_get_contents("php://input"), true);
+$id_cuento = $data['id_cuento'];
+$id_alumno = $data['id_alumno'];
 
-$id_cuento = $_POST['id_cuento'];
-$id_alumno = $_POST['id_alumno'];
+if (empty($id_cuento) || empty($id_alumno)) {
+    echo "Error: id_cuento and id_alumno must be provided";
+    exit();
+}
 
 $sql = "CALL UnirseCuento($id_cuento, $id_alumno);";
 

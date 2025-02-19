@@ -1,9 +1,16 @@
 <?php
-include('connect_db.php');
+include('cors_headers.php');
+include('config.php');
 
-$id_cuento = $_POST['id_cuento'];
-$nombre_cuento = $_POST['nombre_cuento'];
-$descripcion_cuento = $_POST['descripcion_cuento'];
+$data = json_decode(file_get_contents("php://input"), true);
+$id_cuento = $data['id_cuento'];
+$nombre_cuento = $data['nombre_cuento'];
+$descripcion_cuento = $data['descripcion_cuento'];
+
+if (empty($id_cuento) || empty($nombre_cuento) || empty($descripcion_cuento)) {
+    echo "Error: id_cuento, nombre_cuento and descripcion_cuento must be provided";
+    exit();
+}
 
 $sql = "UPDATE Cuento SET nombre = '$nombre_cuento', descripcion = '$descripcion_cuento' WHERE id_cuento = '$id_cuento';";
 

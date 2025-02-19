@@ -1,7 +1,14 @@
 <?php
-include('connect_db.php');
+include('cors_headers.php');
+include('config.php');
 
-$id_cuento = $_POST['id_cuento'];
+$data = json_decode(file_get_contents("php://input"), true);
+$id_cuento = $data['id_cuento'];
+
+if(empty($id_cuento)){
+    echo json_encode(["error" => "id_cuento es obligatorio"]);
+    exit;
+}
 
 $sql = "CALL CuentoAportacionesConAlumnos($id_cuento);";
 $result = $conn->query($sql);
