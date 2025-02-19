@@ -83,7 +83,7 @@ function login() {
 
       if (datos.length > 0) {
         alert(
-          `¡Bienvenido: ${loginData.value.username}! Haga click para continuar`
+          `¡Bienvenido: ${loginData.value.nombre}! Haga click para continuar`
         );
         localStorage.setItem('id_alumno', datos[0].id_alumno);
         router.push('/dashboard');
@@ -108,15 +108,15 @@ function login() {
               <v-text-field
                 label="Usuario"
                 prepend-inner-icon="mdi-account"
-                v-model="registerData.username"
+                v-model="registerData.nombre"
                 outlined
                 required
               />
               <v-text-field
                 label="Contraseña"
                 prepend-inner-icon="mdi-lock"
-                v-model="registerData.password"
-                type="password"
+                v-model="registerData.contrasena"
+                type="contrasena"
                 outlined
                 required
               />
@@ -137,15 +137,15 @@ function login() {
               <v-text-field
                 label="Usuario"
                 prepend-inner-icon="mdi-account"
-                v-model="loginData.username"
+                v-model="loginData.nombre"
                 outlined
                 required
               />
               <v-text-field
                 label="Contraseña"
                 prepend-inner-icon="mdi-lock"
-                v-model="loginData.password"
-                type="password"
+                v-model="loginData.contrasena"
+                type="contrasena"
                 outlined
                 required
               />

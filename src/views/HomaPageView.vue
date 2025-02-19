@@ -5,8 +5,8 @@ import axios from 'axios';
 
 // Reactive state
 const showRegister = ref(false);
-const registerData = ref({ username: '', password: '' });
-const loginData = ref({ username: '', password: '' });
+const registerData = ref({ usuario: '', contrasena: '' });
+const loginData = ref({ usuario: '', contrasena: '' });
 
 // Router
 const router = useRouter();
@@ -21,7 +21,7 @@ function register() {
       alert(response);
       if (response.data.trim() !== 'El usuario ya existe') {
         alert(
-          `Creación de cuenta exitosa para: ${registerData.value.username}, haga click para continuar`
+          `Creación de cuenta exitosa para: ${registerData.value.usuario}, haga click para continuar`
         );
         localStorage.setItem('id_alumno', response.data.trim());
         router.push('/dashboard');
@@ -41,7 +41,7 @@ function login() {
       const datos = response.data;
       if (datos.length > 0) {
         alert(
-          `¡Bienvenido: ${loginData.value.username}! Haga click para continuar`
+          `¡Bienvenido: ${loginData.value.usuario}! Haga click para continuar`
         );
         localStorage.setItem('id_alumno', datos[0].id_alumno);
         router.push('/dashboard');
@@ -66,15 +66,15 @@ function login() {
               <v-text-field
                 label="Usuario"
                 prepend-inner-icon="mdi-account"
-                v-model="registerData.username"
+                v-model="registerData.usuario"
                 outlined
                 required
               />
               <v-text-field
                 label="Contraseña"
                 prepend-inner-icon="mdi-lock"
-                v-model="registerData.password"
-                type="password"
+                v-model="registerData.contrasena"
+                type="contrasena"
                 outlined
                 required
               />
@@ -95,15 +95,15 @@ function login() {
               <v-text-field
                 label="Usuario"
                 prepend-inner-icon="mdi-account"
-                v-model="loginData.username"
+                v-model="loginData.usuario"
                 outlined
                 required
               />
               <v-text-field
                 label="Contraseña"
                 prepend-inner-icon="mdi-lock"
-                v-model="loginData.password"
-                type="password"
+                v-model="loginData.contrasena"
+                type="contrasena"
                 outlined
                 required
               />
