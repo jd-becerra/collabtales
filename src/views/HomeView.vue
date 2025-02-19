@@ -15,10 +15,15 @@ const router = useRouter();
 
 // Methods
 function register() {
+  if (!registerData.value.username || !registerData.value.password) {
+    alert('Error: campos vacíos');
+    return;
+  }
+
   axios.post(`${PHP_URL}/php/insert_alumno.php`,
       JSON.stringify({
-        nombre: loginData.value.username,
-        contrasena: loginData.value.password,
+        nombre: registerData.value.username,
+        contrasena: registerData.value.password,
       }),
       {
         headers: {
@@ -29,8 +34,15 @@ function register() {
     )
     .then((response) => {
       if (response) {
+        console.log(response);
+
+        if (response.data.result == 'El usuario ya existe') {
+          alert('Error: El usuario ya existe');
+          return;
+        }
+
         alert(
-          `Creación de cuenta exitosa para: ${registerData.value.username}, haga click para continuar`
+          `Creación de cuenta exitosa para: ${registerData.value.username}, haga click para continuar.`
         );
         localStorage.setItem('id_alumno', response.data.trim());
         router.push('/dashboard');
@@ -44,6 +56,11 @@ function register() {
 }
 
 function login() {
+  if (!loginData.value.username || !loginData.value.password) {
+    alert('Error: campos vacíos');
+    return;
+  }
+
   axios.post(`${PHP_URL}/php/login_alumno.php`,
       JSON.stringify({
         nombre: loginData.value.username,
