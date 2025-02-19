@@ -22,13 +22,13 @@ function loadEnv($path) {
 loadEnv(__DIR__ . '/../../.env');
 
 // Get DB credentials
-$servername = getenv("DB_HOST") ?: "localhost";
-$username = getenv("DB_USER") ?: "dbuser";
-$password = getenv("DB_PASS");
-$dbname = getenv("DB_NAME") ?: "cuentosBD";
+$db_servername = getenv("DB_HOST") ?: "localhost";
+$db_username = getenv("DB_USER") ?: "dbuser";
+$db_password = getenv("DB_PASS");
+$db_name = getenv("DB_NAME") ?: "cuentosBD";
 
 // Connect to database
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($db_servername, $db_username, $db_password, $db_name);
 
 if ($conn->connect_error) {
     die(json_encode(["error" => "Connection failed: " . $conn->connect_error]));

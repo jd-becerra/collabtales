@@ -7,7 +7,7 @@ $data = json_decode(file_get_contents("php://input"), true);
 
 if (empty($data['nombre']) || empty($data['contrasena'])) {
     echo json_encode(["error" => "Nombre y contraseña son obligatorios"]);
-    exit; // Stop script execution
+    exit; // Stop script execution if data is missing
 }
 
 $nombre = $data['nombre'];
