@@ -83,3 +83,29 @@ BEGIN
     END IF;
 END$$
 DELIMITER ;
+
+-- Procedure: EditarAlumno
+DELIMITER $$
+CREATE PROCEDURE `EditarAlumno`(
+    IN id_alumno_param INT,
+    IN nuevo_nombre VARCHAR(255),
+    IN nueva_contrasena VARCHAR(255)
+)
+BEGIN
+    DECLARE nombre_existente INT;
+    
+    -- Verificar si el nuevo nombre ya existe en otro usuario
+    SELECT COUNT(*) INTO nombre_existente FROM Alumno 
+    WHERE nombre = nuevo_nombre AND id_alumno <> id_alumno_param;
+    
+    IF nombre_existente = 0 THEN
+        UPDATE Alumno 
+        SET nombre = nuevo_nombre, contrasena = nueva_contrasena
+        WHERE id_alumno = id_alumno_param;
+        
+        SELECT 'Alumno actualizado correctamente' AS result;
+    ELSE
+        SELECT 'El nombre de usuario ya existe' AS result;
+    END IF;
+END$$
+DELIMITER ;

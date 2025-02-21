@@ -37,17 +37,32 @@ function getDatosAlumno() {
 
 function editarAlumno() {
   axios
-    .post(`${PHP_URL}/php/editar_alumno.php`, datosAlumno.value)
+    .post(`${PHP_URL}/php/editar_alumno.php`, {
+      id_alumno: datosAlumno.value.id_alumno,
+      nombre: datosAlumno.value.nombre,
+      contrasena: datosAlumno.value.contrasena,
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
     .then((response) => {
-      if (response.data.trim() === '1') {
-        alert('Datos actualizados correctamente.');
+      console.log(response.data);
+
+      if (response.data.message) {  // Si hay un mensaje de éxito
+        alert(response.data.message);
         router.push('/user');
+      } else if (response.data.error) {  // Si hay un mensaje de error
+        alert(response.data.error);
       } else {
-        alert('Error al actualizar datos.');
+        alert('Error desconocido al actualizar datos.');
       }
     })
     .catch((error) => {
       console.error('Error al editar:', error);
+      alert('Ocurrió un error al intentar actualizar los datos.');
     });
 }
 
