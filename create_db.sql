@@ -72,8 +72,8 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `EliminarAlumno`(IN id_alumno_param INT)
 BEGIN
-    DELETE FROM Cuento WHERE fk_owner = id_alumno_param;
     DELETE FROM Alumno WHERE id_alumno = id_alumno_param;
+    SELECT 'Alumno eliminado correctamente' AS result;
 END$$
 DELIMITER ;
 

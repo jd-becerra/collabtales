@@ -7,6 +7,7 @@ import axios from 'axios';
 const showRegister = ref(false);
 const registerData = ref({ nombre: '', contrasena: '' });
 const loginData = ref({ nombre: '', contrasena: '' });
+const loading = ref(false); // New loading state
 
 const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 
@@ -19,6 +20,8 @@ function register() {
     alert('Error: campos vacíos');
     return;
   }
+
+  loading.value = true; // Start loading
 
   axios.post(`${PHP_URL}/php/insert_alumno.php`,
       JSON.stringify({
@@ -52,6 +55,9 @@ function register() {
     })
     .catch((error) => {
       console.error('Error en registro:', error);
+    })
+    .finally(() => {
+      loading.value = false; // Stop loading
     });
 }
 
@@ -60,6 +66,8 @@ function login() {
     alert('Error: campos vacíos');
     return;
   }
+
+  loading.value = true; // Start loading
 
   axios.post(`${PHP_URL}/php/login_alumno.php`,
       JSON.stringify({
@@ -93,6 +101,9 @@ function login() {
     })
     .catch((error) => {
       console.error('Error en inicio de sesión:', error);
+    })
+    .finally(() => {
+      loading.value = false; // Stop loading
     });
 }
 </script>
@@ -116,11 +127,12 @@ function login() {
                 label="Contraseña"
                 prepend-inner-icon="mdi-lock"
                 v-model="registerData.contrasena"
-                type="contrasena"
+                type="password"
                 outlined
                 required
               />
-              <v-btn block color="green-darken-3" class="mt-2" type="submit">
+              <v-btn block color="green-darken-3" class="mt-2" type="submit" :disabled="loading">
+                <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
                 Registrarse
               </v-btn>
               <v-btn block variant="text" class="mt-2" @click="showRegister = false">
@@ -145,11 +157,12 @@ function login() {
                 label="Contraseña"
                 prepend-inner-icon="mdi-lock"
                 v-model="loginData.contrasena"
-                type="contrasena"
+                type="password"
                 outlined
                 required
               />
-              <v-btn block color="green-darken-3" class="mt-2" type="submit">
+              <v-btn block color="green-darken-3" class="mt-2" type="submit" :disabled="loading">
+                <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
                 Iniciar sesión
               </v-btn>
               <v-btn block variant="text" class="mt-2" @click="showRegister = true">

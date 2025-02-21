@@ -21,10 +21,9 @@ function getDatosAlumno() {
   }
 
   axios
-    .post(`${PHP_URL}/php/get_alumno.php`, { id_alumno }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
+    .get(`${PHP_URL}/php/get_alumno.php`, {
+      params: {
+        id_alumno: id_alumno
       }
     })
     .then((response) => {
@@ -38,7 +37,7 @@ function getDatosAlumno() {
 function editarAlumno() {
   axios
     .post(`${PHP_URL}/php/editar_alumno.php`, {
-      id_alumno: datosAlumno.value.id_alumno,
+      id_alumno: localStorage.getItem('id_alumno'),
       nombre: datosAlumno.value.nombre,
       contrasena: datosAlumno.value.contrasena,
     },
@@ -67,9 +66,16 @@ function editarAlumno() {
 }
 
 function eliminarAlumno() {
-  const id_alumno = localStorage.getItem('id_alumno') || '';
   axios
-    .post(`${PHP_URL}/php/eliminar_alumno.php`, { id_alumno })
+    .post(`${PHP_URL}/php/eliminar_alumno.php`, {
+      id_alumno: localStorage.getItem('id_alumno')
+     },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    })
     .then(() => {
       alert('Cuenta eliminada con éxito.');
       localStorage.removeItem('id_alumno');
