@@ -1,11 +1,11 @@
-DROP SCHEMA IF EXISTS `cuentosBD`;
-CREATE SCHEMA `cuentosBD` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+DROP DATABASE IF EXISTS `cuentosBD`; 
+CREATE DATABASE `cuentosBD` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `cuentosBD`;
 
 -- Table: Alumno
 CREATE TABLE `Alumno` (
   `id_alumno` INT(11) NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+  `nombre` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL UNIQUE,
   `contrasena` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id_alumno`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -17,7 +17,16 @@ CREATE TABLE `Cuento` (
   `descripcion` VARCHAR(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   `fk_owner` INT(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id_cuento`),
-  CONSTRAINT `fk_owner` FOREIGN KEY (`fk_owner`) REFERENCES `Alumno` (`id_alumno`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `fk_cuento_owner` FOREIGN KEY (`fk_owner`) REFERENCES `Alumno` (`id_alumno`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table: Relacion_Alumno_Cuento
+CREATE TABLE `Relacion_Alumno_Cuento` (
+    `fk_alumno` INT(11) NOT NULL,
+    `fk_cuento` INT(11) NOT NULL,
+    PRIMARY KEY (`fk_alumno`, `fk_cuento`),
+    FOREIGN KEY (`fk_alumno`) REFERENCES `Alumno`(`id_alumno`) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (`fk_cuento`) REFERENCES `Cuento`(`id_cuento`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table: Aportacion
@@ -26,10 +35,22 @@ CREATE TABLE `Aportacion` (
   `contenido` VARCHAR(2047) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `fk_cuento` INT(11) NULL DEFAULT NULL,
   `fk_alumno` INT(11) NULL DEFAULT NULL,
-  `fecha_creacion` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+  `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_aportacion`),
   CONSTRAINT `fk_cuento_aportacion` FOREIGN KEY (`fk_cuento`) REFERENCES `Cuento` (`id_cuento`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_alumno_aportacion` FOREIGN KEY (`fk_alumno`) REFERENCES `Alumno` (`id_alumno`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table: Historial
+CREATE TABLE `Historial` (
+    `id_historial` INT(11) NOT NULL AUTO_INCREMENT,
+    `fk_alumno` INT(11) NOT NULL,
+    `fk_cuento` INT(11) NOT NULL,
+    `accion` VARCHAR(255) NOT NULL,
+    `fecha` TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+    PRIMARY KEY (`id_historial`),
+    FOREIGN KEY (`fk_alumno`) REFERENCES `Alumno`(`id_alumno`) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (`fk_cuento`) REFERENCES `Cuento`(`id_cuento`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Procedure: AñadirAlumno
@@ -76,7 +97,7 @@ BEGIN
     SELECT COUNT(*) INTO relacion_count FROM Relacion_Alumno_Cuento WHERE fk_cuento = cuento_id AND fk_alumno = alumno_id;
     IF relacion_count = 0 THEN
         INSERT INTO `Relacion_Alumno_Cuento` (fk_cuento, fk_alumno) VALUES (cuento_id, alumno_id);
-        INSERT INTO `Aportacion` (fk_cuento, fk_alumno) VALUES (cuento_id, alumno_id);
+        INSERT INTO `Aportacion` (contenido, fk_cuento, fk_alumno) VALUES ('', cuento_id, alumno_id);
         SELECT 'El alumno se ha unido al cuento correctamente' AS result;
     ELSE
         SELECT 'Error al unirse al cuento.' AS result;
@@ -107,5 +128,72 @@ BEGIN
     ELSE
         SELECT 'El nombre de usuario ya existe' AS result;
     END IF;
+END$$
+DELIMITER ;
+
+-- Procedure: CrearCuento
+DELIMITER $$
+CREATE PROCEDURE `CrearCuento`(
+    IN nombre_cuento VARCHAR(255),
+    IN descripcion_cuento VARCHAR(511),
+    IN id_owner INT
+)
+BEGIN
+    DECLARE cuento_id INT;
+
+    -- Insertar el cuento en la tabla Cuento
+    INSERT INTO Cuento (nombre, descripcion, fk_owner) 
+    VALUES (nombre_cuento, descripcion_cuento, id_owner);
+    
+    -- Obtener el ID del cuento recién creado
+    SET cuento_id = LAST_INSERT_ID();
+
+    -- Insertar al dueño en la relación de alumnos y cuentos
+    INSERT INTO Relacion_Alumno_Cuento (fk_alumno, fk_cuento) 
+    VALUES (id_owner, cuento_id);
+
+    -- Registrar la acción en el historial
+    INSERT INTO Historial (fk_alumno, fk_cuento, accion) 
+    VALUES (id_owner, cuento_id, 'Creó el cuento');
+
+    -- Devolver el ID del cuento creado
+    SELECT cuento_id AS id_cuento_creado;
+END$$
+DELIMITER ;
+
+-- Procedure: ListarCuentoAportacionesConAlumnos
+DELIMITER $$
+CREATE PROCEDURE `ListarCuentoAportacionesConAlumnos`(
+    IN id_cuento_param INT
+)
+BEGIN
+    SELECT Aportacion.id_aportacion, Aportacion.contenido, Aportacion.fecha_creacion, 
+           Alumno.id_alumno, Alumno.nombre AS nombre_alumno
+    FROM Aportacion
+    JOIN Alumno ON Aportacion.fk_alumno = Alumno.id_alumno
+    WHERE Aportacion.fk_cuento = id_cuento_param
+    ORDER BY Aportacion.fecha_creacion ASC;
+END$$
+DELIMITER ;
+
+-- Trigger: After_UnirseCuento
+DELIMITER $$
+CREATE TRIGGER `After_UnirseCuento`
+AFTER INSERT ON `Relacion_Alumno_Cuento`
+FOR EACH ROW
+BEGIN
+    INSERT INTO Historial (fk_alumno, fk_cuento, accion)
+    VALUES (NEW.fk_alumno, NEW.fk_cuento, 'Se unió al cuento');
+END$$
+DELIMITER ;
+
+-- Trigger: After_Aportacion
+DELIMITER $$
+CREATE TRIGGER `After_Aportacion`
+AFTER INSERT ON `Aportacion`
+FOR EACH ROW
+BEGIN
+    INSERT INTO Historial (fk_alumno, fk_cuento, accion)
+    VALUES (NEW.fk_alumno, NEW.fk_cuento, 'Realizó una aportación');
 END$$
 DELIMITER ;

@@ -8,7 +8,7 @@ $id_alumno = $data['id_alumno'] ?? null;
 $nombre = $data['nombre'] ?? null;
 $contrasena = $data['contrasena'] ?? null;
 
-if (!isset($id_alumno, $nombre, $contrasena)) {
+if (empty($id_alumno) || empty($nombre) || empty($contrasena)) {
     echo json_encode(["error" => "ID, nombre y contraseña son obligatorios"]);
     exit;
 }

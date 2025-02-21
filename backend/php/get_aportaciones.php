@@ -10,7 +10,7 @@ if(empty($id_cuento)){
     exit;
 }
 
-$sql = "CALL CuentoAportacionesConAlumnos($id_cuento);";
+$sql = "CALL ListarCuentoAportacionesConAlumnos($id_cuento);";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {

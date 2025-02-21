@@ -7,6 +7,11 @@ $data = json_decode(file_get_contents("php://input"), true);
 $nombre = $data['nombre'];
 $contrasena = $data['contrasena'];
 
+if (empty($nombre) || empty($contrasena)) {
+    echo json_encode(["error" => "Nombre y contraseña son obligatorios"]);
+    exit; // Stop script execution if data is missing
+}
+
 $sql = "SELECT id_alumno FROM Alumno WHERE nombre = '$nombre' AND contrasena = '$contrasena'";
 $result = $conn->query($sql);
 
