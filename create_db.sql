@@ -81,7 +81,7 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `ListarCuentosAlumno`(IN id_alumno INT)
 BEGIN
-    SELECT cuento.id_cuento, cuento.nombre
+    SELECT cuento.id_cuento, cuento.nombre, cuento.descripcion
     FROM `Cuento` cuento
     JOIN `Relacion_Alumno_Cuento` relacion ON cuento.id_cuento = relacion.fk_cuento
     WHERE relacion.fk_alumno = id_alumno

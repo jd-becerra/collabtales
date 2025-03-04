@@ -26,7 +26,6 @@ const drawer = ref(false)
     <v-navigation-drawer v-model="drawer" temporary>
       <v-list>
         <v-list-item to="/" exact title="Inicio" />
-        <v-list-item to="/about" title=" " />
         <v-list-item to="/crear_cuento" title="Crear Cuento" />
       </v-list>
     </v-navigation-drawer>
