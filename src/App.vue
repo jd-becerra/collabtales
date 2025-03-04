@@ -16,7 +16,6 @@ const drawer = ref(false)
 
         <div class="hidden-sm-and-down">
           <v-btn variant="text" to="/" exact color="white">Inicio</v-btn>
-          <v-btn variant="text" to="/about" color="white">About</v-btn>
           <v-btn variant="text" to="/crear_cuento" color="white">Crear Cuento</v-btn>
         </div>
 

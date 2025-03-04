@@ -1,37 +1,31 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '@/views/HomeView.vue';
-import CrearCuento from '../components/CrearCuento.vue'; 
-import UserProfile from '@/views/UserProfile.vue';
-import AboutView from '../views/AboutView.vue';
-import DashboardView from '@/views/DashboardView.vue';
+import Inicio_Sesion from '@/views/Inicio_Sesion.vue';
+import Crear_Cuento from '../components/CrearCuento.vue'; 
+import Perfil_Usuario from '@/views/Perfil_Usuario.vue';
+import Panel_Inicio from '@/views/Panel_Inicio.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: AboutView,
+      name: 'inicio_sesion',
+      component: Inicio_Sesion
     },
     {
       path: '/crear_cuento',
-      name: 'CrearCuento',
-      component: CrearCuento,
+      name: 'crear_cuento',
+      component: Crear_Cuento
     },
     {
-      path: '/user',
-      name: 'UserProfile',
-      component: UserProfile,
+      path: '/perfil_usuario',
+      name: 'perfil_usuario',
+      component: Perfil_Usuario
     },
     {
-      path: '/dashboard',
-      name: 'Dashboard',
-      component: DashboardView
+      path: '/panel_inicio',
+      name: 'panel_inicio',
+      component: Panel_Inicio
     }
   ],
 });

@@ -7,109 +7,99 @@ import axios from 'axios';
 const showRegister = ref(false);
 const registerData = ref({ nombre: '', contrasena: '' });
 const loginData = ref({ nombre: '', contrasena: '' });
-const loading = ref(false); // New loading state
+const loading = ref(false); // Estado de carga
 
 const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 
 // Router
 const router = useRouter();
 
-// Methods
-function register() {
+// Método para registrar usuario
+async function register() {
   if (!registerData.value.nombre || !registerData.value.contrasena) {
     alert('Error: campos vacíos');
     return;
   }
 
-  loading.value = true; // Start loading
+  loading.value = true; // Inicia la carga
 
-  axios.post(`${PHP_URL}/php/insert_alumno.php`,
-      JSON.stringify({
-        nombre: registerData.value.nombre,
-        contrasena: registerData.value.contrasena,
-      }),
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      }
-    )
-    .then((response) => {
-      if (response) {
-        console.log(response);
-
-        if (response.data.result == 'El usuario ya existe') {
-          alert('Error: El usuario ya existe');
-          return;
-        }
-
-        alert(
-          `Creación de cuenta exitosa para: ${registerData.value.nombre}, haga click para continuar.`
-        );
-        localStorage.setItem('id_alumno', response.data.trim());
-        router.push('/dashboard');
-      } else {
-        alert(response);
-      }
-    })
-    .catch((error) => {
-      console.error('Error en registro:', error);
-    })
-    .finally(() => {
-      loading.value = false; // Stop loading
+  try {
+    const response = await axios.post(`${PHP_URL}/php/insert_alumno.php`, {
+      nombre: registerData.value.nombre,
+      contrasena: registerData.value.contrasena,
+    }, {
+      headers: { 'Content-Type': 'application/json' }
     });
+
+    if (response.data.error) {
+      alert(response.data.error);
+      return;
+    }
+
+    if (response.data.result === 'El usuario ya existe') {
+      alert('Error: El usuario ya existe');
+      return;
+    }
+
+    // Si la respuesta contiene un ID, lo guardamos en localStorage
+    if (response.data.id_alumno) {
+      localStorage.setItem('id_alumno', response.data.id_alumno);
+      alert(`Cuenta creada con éxito: ${registerData.value.nombre}. Redirigiendo...`);
+      router.push('/panel_inicio');
+    } else {
+      alert('Error: No se recibió el ID del usuario.');
+    }
+  } catch (error) {
+    console.error('Error en registro:', error);
+    alert('Error en el servidor. Intente nuevamente.');
+  } finally {
+    loading.value = false; // Detiene la carga
+  }
 }
 
-function login() {
+// Método para iniciar sesión
+async function login() {
   if (!loginData.value.nombre || !loginData.value.contrasena) {
     alert('Error: campos vacíos');
     return;
   }
 
-  loading.value = true; // Start loading
+  loading.value = true; // Inicia la carga
 
-  axios.post(`${PHP_URL}/php/login_alumno.php`,
-      JSON.stringify({
-        nombre: loginData.value.nombre,
-        contrasena: loginData.value.contrasena,
-      }),
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      }
-    )
-    .then((response) => {
-      const datos = response.data;
-
-      if (datos === 'Error: campos vacios') {
-        alert(datos);
-        return;
-      }
-
-      if (datos.length > 0) {
-        alert(
-          `¡Bienvenido: ${loginData.value.nombre}! Haga click para continuar`
-        );
-        localStorage.setItem('id_alumno', datos[0].id_alumno);
-        router.push('/dashboard');
-      } else {
-        alert('ERROR: Usuario o contraseña incorrectos');
-      }
-    })
-    .catch((error) => {
-      console.error('Error en inicio de sesión:', error);
-    })
-    .finally(() => {
-      loading.value = false; 
+  try {
+    const response = await axios.post(`${PHP_URL}/php/login_alumno.php`, {
+      nombre: loginData.value.nombre,
+      contrasena: loginData.value.contrasena,
+    }, {
+      headers: { 'Content-Type': 'application/json' }
     });
+
+    const datos = response.data;
+
+    if (datos === 'Error: campos vacíos') {
+      alert(datos);
+      return;
+    }
+
+    if (Array.isArray(datos) && datos.length > 0) {
+      localStorage.setItem('id_alumno', datos[0].id_alumno);
+      alert(`¡Bienvenido: ${loginData.value.nombre}! Redirigiendo...`);
+      router.push('/panel_inicio');
+    } else {
+      alert('ERROR: Usuario o contraseña incorrectos');
+    }
+  } catch (error) {
+    console.error('Error en inicio de sesión:', error);
+    alert('Error en el servidor. Intente nuevamente.');
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 
+
 <template>
-  <v-container class="fill-height d-flex align-center justify-center">
+  <v-container class="fill-height d-flex justify-center align-center">
     <v-card class="pa-5" width="400" elevation="10">
       <v-slide-x-transition mode="out-in">
         <div v-if="showRegister" key="register">
@@ -179,5 +169,8 @@ function login() {
 <style scoped>
 .fill-height {
   height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

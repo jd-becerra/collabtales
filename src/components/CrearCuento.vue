@@ -42,11 +42,11 @@
     });
     
     alert('Cuento creado exitosamente');
-    router.push('/lista_cuentos');
+    router.push('/panel_inicio');
   };
   
   const cancelar = () => {
-    router.push('/lista_cuentos');
+    router.push('/panel_inicio');
   };
   </script>
   

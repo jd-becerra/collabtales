@@ -24,7 +24,7 @@ function fetchCuentos() {
 
 <template>
   <v-container>
-    <v-btn class="mb-3" @click="router.push('/user')">Perfil de usuario</v-btn>
+    <v-btn class="mb-3" @click="router.push('/perfil_usuario')">Perfil de usuario</v-btn>
     <v-btn class="mb-3" @click="router.push('/crear_cuento')">Crear un cuento nuevo</v-btn>
     <v-btn class="mb-3" @click="router.push('/unirse_cuento')">Unirse a un cuento</v-btn>
 

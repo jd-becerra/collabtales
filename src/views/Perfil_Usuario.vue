@@ -96,7 +96,7 @@ function eliminarAlumno() {
           <v-text-field v-model="datosAlumno.nombre" label="Nombre" outlined required />
           <v-text-field v-model="datosAlumno.contrasena" label="Contraseña" type="password" outlined required />
           <v-btn block color="green-darken-3" class="mt-3" type="submit">Guardar Cambios</v-btn>
-          <v-btn block variant="text" class="mt-2" @click="router.push('/user')">Cancelar</v-btn>
+          <v-btn block variant="text" class="mt-2" @click="router.push('/panel_inicio')">Cancelar</v-btn>
         </v-form>
       </v-card-text>
     </v-card>
