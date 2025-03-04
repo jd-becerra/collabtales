@@ -12,7 +12,7 @@ onMounted(() => {
 });
 
 function fetchCuentos() {
-  axios.get(`${PHP_URL}/php/get_cuentos.php`)
+  axios.get(`${PHP_URL}/php/obtener_cuentos.php`)
     .then((response) => {
       cuentos.value = response.data;
     })

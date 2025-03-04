@@ -24,7 +24,7 @@ async function register() {
   loading.value = true; // Inicia la carga
 
   try {
-    const response = await axios.post(`${PHP_URL}/php/insert_alumno.php`, {
+    const response = await axios.post(`${PHP_URL}/php/crear_alumno.php`, {
       nombre: registerData.value.nombre,
       contrasena: registerData.value.contrasena,
     }, {
@@ -67,7 +67,7 @@ async function login() {
   loading.value = true; // Inicia la carga
 
   try {
-    const response = await axios.post(`${PHP_URL}/php/login_alumno.php`, {
+    const response = await axios.post(`${PHP_URL}/php/iniciar_sesion.php`, {
       nombre: loginData.value.nombre,
       contrasena: loginData.value.contrasena,
     }, {

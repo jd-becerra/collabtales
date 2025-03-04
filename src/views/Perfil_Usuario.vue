@@ -21,7 +21,7 @@ function getDatosAlumno() {
   }
 
   axios
-    .get(`${PHP_URL}/php/get_alumno.php`, {
+    .get(`${PHP_URL}/php/obtener_alumno.php`, {
       params: {
         id_alumno: id_alumno
       }
@@ -52,7 +52,7 @@ function editarAlumno() {
 
       if (response.data.message) {  // Si hay un mensaje de éxito
         alert(response.data.message);
-        router.push('/user');
+        router.push('/perfil_usuario');
       } else if (response.data.error) {  // Si hay un mensaje de error
         alert(response.data.error);
       } else {
