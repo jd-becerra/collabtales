@@ -36,7 +36,7 @@ function getDatosAlumno() {
 
 function editarAlumno() {
   axios
-    .post(`${PHP_URL}/php/editar_alumno.php`, {
+    .put(`${PHP_URL}/php/editar_alumno.php`, {
       id_alumno: localStorage.getItem('id_alumno'),
       nombre: datosAlumno.value.nombre,
       contrasena: datosAlumno.value.contrasena,
