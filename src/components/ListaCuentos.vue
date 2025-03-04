@@ -3,9 +3,7 @@
     <v-card-title>Tus cuentos</v-card-title>
     <v-list>
       <v-list-item v-for="cuento in cuentos" :key="cuento.id_cuento">
-        <v-list-item-content>
           <v-list-item-title>{{ cuento.nombre }}</v-list-item-title>
-        </v-list-item-content>
       </v-list-item>
     </v-list>
   </v-card>

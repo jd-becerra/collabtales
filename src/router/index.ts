@@ -5,6 +5,7 @@ import Inicio_Sesion from '@/views/InicioSesion.vue';
 import Crear_Cuento from '../components/CrearCuento.vue';
 import Perfil_Usuario from '@/views/PerfilUsuario.vue';
 import Panel_Inicio from '@/views/PanelInicio.vue';
+import VerCuento from '@/views/VerCuento.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,7 +39,13 @@ const router = createRouter({
       path: '/lista_cuentos',
       name: 'lista_cuentos',
       component: ListaCuentos
-    }
+    },
+    {
+      path: '/ver_cuento',
+      name: 'ver_cuento',
+      component: VerCuento
+    },
+
   ],
 });
 
