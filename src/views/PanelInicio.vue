@@ -29,6 +29,7 @@ function fetchCuentos() {
     <v-btn class="mb-3" @click="router.push('/crear_cuento')">Crear un cuento nuevo</v-btn>
     <v-btn class="mb-3" @click="router.push('/unirse_cuento')">Unirse a un cuento</v-btn>
 
+
     <ListaCuentos/>
   </v-container>
 </template>

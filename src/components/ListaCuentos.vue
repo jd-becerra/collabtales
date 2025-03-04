@@ -1,7 +1,17 @@
 <template>
   <v-card class="mt-4 pa-4">
-    <v-card-title>Tus cuentos</v-card-title>
-    <v-list>
+    <v-card-title>
+      <v-btn @click="showAlumnoCuentos">Tus cuentos</v-btn>
+      <v-btn @click="showGlobalCuentos">Cuentos Globales</v-btn>
+    </v-card-title>
+    <v-list v-if="showAlumno">
+      <v-list-item v-for="cuento in cuentos" :key="cuento.id_cuento">
+        <v-list-item-content>
+          <v-list-item-title>{{ cuento.nombre }}</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+    </v-list>
+    <v-list v-if="showGlobal">
       <v-list-item v-for="cuento in cuentos" :key="cuento.id_cuento">
           <v-list-item-title>{{ cuento.nombre }}</v-list-item-title>
       </v-list-item>
@@ -19,8 +29,10 @@
   }
 
   const cuentos = ref<Cuento[]>([]);
+  const showAlumno = ref(true);
+  const showGlobal = ref(false);
 
-  const getCuentos = async () => {
+  const getCuentosAlumno = async () => {
     try {
       const id_alumno = localStorage.getItem('id_alumno');
       if (!id_alumno) {
@@ -39,5 +51,28 @@
     }
   };
 
-  onMounted(getCuentos);
+  const getCuentosGlobal = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_cuentos_globales.php`);
+
+      cuentos.value = response.data;
+      console.log(cuentos.value);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const showAlumnoCuentos = () => {
+    showAlumno.value = true;
+    showGlobal.value = false;
+    getCuentosAlumno();
+  };
+
+  const showGlobalCuentos = () => {
+    showAlumno.value = false;
+    showGlobal.value = true;
+    getCuentosGlobal();
+  };
+
+  onMounted(getCuentosAlumno);
 </script>
