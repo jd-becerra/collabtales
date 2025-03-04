@@ -28,6 +28,16 @@ const router = createRouter({
       path: '/panel_inicio',
       name: 'panel_inicio',
       component: Panel_Inicio
+    },
+    {
+      path: '/crear_cuento',
+      name: 'crear_cuento',
+      component: CrearCuento
+    },
+    {
+      path: '/lista_cuentos',
+      name: 'lista_cuentos',
+      component: ListaCuentos
     }
   ],
 });

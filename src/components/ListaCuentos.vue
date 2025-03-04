@@ -1,10 +1,14 @@
 <template>
-  <div>
-    <h1>Lista de Cuentos</h1>
-    <ul>
-      <li v-for="cuento in cuentos" :key="cuento.id_cuento">{{ cuento.nombre }}</li>
-    </ul>
-  </div>
+  <v-card class="mt-4 pa-4">
+    <v-card-title>Tus cuentos</v-card-title>
+    <v-list>
+      <v-list-item v-for="cuento in cuentos" :key="cuento.id_cuento">
+        <v-list-item-content>
+          <v-list-item-title>{{ cuento.nombre }}</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+    </v-list>
+  </v-card>
 </template>
 
 <script setup lang="ts">
@@ -26,7 +30,7 @@
         return;
       }
 
-      const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/get_cuentos.php`, {
+      const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_cuentos.php`, {
         params: { id_alumno }
       });
 
