@@ -33,7 +33,7 @@ export default {
     },
     async obtenerAportaciones() {
       try {
-        const response = await axios.get(`/php/get_aportaciones.php?id_cuento=${this.id_cuento}`);
+        const response = await axios.get(`/php/obtener_aportaciones.php?id_cuento=${this.id_cuento}`);
         this.aportaciones = response.data;
       } catch (error) {
         console.error("Error al obtener las aportaciones:", error);
