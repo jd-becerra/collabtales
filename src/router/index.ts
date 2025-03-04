@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import CrearCuento from '../components/CrearCuento.vue';
+import ListaCuentos from '@/components/ListaCuentos.vue';
 import Inicio_Sesion from '@/views/Inicio_Sesion.vue';
-import Crear_Cuento from '../components/CrearCuento.vue'; 
+import Crear_Cuento from '../components/CrearCuento.vue';
 import Perfil_Usuario from '@/views/Perfil_Usuario.vue';
 import Panel_Inicio from '@/views/Panel_Inicio.vue';
 

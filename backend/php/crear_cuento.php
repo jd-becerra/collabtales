@@ -3,30 +3,35 @@ include('cors_headers.php');
 include('config.php');
 
 $data = json_decode(file_get_contents("php://input"), true);
-$nombre = $data['nombre'];
-$descripcion = $data['descripcion'];
-$id_alumno = $data['id_alumno'];
 
-if (empty($nombre) || empty($descripcion) || empty($id_alumno)) {
-    echo "Error: nombre, descripcion y id_alumno son obligatorios";
+if (!isset($data['nombre'], $data['descripcion'], $data['id_alumno'])) {
+    echo json_encode(["error" => "Error: nombre, descripcion y id_alumno son obligatorios"]);
     exit();
 }
 
-//$sql = "SELECT CrearCuento(9, 'Nuevo Cuento', 'Descripción del nuevo cuento') AS nuevo_cuento_id;";
+$nombre = $data['nombre'];
+$descripcion = $data['descripcion'];
+$id_alumno = intval($data['id_alumno']);
 
-$sql = "CALL CrearCuento($id_alumno, '$nombre', '$descripcion') AS nuevo_cuento_id;";
+$sql = "CALL CrearCuento(?, ?, ?)";
 
-if ($conn->multi_query($sql)) {
-    do {
-        // Store result set
-        if ($result = $conn->store_result()) {
-            while ($row = $result->fetch_assoc()) {
-                echo $row['result'];
-            }
-            $result->free();
-        }
-    } while ($conn->more_results() && $conn->next_result());
-} 
+if ($stmt = $conn->prepare($sql)) {
+    $stmt->bind_param("ssi", $nombre, $descripcion, $id_alumno);
+    
+    if ($stmt->execute()) {
+        $stmt->store_result();
+        $stmt->bind_result($cuento_id);
+        $stmt->fetch();
+
+        echo json_encode(["success" => true, "id_cuento_creado" => $cuento_id]);
+    } else {
+        echo json_encode(["error" => "Error al ejecutar la consulta"]);
+    }
+
+    $stmt->close();
+} else {
+    echo json_encode(["error" => "Error al preparar la consulta"]);
+}
+
 $conn->close();
 ?>
-
