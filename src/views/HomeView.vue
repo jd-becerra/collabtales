@@ -103,7 +103,7 @@ function login() {
       console.error('Error en inicio de sesión:', error);
     })
     .finally(() => {
-      loading.value = false; // Stop loading
+      loading.value = false; 
     });
 }
 </script>
