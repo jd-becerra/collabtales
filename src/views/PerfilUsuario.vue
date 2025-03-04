@@ -97,13 +97,11 @@ function eliminarAlumno() {
           <v-text-field v-model="datosAlumno.contrasena" label="Contraseña" type="password" outlined required />
           <v-btn block color="green-darken-3" class="mt-3" type="submit">Guardar Cambios</v-btn>
           <v-btn block variant="text" class="mt-2" @click="router.push('/panel_inicio')">Cancelar</v-btn>
+          <v-btn block color="red-darken-3" class="mt-2" @click="showDeleteDialog = true">Eliminar Cuenta </v-btn>
         </v-form>
       </v-card-text>
     </v-card>
 
-    <v-btn color="red-darken-3" class="mt-5" @click="showDeleteDialog = true">
-      Eliminar Cuenta
-    </v-btn>
 
     <v-dialog v-model="showDeleteDialog" max-width="400">
       <v-card>

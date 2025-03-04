@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import CrearCuento from '../components/CrearCuento.vue';
 import ListaCuentos from '@/components/ListaCuentos.vue';
-import Inicio_Sesion from '@/views/Inicio_Sesion.vue';
+import Inicio_Sesion from '@/views/InicioSesion.vue';
 import Crear_Cuento from '../components/CrearCuento.vue';
-import Perfil_Usuario from '@/views/Perfil_Usuario.vue';
-import Panel_Inicio from '@/views/Panel_Inicio.vue';
+import Perfil_Usuario from '@/views/PerfilUsuario.vue';
+import Panel_Inicio from '@/views/PanelInicio.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
