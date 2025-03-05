@@ -197,3 +197,36 @@ BEGIN
     VALUES (NEW.fk_alumno, NEW.fk_cuento, 'Realizó una aportación');
 END$$
 DELIMITER ;
+
+-- Procedure: EditarAportacion
+DELIMITER $$
+CREATE PROCEDURE `EditarAportacion`(
+    IN id_alumno_param INT,
+    IN id_cuento_param INT,
+    IN nuevo_contenido VARCHAR(2047)
+)
+BEGIN
+    DECLARE aportacion_existente INT;
+
+    -- Verificar si la aportación del alumno ya existe en el cuento
+    SELECT COUNT(*) INTO aportacion_existente 
+    FROM Aportacion 
+    WHERE fk_alumno = id_alumno_param AND fk_cuento = id_cuento_param;
+
+    IF aportacion_existente > 0 THEN
+        -- Si existe, actualizar la aportación
+        UPDATE Aportacion
+        SET contenido = nuevo_contenido
+        WHERE fk_alumno = id_alumno_param AND fk_cuento = id_cuento_param;
+        
+        -- Registrar la acción en el historial
+        INSERT INTO Historial (fk_alumno, fk_cuento, accion) 
+        VALUES (id_alumno_param, id_cuento_param, 'Actualizó una aportación');
+        
+        SELECT 'Aportación actualizada correctamente' AS result;
+    ELSE
+        -- Si no existe la aportación, mostrar error
+        SELECT 'La aportación no existe para el alumno y cuento especificados' AS result;
+    END IF;
+END$$
+DELIMITER ;
