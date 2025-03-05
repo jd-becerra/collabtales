@@ -26,7 +26,6 @@ export default {
       try {
         const response = await axios.post('/php/obtener_vista_cuento.php', { id_cuento: this.id_cuento });
         this.cuento = response.data.length ? response.data[0] : null;
-        console.log(this.cuento);
       } catch (error) {
         console.error("Error al obtener el cuento:", error);
       }
@@ -41,7 +40,7 @@ export default {
     },
     async eliminarCuento() {
       try {
-        await axios.post('/php/delete_cuento.php', { id_cuento: this.id_cuento });
+        await axios.post('/php/eliminar_cuento.php', { id_cuento: this.id_cuento });
         localStorage.removeItem("id_cuento");
         this.$router.push('/panel_inicio');
       } catch (error) {
@@ -63,19 +62,44 @@ export default {
 <template>
   <v-container class="vista-cuento">
     <!-- Botón para volver a la lista de cuentos -->
-    <v-btn color="primary" :to="'/panel_inicio'">Mis cuentos</v-btn>
-    
-    <v-card class="my-4" v-if="cuento">
-      <v-card-title>{{ cuento.nombre }}</v-card-title>
-      <v-card-text>{{ cuento.descripcion }}</v-card-text>
+    <v-btn color="primary" class="mb-4" :to="'/panel_inicio'">📚 Volver a Mis Cuentos</v-btn>
+
+    <!-- Tarjeta del cuento -->
+    <v-card class="my-4 pa-4" elevation="6" v-if="cuento">
+      <v-card-title class="text-h5 font-weight-bold">📖 Nombre Cuento: {{ cuento.nombre }}</v-card-title>
+      <v-divider></v-divider>
+      <v-card-text class="mt-2">
+        <p class="text-body-1">Trata sobre:{{ cuento.descripcion }}</p>
+      </v-card-text>
     </v-card>
-    
-    <v-list>
-      <v-list-item v-for="aportacion in aportaciones" :key="aportacion.id">
-          <v-list-item-title>{{ aportacion.texto }}</v-list-item-title>
-      </v-list-item>
-    </v-list>
-    
+
+    <!-- Código para unirse -->
+    <v-card class="pa-4 mb-4 code-card" elevation="6">
+      <v-card-title class="text-h6 font-weight-bold">🔑 Código para unirse</v-card-title>
+      <v-card-text class="text-center text-h5 font-weight-bold green--text">
+        {{ id_cuento }}
+      </v-card-text>
+    </v-card>
+
+    <!-- Sección de Aportaciones -->
+    <v-card class="pa-4 aportaciones-card" elevation="6">
+      <v-card-title class="text-h6 font-weight-bold">✍️ Aportaciones</v-card-title>
+      <v-divider></v-divider>
+      <v-card-text class="mt-2">
+        <v-list v-if="aportaciones.length > 0">
+          <v-list-item v-for="aportacion in aportaciones" :key="aportacion.id" class="aportacion-item">
+            <v-list-item-content>
+              <v-list-item-title class="text-body-1">{{ aportacion.texto }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+        <p v-else class="no-aportaciones">⚠️ Actualmente no existen aportaciones en este cuento.</p>
+      </v-card-text>
+    </v-card>
+
+    <!-- Botón para eliminar cuento -->
+    <v-btn color="red" class="mt-4" @click="showDeleteCuentoPopup = true">🗑️ Eliminar Cuento</v-btn>
+
     <!-- Popup Eliminar Cuento -->
     <v-dialog v-model="showDeleteCuentoPopup" max-width="400">
       <v-card>
@@ -90,7 +114,7 @@ export default {
         </v-card-actions>
       </v-card>
     </v-dialog>
-    
+
     <!-- Popup Eliminar Aportación -->
     <v-dialog v-model="showDeleteAportacionPopup" max-width="400">
       <v-card>
@@ -109,6 +133,38 @@ export default {
 
 <style scoped>
 .vista-cuento {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+}
+
+.code-card {
+  background-color: #e8f5e9;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.aportaciones-card {
+  width: 100%;
+  max-height: 400px;
+  max-width: 600px;
+  background-color: #f3e5f5;
+  overflow: auto;
+}
+
+.aportacion-item {
+  max-width: 300px;
+  margin: auto;
+  background-color: #ffffff;
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.no-aportaciones {
+  text-align: center;
+  font-weight: bold;
+  color: #757575;
   padding: 20px;
 }
 </style>
