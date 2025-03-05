@@ -11,7 +11,7 @@ if(empty($id_cuento)){
     exit;
 }
 
-$sql = "SELECT * FROM Cuento WHERE id_cuento = '$id_cuento'";
+$sql = "SELECT id_cuento, nombre, descripcion FROM Cuento WHERE id_cuento = '$id_cuento'";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
