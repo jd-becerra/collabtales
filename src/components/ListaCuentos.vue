@@ -17,39 +17,49 @@
 
       <!-- Sección: Tus Cuentos -->
       <v-list v-if="showAlumno">
-        <v-list-item
-          v-for="cuento in cuentos"
-          :key="cuento.id_cuento"
-          class="cuento-item"
-          @click="verCuento(cuento.id_cuento)"
-        >
-          <v-list-item-content>
-            <v-list-item-title class="text-subtitle-1 font-weight-bold">📖 Título: {{ cuento.nombre }}</v-list-item-title>
-            <v-list-item-subtitle class="text-body-2 text--secondary">
-              📝 Descripción: {{ cuento.descripcion || 'Sin descripción disponible' }}
-            </v-list-item-subtitle>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-icon color="blue">mdi-chevron-right</v-icon>
-          </v-list-item-action>
-        </v-list-item>
+        <template v-if="cuentos.length > 0">
+          <v-list-item
+            v-for="cuento in cuentos"
+            :key="cuento.id_cuento"
+            class="cuento-item"
+            @click="verCuento(cuento.id_cuento)"
+          >
+            <v-list-item-content>
+              <v-list-item-title class="text-subtitle-1 font-weight-bold">📖 Título: {{ cuento.nombre }}</v-list-item-title>
+              <v-list-item-subtitle class="text-body-2 text--secondary">
+                📝 Descripción: {{ cuento.descripcion || 'Sin descripción disponible' }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-icon color="blue">mdi-chevron-right</v-icon>
+            </v-list-item-action>
+          </v-list-item>
+        </template>
+        <p v-else class="no-cuentos-text">⚠️ Aún no tienes cuentos asignados. ¡Únete a uno o crea tu propia historia! 📖✨</p>
       </v-list>
 
       <!-- Sección: Cuentos Globales -->
       <v-list v-if="showGlobal">
-        <v-list-item v-for="cuento in cuentosGlobales" :key="cuento.id_cuento" class="cuento-item">
-          <v-list-item-content>
-            <v-list-item-title class="text-subtitle-1 font-weight-bold">📖 Título: {{ cuento.nombre }}</v-list-item-title>
-            <v-list-item-subtitle class="text-body-2 text--secondary">
-              📝 Descripción: {{ cuento.descripcion || 'Sin descripción disponible' }}
-            </v-list-item-subtitle>
-          </v-list-item-content>
-          <v-list-item-action v-if="!cuento.unido">
-            <v-btn color="green" outlined @click="unirseCuento(cuento.id_cuento)">
-              Unirse
-            </v-btn>
-          </v-list-item-action>
-        </v-list-item>
+        <template v-if="cuentosGlobales.length > 0">
+          <v-list-item v-for="cuento in cuentosGlobales" :key="cuento.id_cuento" class="cuento-item">
+            <v-row align="center" class="w-100">
+              <v-col cols="9">
+                <v-list-item-content>
+                  <v-list-item-title class="text-subtitle-1 font-weight-bold">📖 Título: {{ cuento.nombre }}</v-list-item-title>
+                  <v-list-item-subtitle class="text-body-2 text--secondary">
+                    📝 Descripción: {{ cuento.descripcion || 'Sin descripción disponible' }}
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+              </v-col>
+              <v-col cols="3" class="d-flex justify-end">
+                <v-btn v-if="!cuento.unido" color="green" outlined @click="unirseCuento(cuento.id_cuento)">
+                  Unirse
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-list-item>
+        </template>
+        <p v-else class="no-cuentos-text">⚠️ No hay cuentos disponibles en este momento. Vuelve más tarde o crea uno nuevo. 🚀</p>
       </v-list>
     </v-card>
   </v-container>
@@ -183,6 +193,15 @@ onMounted(() => {
 .cuento-item:hover {
   background-color: #e3f2fd;
   cursor: pointer;
+}
+
+/* Mensaje cuando no hay cuentos */
+.no-cuentos-text {
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #666;
+  padding: 20px;
 }
 
 /* Botón "Unirse" */
