@@ -26,10 +26,8 @@
               </v-list-item-subtitle>
             </v-list-item-content>
             
-            <!-- Botón Editar SIEMPRE visible -->
             <v-list-item-action>
-              <v-btn color="blue" outlined @click.stop="editarCuento(cuento.id_cuento)">
-                <v-icon left>mdi-pencil</v-icon> Editar
+              <v-btn color="blue" outlined @click.stop="editarCuento(cuento.id_cuento)">Editar
               </v-btn>
             </v-list-item-action>
           </v-list-item>
@@ -41,13 +39,10 @@
       <v-list v-if="showGlobal">
         <template v-if="cuentosGlobales.length > 0">
           <v-list-item v-for="cuento in cuentosGlobales" :key="cuento.id_cuento" class="cuento-item">
-            <v-list-item-content>
               <v-list-item-title class="text-subtitle-1 font-weight-bold">📖 {{ cuento.nombre }}</v-list-item-title>
               <v-list-item-subtitle class="text-body-2 text--secondary">
                 📝 {{ cuento.descripcion || 'Sin descripción disponible' }}
               </v-list-item-subtitle>
-            </v-list-item-content>
-            
             <v-list-item-action v-if="!cuento.unido">
               <v-btn color="green" outlined @click="unirseCuento(cuento.id_cuento)">
                 Unirse

@@ -33,6 +33,8 @@ export default {
     async obtenerAportaciones() {
       try {
         const response = await axios.get(`/php/obtener_aportaciones.php?id_cuento=${this.id_cuento}`);
+        console.log("Id cuento:", this.id_cuento);
+        console.log("Aportaciones:", response.data);
         this.aportaciones = response.data;
       } catch (error) {
         console.error("Error al obtener las aportaciones:", error);
@@ -61,10 +63,8 @@ export default {
 
 <template>
   <v-container class="vista-cuento">
-    <!-- Botón para volver a la lista de cuentos -->
     <v-btn color="primary" class="mb-4" :to="'/panel_inicio'">📚 Volver a Mis Cuentos</v-btn>
 
-    <!-- Tarjeta del cuento -->
     <v-card class="my-4 pa-4" elevation="6" v-if="cuento">
       <v-card-title class="text-h5 font-weight-bold">📖 Nombre Cuento: {{ cuento.nombre }}</v-card-title>
       <v-divider></v-divider>
@@ -73,7 +73,6 @@ export default {
       </v-card-text>
     </v-card>
 
-    <!-- Código para unirse -->
     <v-card class="pa-4 mb-4 code-card" elevation="6">
       <v-card-title class="text-h6 font-weight-bold">🔑 Código para unirse</v-card-title>
       <v-card-text class="text-center text-h5 font-weight-bold green--text">
@@ -81,16 +80,13 @@ export default {
       </v-card-text>
     </v-card>
 
-    <!-- Sección de Aportaciones -->
     <v-card class="pa-4 aportaciones-card" elevation="6">
       <v-card-title class="text-h6 font-weight-bold">✍️ Aportaciones</v-card-title>
       <v-divider></v-divider>
       <v-card-text class="mt-2">
         <v-list v-if="aportaciones.length > 0">
           <v-list-item v-for="aportacion in aportaciones" :key="aportacion.id" class="aportacion-item">
-            <v-list-item-content>
               <v-list-item-title class="text-body-1">{{ aportacion.texto }}</v-list-item-title>
-            </v-list-item-content>
           </v-list-item>
         </v-list>
         <p v-else class="no-aportaciones">⚠️ Actualmente no existen aportaciones en este cuento.</p>
