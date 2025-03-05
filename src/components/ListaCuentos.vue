@@ -18,20 +18,19 @@
       <!-- Sección: Tus Cuentos -->
       <v-list v-if="showAlumno">
         <template v-if="cuentos.length > 0">
-          <v-list-item
-            v-for="cuento in cuentos"
-            :key="cuento.id_cuento"
-            class="cuento-item"
-            @click="verCuento(cuento.id_cuento)"
-          >
-            <v-list-item-content>
-              <v-list-item-title class="text-subtitle-1 font-weight-bold">📖 Título: {{ cuento.nombre }}</v-list-item-title>
+          <v-list-item v-for="cuento in cuentos" :key="cuento.id_cuento" class="cuento-item">
+            <v-list-item-content @click="verCuento(cuento.id_cuento)">
+              <v-list-item-title class="text-subtitle-1 font-weight-bold">📖 {{ cuento.nombre }}</v-list-item-title>
               <v-list-item-subtitle class="text-body-2 text--secondary">
-                📝 Descripción: {{ cuento.descripcion || 'Sin descripción disponible' }}
+                📝 {{ cuento.descripcion || 'Sin descripción disponible' }}
               </v-list-item-subtitle>
             </v-list-item-content>
+            
+            <!-- Botón Editar SIEMPRE visible -->
             <v-list-item-action>
-              <v-icon color="blue">mdi-chevron-right</v-icon>
+              <v-btn color="blue" outlined @click.stop="editarCuento(cuento.id_cuento)">
+                <v-icon left>mdi-pencil</v-icon> Editar
+              </v-btn>
             </v-list-item-action>
           </v-list-item>
         </template>
@@ -42,21 +41,18 @@
       <v-list v-if="showGlobal">
         <template v-if="cuentosGlobales.length > 0">
           <v-list-item v-for="cuento in cuentosGlobales" :key="cuento.id_cuento" class="cuento-item">
-            <v-row align="center" class="w-100">
-              <v-col cols="9">
-                <v-list-item-content>
-                  <v-list-item-title class="text-subtitle-1 font-weight-bold">📖 Título: {{ cuento.nombre }}</v-list-item-title>
-                  <v-list-item-subtitle class="text-body-2 text--secondary">
-                    📝 Descripción: {{ cuento.descripcion || 'Sin descripción disponible' }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-col>
-              <v-col cols="3" class="d-flex justify-end">
-                <v-btn v-if="!cuento.unido" color="green" outlined @click="unirseCuento(cuento.id_cuento)">
-                  Unirse
-                </v-btn>
-              </v-col>
-            </v-row>
+            <v-list-item-content>
+              <v-list-item-title class="text-subtitle-1 font-weight-bold">📖 {{ cuento.nombre }}</v-list-item-title>
+              <v-list-item-subtitle class="text-body-2 text--secondary">
+                📝 {{ cuento.descripcion || 'Sin descripción disponible' }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            
+            <v-list-item-action v-if="!cuento.unido">
+              <v-btn color="green" outlined @click="unirseCuento(cuento.id_cuento)">
+                Unirse
+              </v-btn>
+            </v-list-item-action>
           </v-list-item>
         </template>
         <p v-else class="no-cuentos-text">⚠️ No hay cuentos disponibles en este momento. Vuelve más tarde o crea uno nuevo. 🚀</p>
@@ -131,14 +127,12 @@ const unirseCuento = async (id_cuento: number) => {
       return;
     }
 
-    const response = await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/unirse_cuento.php`, {
+    await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/unirse_cuento.php`, {
       id_cuento,
       id_alumno
     });
 
-    console.log('Respuesta del servidor:', response.data);
     alert('Te has unido al cuento con éxito 🎉');
-
     getCuentosAlumno();
     getCuentosGlobal();
   } catch (error) {
@@ -150,6 +144,11 @@ const unirseCuento = async (id_cuento: number) => {
 const verCuento = (id_cuento: number) => {
   localStorage.setItem('id_cuento', id_cuento.toString());
   router.push('/ver_cuento');
+};
+
+const editarCuento = (id_cuento: number) => {
+  localStorage.setItem('id_cuento', id_cuento.toString());
+  router.push('/editar_cuento');
 };
 
 const showAlumnoCuentos = () => {
@@ -171,7 +170,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Personalización de botones de navegación */
 .v-btn {
   font-weight: bold;
   text-transform: none;
@@ -183,7 +181,6 @@ onMounted(() => {
   color: white !important;
 }
 
-/* Estilo de cada cuento */
 .cuento-item {
   border-radius: 8px;
   transition: background-color 0.3s ease-in-out;
@@ -195,19 +192,11 @@ onMounted(() => {
   cursor: pointer;
 }
 
-/* Mensaje cuando no hay cuentos */
 .no-cuentos-text {
   text-align: center;
   font-size: 16px;
   font-weight: bold;
   color: #666;
   padding: 20px;
-}
-
-/* Botón "Unirse" */
-.v-btn.outlined {
-  border: 2px solid #2e7d32 !important;
-  color: #2e7d32 !important;
-  font-weight: bold;
 }
 </style>

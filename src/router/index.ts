@@ -6,6 +6,7 @@ import Crear_Cuento from '../components/CrearCuento.vue';
 import Perfil_Usuario from '@/views/PerfilUsuario.vue';
 import Panel_Inicio from '@/views/PanelInicio.vue';
 import VerCuento from '@/views/VerCuento.vue';
+import EditarCuento from '@/components/EditarCuento.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,7 +46,11 @@ const router = createRouter({
       name: 'ver_cuento',
       component: VerCuento
     },
-
+    {
+      path: '/editar_cuento',
+      name: 'editar_cuento',
+      component: EditarCuento
+    }
   ],
 });
 
