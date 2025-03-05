@@ -1,45 +1,139 @@
-# collabtales
+# Collabtales
 
-This template should help get you started developing with Vue 3 in Vite.
+Este es un template para comenzar a desarrollar aplicaciones utilizando **Vue 3** con **Vite**. Está diseñado para facilitar la configuración inicial y ayudarte a arrancar tu proyecto de forma rápida y eficiente.
 
-## Recommended IDE Setup
+## Contenido
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- [Características](#características)
+- [Requisitos previos](#requisitos-previos)
+- [Instalación](#instalación)
+- [Uso](#uso)
+- [Scripts disponibles](#scripts-disponibles)
+- [Configuración del entorno de desarrollo](#configuración-del-entorno-de-desarrollo)
+- [Personalización de la configuración](#personalización-de-la-configuración)
+- [Funcionalidades](#funcionalidades)
+- [Contribuir](#contribuir)
+- [Recursos](#recursos)
+- [Licencia](#licencia)
 
-## Type Support for `.vue` Imports in TS
+## Características
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+- **Vue 3** para crear interfaces de usuario reactivas.
+- **Vite** como herramienta de bundling, lo que permite un arranque rápido y recargas instantáneas durante el desarrollo.
+- **TypeScript** (soporte mediante `vue-tsc`) para mejorar la calidad del código y la experiencia del desarrollador.
+- Configuración básica de ESLint para mantener un código limpio y consistente.
+- Plantilla lista para incorporar pruebas unitarias utilizando **Vitest**.
 
-## Customize configuration
+## Requisitos previos
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+- Php para backend (local)
+- [npm](https://www.npmjs.com/) o [Yarn](https://yarnpkg.com/)
 
-## Project Setup
+## Instalación
 
-```sh
-npm install
-```
+1. Clona el repositorio:
 
-### Compile and Hot-Reload for Development
+   ```bash
+   git clone https://github.com/jd-becerra/collabtales.git
+   cd collabtales
+   ```
 
-```sh
+2. Instala las dependencias:
+
+   ```bash
+   npm install
+   ```
+
+## Uso
+
+### Desarrollo
+
+Para iniciar el servidor de desarrollo y ver la aplicación en el navegador:
+
+```bash
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+La aplicación se ejecutará en [http://localhost:3000](http://localhost:3000) (o en el puerto configurado por Vite).
 
-```sh
+### Construcción para producción
+
+Para compilar la aplicación y generar los archivos optimizados:
+
+```bash
 npm run build
 ```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+### Pruebas unitarias
 
-```sh
+Para ejecutar las pruebas unitarias con **Vitest**:
+
+```bash
 npm run test:unit
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+### Linting
 
-```sh
+Para revisar el código y asegurarte de que sigue las convenciones establecidas:
+
+```bash
 npm run lint
 ```
+
+## Scripts disponibles
+
+- **npm run dev**: Inicia el servidor de desarrollo con recarga en caliente.
+- **npm run build**: Compila la aplicación para producción.
+- **npm run test:unit**: Ejecuta pruebas unitarias utilizando Vitest.
+- **npm run lint**: Realiza análisis estático del código con ESLint.
+
+## Configuración del entorno de desarrollo
+
+Se recomienda utilizar [Visual Studio Code (VSCode)](https://code.visualstudio.com/) junto con la extensión [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) para aprovechar al máximo el soporte de Vue 3 y TypeScript.
+
+> **Nota:** TypeScript no maneja de forma nativa la información de tipos para archivos `.vue`, por lo que se utiliza `vue-tsc` para el chequeo de tipos.
+
+## Personalización de la configuración
+
+- **Vite:** Puedes personalizar la configuración de Vite según las necesidades de tu proyecto. Consulta la [documentación de Vite](https://vite.dev) para más detalles.
+- **ESLint:** La configuración de ESLint se encuentra en el archivo `eslint.config.ts`. Puedes modificarla para adaptarla a tu estilo de codificación.
+- **TypeScript:** La configuración de TypeScript se encuentra en los archivos `tsconfig.json`, `tsconfig.app.json`, etc.
+
+## Funcionalidades
+
+Collabtales incluye las siguientes funcionalidades:
+
+- **Creación y edición de historias**: Permite a los usuarios escribir y modificar historias colaborativas.
+- **Colaboración en tiempo real**: Múltiples usuarios pueden contribuir a la misma historia simultáneamente.
+- **Autenticación de usuarios**: Registro e inicio de sesión mediante autenticación segura.
+- **Gestor de roles y permisos**: Asigna diferentes niveles de acceso a los usuarios.
+- **Interfaz amigable y responsiva**: Diseño moderno y adaptable a dispositivos móviles..
+
+## Contribuir
+
+Si deseas contribuir al proyecto, sigue estos pasos:
+
+1. Haz un fork del repositorio.
+2. Crea una nueva rama para tu funcionalidad o arreglo:
+   ```bash
+   git checkout -b mi-nueva-funcionalidad
+   ```
+3. Realiza los cambios y haz commit:
+   ```bash
+   git commit -m "Agrega nueva funcionalidad X"
+   ```
+4. Envía un pull request para revisión.
+
+Cualquier contribución es bienvenida.
+
+## Recursos
+
+- [Documentación de Vue 3](https://vuejs.org/)
+- [Guía de Vite](https://vite.dev)
+- [Vitest](https://vitest.dev)
+- [ESLint](https://eslint.org/)
+- [Volar para VSCode](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+
+## Licencia
+
+*Este proyecto no especifica una licencia. Revisa el repositorio para más información o contacta al autor para definir los términos de uso.*
