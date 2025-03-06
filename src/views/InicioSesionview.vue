@@ -24,11 +24,11 @@
                 required
                 class="custom-input"
               />
-              <v-btn block color="primary" class="mt-3 rounded-lg" type="submit" :disabled="loading">
+              <v-btn block color="green-darken-3" class="mt-3 rounded-lg" type="submit" :disabled="loading">
                 <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
                 Registrarse
               </v-btn>
-              <v-btn block variant="text" class="mt-2 text-blue-darken-2" @click="showRegister = false">
+              <v-btn block color="primary" class="mt-3 rounded-lg" @click="showRegister = false">
                 Ya tengo una cuenta
               </v-btn>
             </v-form>
@@ -61,7 +61,7 @@
                 <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
                 Iniciar sesión
               </v-btn>
-              <v-btn block variant="text" class="mt-2 text-blue-darken-2" @click="showRegister = true">
+              <v-btn block color="blue-darken-3" class="mt-3 rounded-lg" @click="showRegister = true">
                 Crear una cuenta
               </v-btn>
             </v-form>
