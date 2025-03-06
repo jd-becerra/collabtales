@@ -3,7 +3,7 @@
     include('config.php');
 
     // Obtener todos los cuentos globales
-    $sql = "SELECT id_cuento, nombre FROM Cuento";
+    $sql = "SELECT c.id_cuento, c.nombre FROM Cuento c where c.publicado = 1";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {

@@ -2,7 +2,7 @@
   <v-container>
     <v-card class="mt-4 pa-4 elevation-4">
       <v-card-title class="text-h5 font-weight-bold text-center">
-        📚 Biblioteca de Cuentos
+        📚 Biblioteca de Cuentos 
       </v-card-title>
       <v-divider class="my-3"></v-divider>
 
@@ -102,7 +102,14 @@ const getCuentosGlobal = async () => {
       params: { id_alumno }
     });
 
+    console.log('Cuentos globales:', response.data);
+
     // Marcar cuentos en los que el usuario ya está unido
+    if (!response.data || !response.data.length) {
+      cuentosGlobales.value = [];
+      return;
+    }
+
     cuentosGlobales.value = response.data.map((cuento: Cuento) => ({
       ...cuento,
       unido: cuentos.value.some((c) => c.id_cuento === cuento.id_cuento),

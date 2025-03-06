@@ -1,3 +1,4 @@
+-- Active: 1714144756101@@127.0.0.1@3306
 DROP DATABASE IF EXISTS `cuentosBD`; 
 CREATE DATABASE `cuentosBD` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `cuentosBD`;
@@ -15,7 +16,7 @@ CREATE TABLE `Cuento` (
   `id_cuento` INT(11) NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
   `descripcion` VARCHAR(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
-  'publicado' TINYINT(1) DEFAULT 0,
+  `publicado` TINYINT(1) DEFAULT 0,
   `fk_owner` INT(11) NULL DEFAULT NULL,
   PRIMARY KEY (`id_cuento`),
   CONSTRAINT `fk_cuento_owner` FOREIGN KEY (`fk_owner`) REFERENCES `Alumno` (`id_alumno`) ON DELETE CASCADE ON UPDATE CASCADE
