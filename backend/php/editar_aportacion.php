@@ -12,7 +12,7 @@ if (empty($id_cuento) || empty($id_alumno) || empty($aportacion)) {
   exit();
 }
 
-$sql = "CALL UpdateContenido($id_alumno, $id_cuento, '$aportacion')";
+$sql = "CALL EditarAportacion($id_alumno, $id_cuento, '$aportacion')";
 
 if ($conn->query($sql) === TRUE) {
   echo "Aportación actualizada correctamente";
