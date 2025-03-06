@@ -1,6 +1,6 @@
 # Collabtales
 
-Este es un template para comenzar a desarrollar aplicaciones utilizando **Vue 3** con **Vite**. Está diseñado para facilitar la configuración inicial y ayudarte a arrancar tu proyecto de forma rápida y eficiente.
+Collab Tales es una plataforma web diseñada para que todas las personas puedan crear y desarrollar cuentos de manera colaborativa. Cada usuario puede iniciar un cuento y generar un código único que permitirá invitar a otros participantes para continuar la historia. El objetivo es fomentar la creatividad, el trabajo en equipo, la escritura y la lectura.
 
 ## Contenido
 
