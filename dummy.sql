@@ -1,13 +1,24 @@
--- Active: 1714144756101@@127.0.0.1@3306@cuentosbd
+-- Desactivar temporalmente las restricciones de claves foráneas
+SET FOREIGN_KEY_CHECKS = 0;
 
--- Insertar Alumnos
+-- Vaciar todas las tablas
+TRUNCATE TABLE Historial;
+TRUNCATE TABLE Aportacion;
+TRUNCATE TABLE Relacion_Alumno_Cuento;
+TRUNCATE TABLE Cuento;
+TRUNCATE TABLE Alumno;
+
+-- Reactivar las restricciones de claves foráneas
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+-- Insertar Alumnos con contraseñas hasheadas
 INSERT INTO Alumno (nombre, contrasena) VALUES 
-('Juan Perez', 'password123'),
-('Maria Lopez', 'securepass'),
-('Carlos Gomez', 'mypassword'),
-('Ana Martinez', 'anapass'),
-('Luis Rodriguez', 'luis123');
-('dev, dev')
+('Juan Perez', '$2y$10$eImG9m6MvntXJ4O27hdXHOzVZ49L4g7t2xz4zR0AqYSm7ZXO8G3y6'), -- password123
+('Maria Lopez', '$2y$10$h1Q3Zv3x57Uxy3Dk9EZsfuhKzCZ9RYkaY0QykLfYRT2qvlWXTW.eS'), -- securepass
+('Carlos Gomez', '$2y$10$0tFZ0ZhDf0KpX06Iq7EdGe3ql1Pp0OnZsG3XaY6T0WGyKl2tV8QfS'), -- mypassword
+('Ana Martinez', '$2y$10$F9/dK/NOdS3H3Hq5jNmLxOxZ5hsyXtNwVmfgKvH6rHcCm5DTjzJr6'), -- anapass
+('Luis Rodriguez', '$2y$10$z6vJ9iQbcfRb2tx38MwbqO5UZX3x89wytn.zqF15XT3kjmbULMcPO'); -- luis123
 
 -- Insertar Cuentos
 INSERT INTO Cuento (nombre, descripcion, fk_owner) VALUES 
@@ -59,4 +70,3 @@ INSERT INTO Historial (fk_alumno, fk_cuento, accion) VALUES
 (5, 3, 'Realizó una aportación'),
 (2, 4, 'Realizó una aportación'),
 (4, 5, 'Realizó una aportación');
-
