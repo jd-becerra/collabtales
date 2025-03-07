@@ -11,8 +11,9 @@ if (empty($data['nombre']) || empty($data['contrasena'])) {
 
 $nombre = $data['nombre'];
 $contrasena = $data['contrasena'];
+$hash_contraseña = password_hash($contrasena, PASSWORD_BCRYPT);
 
-$sql = "CALL AñadirAlumno('$nombre', '$contrasena')";
+$sql = "CALL AñadirAlumno('$nombre', '$hash_contraseña')";
 
 if ($conn->multi_query($sql)) {
     do {
