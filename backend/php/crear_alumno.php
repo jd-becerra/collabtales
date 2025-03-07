@@ -11,7 +11,7 @@ if (empty($data['nombre']) || empty($data['contrasena'])) {
 
 $nombre = $data['nombre'];
 $contrasena = $data['contrasena'];
-$hash_contraseña = password_hash($contrasena, PASSWORD_BCRYPT);
+$hash_contraseña = password_hash($contrasena, PASSWORD_DEFAULT);
 
 $sql = "CALL AñadirAlumno('$nombre', '$hash_contraseña')";
 

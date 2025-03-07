@@ -2,34 +2,36 @@
 include('cors_headers.php');
 include('config.php');
 
-// Obtener datos del cuerpo de la solicitud
+// Assuming you're using the 'nombre' parameter in your query
 $data = json_decode(file_get_contents("php://input"), true);
-$nombre = $data['nombre'] ?? '';
-$contrasena = $data['contrasena'] ?? '';
-error_log("nombre: $nombre, contrasena: $contrasena");
-
+$nombre = $data['nombre'];
+$contrasena = $data['contrasena'];
 
 if (empty($nombre) || empty($contrasena)) {
     echo json_encode(["error" => "Nombre y contraseña son obligatorios"]);
-    exit;
+    exit; // Stop script execution if data is missing
 }
 
-// Consulta sin preparación
-$sql = "SELECT id_alumno, contrasena FROM Alumno WHERE nombre = '$nombre'";
-$result = $conn->query($sql);
+$sql = "SELECT id_alumno, contrasena FROM Alumno WHERE nombre = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $nombre);
+$stmt->execute();
+$result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     
-    // Verificar la contraseña con password_verify
+    // Verify password
     if (password_verify($contrasena, $row['contrasena'])) {
-        echo json_encode(["id_alumno" => $row['id_alumno']]);
+        unset($row['contrasena']); // Remove password hash before returning
+        echo json_encode([$row]);
     } else {
-        echo json_encode(["error" => "Contraseña incorrecta"]);
+        echo json_encode([]); // Return an empty array if password is incorrect
     }
 } else {
-    echo json_encode(["error" => "Usuario no encontrado"]);
+    echo json_encode([]); // Return an empty array if no data is found
 }
 
+$stmt->close();
 $conn->close();
 ?>
