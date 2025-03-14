@@ -20,12 +20,10 @@ jobs:
 
     - name: Install dependencies (Vue.js)
       run: |
-        cd frontend  # Asumiendo que tu frontend está en la carpeta 'frontend'
         npm install
 
     - name: Build Vue.js app
       run: |
-        cd frontend
         npm run build  # Generará los archivos estáticos en la carpeta 'dist'
 
     - name: Set up SSH
