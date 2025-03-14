@@ -7,7 +7,7 @@ import Perfil_Usuario from '@/views/PerfilUsuarioView.vue';
 import Panel_Inicio from '@/views/PanelInicioView.vue';
 import VerCuento from '@/views/VerCuentoView.vue';
 import EditarCuento from '@/components/EditarCuento.vue';
-import RestaurarContraseña from '@/views/ValidarTokenRestauracion.vue';
+import RestaurarContraseña from '@/views/ValidarTokenRestauracionView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
