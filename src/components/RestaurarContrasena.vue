@@ -21,7 +21,7 @@ import axios from 'axios';
 
 const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 
-export default defineComponent({
+const RestaurarContrasena = defineComponent({
   props: ['token', 'correo'],
   setup(props) {
     const password = ref('');
@@ -59,4 +59,6 @@ export default defineComponent({
     };
   },
 });
+
+export default RestaurarContrasena;
 </script>
