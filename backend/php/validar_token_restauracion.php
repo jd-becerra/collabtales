@@ -2,9 +2,8 @@
 include('cors_headers.php');
 include('config.php');
 
-$data = json_decode(file_get_contents("php://input"), true);
-$token = $data['token'] ?? null;
-$correo = $data['correo'] ?? null;
+$token = $_GET['token'] ?? null;
+$correo = $_GET['correo'] ?? null;
 
 if (empty($token) || empty($correo)) {
     echo json_encode(["error" => "Campos inválidos"]);

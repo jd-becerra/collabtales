@@ -1,12 +1,24 @@
 <template>
-  <div>
-    <h1>Validar Token de Restauración</h1>
-    <p v-if="!validado">Validando token...</p>
-    <p v-if="mensaje_error">{{ mensaje_error }}</p>
+ <v-container class="fill-height d-flex justify-center align-center">
+  <v-card class="pa-6 rounded-lg elevation-10 login-card">
+    <v-card-title class="text-center text-h5 font-weight-bold">🔐 Restaurar contraseña</v-card-title>
+    <div v-if="loading" class="d-flex justify-center">
+      <v-progress-circular indeterminate color="white" size="20" class="mr-2" />
+      <v-card-subtitle class="text-center text-body-2">Validando token</v-card-subtitle>
+    </div>
+
+    <div v-if="mensaje_error">
+      <v-card-text>
+        <p
+          style="color: red;"
+        >{{ mensaje_error }}</p>
+      </v-card-text>
+    </div>
 
     <!-- Conditionally render the RestaurarContrasena component if the token is valid -->
     <RestaurarContrasena v-if="validado" :token="token" :id_usuario="id_usuario" />
-  </div>
+  </v-card>
+</v-container>
 </template>
 
 <script lang="ts">
@@ -25,12 +37,17 @@ export default defineComponent({
     const mensaje_error = ref('');
     const validado = ref(false);
     const id_usuario = ref(null);
+    const loading = ref(false);
 
     const validarToken = async () => {
+      loading.value = true;
       try {
-        const response = await axios.post(`${PHP_URL}/php/validar_token_restauracion.php`, {
-          token: props.token,
-          correo: props.correo,
+        const response = await axios.get(`${PHP_URL}/php/validar_token_restauracion.php`,
+        {
+          params: {
+            token: props.token,
+            correo: props.correo,
+          }
         });
 
         if (response.data.error) {
@@ -45,13 +62,53 @@ export default defineComponent({
       } catch (error) {
         console.error(error);
         mensaje_error.value = 'Error al validar token';
+      } finally {
+        loading.value = false;
       }
     };
 
     // Call validarToken when the component is mounted
     validarToken();
 
-    return { mensaje_error, validado, id_usuario };
+    return { mensaje_error, validado, id_usuario, loading };
   },
 });
 </script>
+
+<style scoped>
+/* Fondo con degradado */
+.fill-height {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Estilo de la tarjeta */
+.login-card {
+  width: 400px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Campos de entrada personalizados */
+.custom-input {
+  background: #f4f6f8;
+  border-radius: 8px;
+}
+
+/* Botones estilizados */
+.v-btn {
+  font-weight: bold;
+  transition: 0.3s ease-in-out;
+}
+
+.v-btn:hover {
+  transform: scale(1.03);
+}
+
+.text-blue-darken-2 {
+  color: #1976d2 !important;
+}
+</style>
