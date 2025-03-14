@@ -55,10 +55,44 @@ $headers = "From: $from" . "\r\n" .
     "Reply-To: $reply_to" . "\r\n" .
     "X-Mailer: PHP/" . phpversion();
 
-mail($to, $subject, $message, $headers);
+
+// Usar PHPMailer para enviar el correo con gmail
+$rdir = str_replace("\\", "/", __DIR__);  // Root Dir
+require_once $rdir . '/../vendor/phpmailer/phpmailer/src/Exception.php';
+require_once $rdir . '/../vendor/phpmailer/phpmailer/src/PHPMailer.php';
+require_once $rdir . '/../vendor/phpmailer/phpmailer/src/SMTP.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+$mail = new PHPMailer(true);
+
+// Usar gmail para enviar el correo
+$mail->IsSMTP(); // telling the class to use SMTP
+$mail->SMTPAuth = true; // enable SMTP authentication
+$mail->SMTPSecure = "ssl"; // sets the prefix to the servier
+$mail->Host = "smtp.gmail.com"; // sets GMAIL as the SMTP server
+$mail->Port = 465; // set the SMTP port for the GMAIL server
+$mail->Username = getenv("SMTP_USER");
+$mail->Password = getenv("SMTP_PASS");
+
+$mail->setFrom($from, 'Collabtales');
+$mail->addAddress($to);  // Add the recipient's email address
+$mail->addReplyTo($reply_to);
+$mail->Subject = $subject;
+$mail->Body = $message;
+
 
 // TODO: Eliminar token de este mensaje en producción
-echo json_encode(["message" => "Se ha enviado un enlace a tu correo para restablecer tu contraseña. Link: $restore_link"]);
+try {
+    $mail->send();
+    echo json_encode(["success" => "Se ha enviado un enlace a tu correo para restablecer tu contraseña. Link: $restore_link"]);
+} catch (Exception $e) {
+    var_dump(getenv("SMTP_PASS"));
+    echo json_encode(["error" => "Error al enviar el correo: " . $mail->ErrorInfo. " Link: $restore_link"]);
+    exit;  // Stop further execution after failure
+}
 
 $conn->close();
 ?>
