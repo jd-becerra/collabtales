@@ -16,11 +16,15 @@ jobs:
     - name: Set up Node.js (para Vue.js)
       uses: actions/setup-node@v3
       with:
-        node-version: '16'  # Usa la versión de Node.js que necesites
+        node-version: '16'  # Asegúrate de usar una versión compatible de Node.js
 
     - name: Install dependencies (Vue.js)
       run: |
         npm install
+
+    - name: Apply crypto polyfill (para resolver problemas de 'crypto')
+      run: |
+        echo "globalThis.crypto = require('crypto');" > ./node_modules/vite/dist/node/chunks/dep-CfG9u7Cn.js
 
     - name: Build Vue.js app
       run: |
@@ -45,7 +49,6 @@ jobs:
       run: |
         ssh -p 65002 u418653278@46.202.198.126 << 'EOF'
           cd ~/public_html/colabtales/backend
-          # Si usas Composer, asegúrate de tener el archivo composer.json
           composer install --no-dev --optimize-autoloader
         EOF
 
@@ -53,7 +56,6 @@ jobs:
       run: |
         ssh -p 65002 u418653278@46.202.198.126 << 'EOF'
           cd ~/public_html/colabtales
-          # Asegúrate de dar permisos correctos para los archivos
           sudo chown -R u418653278:u418653278 ~/public_html/colabtales
           sudo chmod -R 755 ~/public_html/colabtales
         EOF
