@@ -26,11 +26,11 @@ if (!$correo) {
 $stmt = $conn->prepare("SELECT id_alumno FROM Alumno WHERE correo = ?");
 $stmt->bind_param("s", $correo);
 $stmt->execute();
-$stmt->bind_result($id_alumno);
+$stmt->bind_result($id_usuario);
 $stmt->fetch();
 $stmt->close();
 
-if (!$id_alumno) {
+if (!$id_usuario) {
     echo json_encode(["error" => "No se encontró un usuario con ese correo"]);
     exit;
 }
@@ -38,7 +38,7 @@ if (!$id_alumno) {
 // Obtener token y expiración más recientes
 $stmt = $conn->prepare("SELECT token, expiracion FROM TokenRestauracion WHERE fk_alumno = ? AND expiracion > ? ORDER BY expiracion DESC LIMIT 1");
 $current_time = time();
-$stmt->bind_param("ii", $id_alumno, $current_time);
+$stmt->bind_param("ii", $id_usuario, $current_time);
 $stmt->execute();
 $stmt->bind_result($hashed_token, $expiration);
 $stmt->fetch();
@@ -55,7 +55,8 @@ if (!password_verify($token, $hashed_token)) {
     exit;
 }
 
-echo json_encode(["success" => "Token y correo válidos"]);
+// Mandar id_usuario para que el frontend pueda redirigir a la página de restablecimiento
+echo json_encode(["id_usuario" => $id_usuario]);
 
 $conn->close();
 ?>

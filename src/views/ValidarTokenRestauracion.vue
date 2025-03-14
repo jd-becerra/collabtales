@@ -5,7 +5,7 @@
     <p v-if="mensaje_error">{{ mensaje_error }}</p>
 
     <!-- Conditionally render the RestaurarContrasena component if the token is valid -->
-    <RestaurarContrasena v-if="validado" :token="token" :correo="correo" />
+    <RestaurarContrasena v-if="validado" :token="token" :id_usuario="id_usuario" />
   </div>
 </template>
 
@@ -24,6 +24,7 @@ export default defineComponent({
   setup(props) {
     const mensaje_error = ref('');
     const validado = ref(false);
+    const id_usuario = ref(null);
 
     const validarToken = async () => {
       try {
@@ -32,11 +33,15 @@ export default defineComponent({
           correo: props.correo,
         });
 
-        if (response.data.success) {
-          validado.value = true;  // Set to true if token is valid
-        } else {
+        if (response.data.error) {
           mensaje_error.value = response.data.error;
         }
+
+        if (response.data.id_usuario) {
+          id_usuario.value = response.data.id_usuario;
+          validado.value = true;
+        }
+
       } catch (error) {
         console.error(error);
         mensaje_error.value = 'Error al validar token';
@@ -46,7 +51,7 @@ export default defineComponent({
     // Call validarToken when the component is mounted
     validarToken();
 
-    return { mensaje_error, validado };
+    return { mensaje_error, validado, id_usuario };
   },
 });
 </script>

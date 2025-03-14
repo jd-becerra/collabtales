@@ -126,9 +126,8 @@ async function register() {
     } else {
       alert('❌ Error: No se recibió el ID del usuario.');
     }
-  } catch (error) {
-    console.error('Error en registro:', error);
-    alert('❌ Error en el servidor. Intente nuevamente.');
+  } catch (_error) {
+    alert('❌ Error en el servidor. Intente nuevamente: ' + _error);
   } finally {
     loading.value = false;
   }
@@ -149,7 +148,6 @@ async function login() {
     });
 
     const datos = response.data;
-    console.log('Datos de inicio de sesión:', datos);
 
     if (datos === 'Error: campos vacíos') {
       alert(datos);

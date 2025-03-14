@@ -22,7 +22,7 @@ import axios from 'axios';
 const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 
 const RestaurarContrasena = defineComponent({
-  props: ['token', 'correo'],
+  props: ['token', 'id_usuario'],
   setup(props) {
     const password = ref('');
     const repeatPassword = ref('');
@@ -36,7 +36,7 @@ const RestaurarContrasena = defineComponent({
       try {
         const response = await axios.post(`${PHP_URL}/php/restaurar_contrasena.php`, {
           token: props.token,
-          correo: props.correo,
+          id_usuario: props.id_usuario,
           nueva_contrasena: password.value,
         });
 
