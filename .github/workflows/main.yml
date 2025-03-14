@@ -18,17 +18,14 @@ jobs:
       with:
         node-version: '16'  # Asegúrate de usar una versión compatible de Node.js
 
-    - name: Install dependencies (Vue.js)
+    - name: Clean npm cache and install dependencies
       run: |
-        npm install
-
-    - name: Apply crypto polyfill (para resolver problemas de 'crypto')
-      run: |
-        echo "globalThis.crypto = require('crypto');" > ./node_modules/vite/dist/node/chunks/dep-CfG9u7Cn.js
+        rm -rf node_modules package-lock.json  # Elimina node_modules y package-lock.json
+        npm install  # O usa 'npm ci' si tienes un archivo package-lock.json
 
     - name: Build Vue.js app
       run: |
-        npm run build  # Generará los archivos estáticos en la carpeta 'dist'
+        npm run build --force  # Fuerza el build si hay conflictos
 
     - name: Set up SSH
       uses: webfactory/ssh-agent@v0.5.3
