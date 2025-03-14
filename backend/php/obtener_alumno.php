@@ -9,20 +9,24 @@ if (!isset($_GET['id_alumno'])) {
 
 $id_alumno = intval($_GET['id_alumno']);
 
-$sql = "SELECT nombre, contrasena FROM Alumno WHERE id_alumno = ?";
-$result = $conn->prepare($sql);
-$result->bind_param("i", $id_alumno);
-$result->execute();
-$result->store_result();
-$result->bind_result($nombre, $contrasena);
-$result->fetch();
+if ($id_alumno <= 0) {
+    echo json_encode(["error" => "Invalid id_alumno"]);
+    exit;
+}
 
-if ($result->num_rows > 0) {
-    echo json_encode(["nombre" => $nombre, "contrasena" => $contrasena]);
+$stmt = $conn->prepare("SELECT nombre, correo FROM Alumno WHERE id_alumno = ?");
+$stmt->bind_param("i", $id_alumno);
+$stmt->execute();
+$stmt->store_result();
+$stmt->bind_result($nombre, $correo);
+$stmt->fetch();
+
+if ($stmt->num_rows > 0) {
+    echo json_encode(["nombre" => $nombre, "correo" => $correo]);
 } else {
     echo json_encode(["error" => "Alumno not found"]);
 }
 
-$result->close();
+$stmt->close();
 $conn->close();
 ?>

@@ -4,34 +4,48 @@ include('config.php');
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-if (empty($data['nombre']) || empty($data['contrasena'])) {
-    echo json_encode(["error" => "Nombre y contraseña son obligatorios"]);
+if (empty($data['nombre']) || empty($data['contrasena']) || empty($data['correo'])) {
+    echo json_encode(["error" => "Nombre, contraseña y correo son obligatorios"]);
     exit;
 }
 
-$nombre = $data['nombre'];
-$contrasena = $data['contrasena'];
-$hash_contraseña = password_hash($contrasena, PASSWORD_DEFAULT);
+// Eliminar espacios en blanco y caracteres especiales HTML, para evitar inyección XSS
+$nombre = trim(htmlspecialchars($data['nombre']));
+$contrasena = trim($data['contrasena']); // No se aplica htmlspecialchars porque la contraseña puede contener caracteres especiales
+$correo = trim(htmlspecialchars($data['correo']));
 
-$sql = "CALL AñadirAlumno('$nombre', '$hash_contraseña')";
-
-if ($conn->multi_query($sql)) {
-    do {
-        if ($result = $conn->store_result()) {
-            $row = $result->fetch_assoc();
-            if (isset($row['result']) && $row['result'] === 'El usuario ya existe') {
-                echo json_encode(["result" => "El usuario ya existe"]);
-            } elseif (isset($row['id_alumno'])) {
-                echo json_encode(["id_alumno" => $row['id_alumno']]);
-            } else {
-                echo json_encode(["error" => "No se pudo obtener el ID del usuario"]);
-            }
-            $result->free();
-        }
-    } while ($conn->more_results() && $conn->next_result());
-} else {
-    echo json_encode(["error" => "Error en la base de datos: " . $conn->error]);
+// Validar longitud de nombre y contraseña para evitar ataques DoS, entre otros
+if (strlen($nombre) > 50) {
+    echo json_encode(["error" => "El nombre es demasiado largo"]);
+    exit;
+}
+if (strlen($contrasena) > 72) { // BCRYPT sólo toma en cuenta los primeros 72 caracteres
+    echo json_encode(["error" => "La contraseña no debe superar los 72 caracteres"]);
+    exit;
+}
+if (strlen($correo) > 100 or !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+    echo json_encode(["error" => "Correo no válido"]);
+    exit;
 }
 
-$conn->close();
+// Hasheo de la contraseña
+$options = ['cost' => 12];  // Incrementar el costo de iteración para hacer más lenta la generación del hash, pero procurando no hacerlo demasiado lento para el servidor
+$hash_contraseña = password_hash($contrasena, PASSWORD_BCRYPT, $options);
+
+// Preparar query para evitar inyección SQL
+$stmt = $conn->prepare("CALL AñadirAlumno(?, ?, ?)");
+$stmt->bind_param("sss", $nombre, $hash_contraseña, $correo);
+$stmt->execute();
+
+$stmt->bind_result($result);
+$stmt->fetch();
+
+if ($result == -1) {
+    echo json_encode(["result" => "El usuario ya existe"]);
+} elseif ($result > 0) {
+    echo json_encode(["id_alumno" => $result]);
+} else {
+    echo json_encode(["error" => "Error al crear el usuario"]);
+}
+$stmt->close();
 ?>

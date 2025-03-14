@@ -16,6 +16,15 @@
                 class="custom-input"
               />
               <v-text-field
+                label="Correo"
+                prepend-inner-icon="mdi-email"
+                v-model="registerData.correo"
+                type="email"
+                outlined
+                required
+                class="custom-input"
+              />
+              <v-text-field
                 label="Contraseña"
                 prepend-inner-icon="mdi-lock"
                 v-model="registerData.contrasena"
@@ -79,7 +88,7 @@ import axios from 'axios';
 
 // Reactive state
 const showRegister = ref(false);
-const registerData = ref({ nombre: '', contrasena: '' });
+const registerData = ref({ nombre: '', correo: '', contrasena: '' });
 const loginData = ref({ nombre: '', contrasena: '' });
 const loading = ref(false);
 
@@ -88,7 +97,7 @@ const router = useRouter();
 
 // Método para registrar usuario
 async function register() {
-  if (!registerData.value.nombre || !registerData.value.contrasena) {
+  if (!registerData.value.nombre || !registerData.value.correo || !registerData.value.contrasena) {
     alert('⚠ Error: Campos vacíos');
     return;
   }
@@ -115,7 +124,7 @@ async function register() {
       alert(`✅ Cuenta creada con éxito: ${registerData.value.nombre}`);
       router.push('/panel_inicio');
     } else {
-      alert('⚠ Error: No se recibió el ID del usuario.');
+      alert('❌ Error: No se recibió el ID del usuario.');
     }
   } catch (error) {
     console.error('Error en registro:', error);
@@ -140,22 +149,22 @@ async function login() {
     });
 
     const datos = response.data;
+    console.log('Datos de inicio de sesión:', datos);
 
     if (datos === 'Error: campos vacíos') {
       alert(datos);
       return;
     }
 
-    if (Array.isArray(datos) && datos.length > 0) {
-      localStorage.setItem('id_alumno', datos[0].id_alumno);
+    if (datos.id_alumno) {
+      localStorage.setItem('id_alumno', datos.id_alumno);
       alert(`✅ ¡Bienvenido ${loginData.value.nombre}!`);
       router.push('/panel_inicio');
     } else {
       alert('❌ ERROR: Usuario o contraseña incorrectos');
     }
-  } catch (error) {
-    console.error('Error en inicio de sesión:', error);
-    alert('❌ Error en el servidor. Intente nuevamente.');
+  } catch (_error) {
+    alert('❌ Error en el servidor. Intente nuevamente: ' + _error);
   } finally {
     loading.value = false;
   }
