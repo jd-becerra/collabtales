@@ -219,6 +219,7 @@ async function restorePassword() {
     }
 
     if (response.data.success) {
+      showLoginForm();
       alert('✅ Correo enviado. Revisa tu bandeja de entrada.');
     } else {
       alert('❌ Error al restaurar contraseña');

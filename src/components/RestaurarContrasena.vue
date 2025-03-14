@@ -61,14 +61,12 @@ const RestaurarContrasena = defineComponent({
 
         if (response.data.success) {
           alert('Contraseña restaurada correctamente');
-          router.push('/inicio-sesion');
+          router.push('/');
         } else {
-          console.error(response.data);
-          alert('Error al restaurar contraseña');
+          alert('Error: ' + response.data.error);
         }
       } catch (error) {
-        console.error(error);
-        alert('Error al restaurar contraseña');
+        alert('Error: ' + error);
       } finally {
         loading.value = false;
       }

@@ -30,6 +30,30 @@ if (!$id_alumno) {
     exit;
 }
 
+// Obtener el último token generado para este usuario y verificar si ha pasado el tiempo de espera
+$stmt = $conn->prepare("SELECT expiracion FROM TokenRestauracion WHERE fk_alumno = ? ORDER BY expiracion DESC LIMIT 1");
+$stmt->bind_param("i", $id_alumno);
+$stmt->execute();
+$stmt->store_result();
+$stmt->bind_result($last_token_time);
+$stmt->fetch();
+$stmt->close();
+
+$current_time = time();
+$cooldown = 60; // 1 minuto
+
+// Si el último token fue generado hace menos de 1 minuto, rechazamos la solicitud
+if ($last_token_time && ($current_time - $last_token_time < $cooldown)) {
+    echo json_encode(["error" => "Debes esperar 1 minuto antes de solicitar otro token. Revisa tu correo."]);
+    exit;
+}
+
+// Eliminar tokens anteriores
+$stmt = $conn->prepare("DELETE FROM TokenRestauracion WHERE fk_alumno = ?");
+$stmt->bind_param("i", $id_alumno);
+$stmt->execute();
+$stmt->close();
+
 // Utilizar BCRYPT para generar un token seguro
 $token = bin2hex(random_bytes(32));
 $hashed_token = password_hash($token, PASSWORD_BCRYPT);

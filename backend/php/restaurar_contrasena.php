@@ -24,7 +24,6 @@ if (!is_numeric($id_usuario)) {
     exit;
 }
 
-
 // Obtener token y expiración más recientes
 $stmt = $conn->prepare("SELECT token, expiracion FROM TokenRestauracion WHERE fk_alumno = ? AND expiracion > ? ORDER BY expiracion DESC LIMIT 1");
 $current_time = time();
@@ -42,6 +41,20 @@ if (!$hashed_token || time() > $expiration) {
 // Verificar token
 if (!password_verify($token, $hashed_token)) {
     echo json_encode(["error" => "Token inválido"]);
+    exit;
+}
+
+// Obtener la contraseña actual del usuario
+$stmt = $conn->prepare("SELECT contrasena FROM Alumno WHERE id_alumno = ?");
+$stmt->bind_param("i", $id_usuario);
+$stmt->execute();
+$stmt->bind_result($current_password_hash);
+$stmt->fetch();
+$stmt->close();
+
+// Verificar si la nueva contraseña es la misma que la actual
+if (password_verify($new_password, $current_password_hash)) {
+    echo json_encode(["error" => "No se puede repetir la contraseña que tienes actualmente"]);
     exit;
 }
 
