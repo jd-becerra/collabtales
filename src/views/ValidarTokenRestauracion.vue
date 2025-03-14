@@ -5,7 +5,7 @@
     <p v-if="mensaje_error">{{ mensaje_error }}</p>
 
     <!-- Conditionally render the RestaurarContrasena component if the token is valid -->
-    <RestaurarContrasena v-if="validado" />
+    <RestaurarContrasena v-if="validado" :token="token" :correo="correo" />
   </div>
 </template>
 
