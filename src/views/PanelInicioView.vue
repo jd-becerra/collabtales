@@ -161,12 +161,6 @@ const showGlobalCuentos = () => {
 };
 
 onMounted(() => {
-  // Si no hay un alumno registrado, redirigir a la página de inicio de sesión
-  if (!localStorage.getItem('id_alumno')) {
-    router.push('/');
-    return;
-  }
-
   getCuentosAlumno();
   getCuentosGlobal();
 });

@@ -64,4 +64,17 @@ const router = createRouter({
   ],
 });
 
+router.beforeEach((to, from, next) => {
+  const publicPages = ['/'];
+  const authRequired = !publicPages.includes(to.path);
+  const loggedIn = localStorage.getItem('id_alumno');
+
+  if (authRequired && !loggedIn) {
+    return next('/');
+  }
+
+  next();
+}
+);
+
 export default router;
