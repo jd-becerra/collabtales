@@ -24,6 +24,18 @@ if (!is_numeric($id_usuario)) {
     exit;
 }
 
+// Validar longitud mínima de la nueva contraseña
+if (strlen($new_password) < 8) {
+    echo json_encode(["error" => "La contraseña debe tener mínimo 8 caracteres"]);
+    exit;
+}
+
+// Validar que la nueva contraseña tenga al menos un carácter especial
+if (!preg_match('/[^a-zA-Z0-9]/', $new_password)) {
+    echo json_encode(["error" => "La contraseña debe tener al menos un carácter especial"]);
+    exit;
+}
+
 // Obtener token y expiración más recientes
 $stmt = $conn->prepare("SELECT token, expiracion FROM TokenRestauracion WHERE fk_alumno = ? AND expiracion > ? ORDER BY expiracion DESC LIMIT 1");
 $current_time = time();

@@ -28,6 +28,18 @@ if (strlen($correo) > 100 or !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
     exit;
 }
 
+// Validar longitud mínima de la nueva contraseña
+if (strlen($new_password) < 8) {
+    echo json_encode(["error" => "La contraseña debe tener mínimo 8 caracteres"]);
+    exit;
+}
+
+// Validar que la nueva contraseña tenga al menos un carácter especial
+if (!preg_match('/[^a-zA-Z0-9]/', $new_password)) {
+    echo json_encode(["error" => "La contraseña debe tener al menos un carácter especial"]);
+    exit;
+}
+
 // Hasheo de la contraseña
 $options = ['cost' => 12];  // Incrementar el costo de iteración para hacer más lenta la generación del hash, pero procurando no hacerlo demasiado lento para el servidor
 $hash_contraseña = password_hash($contrasena, PASSWORD_BCRYPT, $options);
