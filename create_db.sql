@@ -25,13 +25,12 @@ CREATE TABLE `Cuento` (
 -- Table: Restauracion, para guardar tokens de restauración de contraseña
 CREATE TABLE `TokenRestauracion` (
     `id_restauracion` INT(11) NOT NULL AUTO_INCREMENT,
-    `token` VARCHAR(64) NOT NULL,
+    `token` VARCHAR(64) NOT NULL UNIQUE,
     `expiracion` INT NOT NULL,
     `fk_alumno` INT(11) NOT NULL,
     `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id_restauracion`),
     FOREIGN KEY (`fk_alumno`) REFERENCES `Alumno`(`id_alumno`) ON DELETE CASCADE ON UPDATE CASCADE
-    UNIQUE (`token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table: Relacion_Alumno_Cuento
