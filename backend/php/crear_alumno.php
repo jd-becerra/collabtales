@@ -23,20 +23,21 @@ if (strlen($contrasena) > 72) { // BCRYPT sólo toma en cuenta los primeros 72 c
     echo json_encode(["error" => "La contraseña no debe superar los 72 caracteres"]);
     exit;
 }
-if (strlen($correo) > 100 or !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-    echo json_encode(["error" => "Correo no válido"]);
-    exit;
-}
 
 // Validar longitud mínima de la nueva contraseña
-if (strlen($new_password) < 8) {
+if (strlen($contrasena) < 8) {
     echo json_encode(["error" => "La contraseña debe tener mínimo 8 caracteres"]);
     exit;
 }
 
 // Validar que la nueva contraseña tenga al menos un carácter especial
-if (!preg_match('/[^a-zA-Z0-9]/', $new_password)) {
+if (!preg_match('/[^a-zA-Z0-9]/', $contrasena)) {
     echo json_encode(["error" => "La contraseña debe tener al menos un carácter especial"]);
+    exit;
+}
+
+if (strlen($correo) > 100 or !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+    echo json_encode(["error" => "Correo no válido"]);
     exit;
 }
 

@@ -149,13 +149,13 @@ async function register() {
       alert('⚠ Error: El usuario ya existe');
       return;
     }
-
+    console.log(response.data);
     if (response.data.id_alumno) {
       localStorage.setItem('id_alumno', response.data.id_alumno);
       alert(`✅ Cuenta creada con éxito: ${registerData.value.nombre}`);
       router.push('/panel_inicio');
     } else {
-      alert('❌ Error: No se recibió el ID del usuario.');
+      alert('❌ Error:' + response.data.error);
     }
   } catch (_error) {
     alert('❌ Error en el servidor. Intente nuevamente: ' + _error);
