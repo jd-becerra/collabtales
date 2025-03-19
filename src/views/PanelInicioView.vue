@@ -2,7 +2,7 @@
   <v-container>
     <v-card class="mt-4 pa-4 elevation-4">
       <v-card-title class="text-h5 font-weight-bold text-center">
-        📚 Biblioteca de Cuentos 
+        📚 Biblioteca de Cuentos
       </v-card-title>
       <v-divider class="my-3"></v-divider>
 
@@ -161,6 +161,16 @@ const showGlobalCuentos = () => {
 };
 
 onMounted(() => {
+  getCuentosAlumno();
+  getCuentosGlobal();
+});
+onMounted(() => {
+  // Si no hay un alumno registrado, redirigir a la página de inicio de sesión
+  if (!localStorage.getItem('id_alumno')) {
+    router.push('/');
+    return;
+  }
+
   getCuentosAlumno();
   getCuentosGlobal();
 });
