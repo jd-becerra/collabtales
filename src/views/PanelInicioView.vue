@@ -6,7 +6,7 @@
       </v-card-title>
       <v-divider class="my-3"></v-divider>
 
-      <v-row justify="center">
+      <v-row justify="center" class="mb-4">
         <v-btn class="ma-2" :class="{ 'active-tab': showAlumno }" @click="showAlumnoCuentos">
           Tus cuentos
         </v-btn>

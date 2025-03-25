@@ -106,8 +106,26 @@
         </div>
       </v-slide-y-transition>
     </v-card>
+
+    <!-- pop up de registro-->
+
+    <v-dialog v-model="CamposVaciosPopup" max-width="400">
+      <v-card>
+        <v-card-title class = "text-red"> {{PopupValues.titulo}}</v-card-title>
+        <v-card-text>
+        {{PopupValues.error}}
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="blue" @click="CamposVaciosPopup = false">Ok</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+      <!-- pop up de registro-->
   </v-container>
 </template>
+
+
 
 <script setup lang="ts">
 import { ref } from 'vue';
@@ -118,6 +136,8 @@ import axios from 'axios';
 const showRegister = ref(false);
 const showLogin = ref(true);
 const showRestore = ref(false);
+const CamposVaciosPopup = ref(false);
+const PopupValues = ref({titulo: "Error!", error:""})
 const registerData = ref({ nombre: '', correo: '', contrasena: '' });
 const loginData = ref({ nombre: '', contrasena: '' });
 const restoreData = ref({ correo: '' });
@@ -126,10 +146,18 @@ const loading = ref(false);
 const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 const router = useRouter();
 
+// Metodo para mostrar pop ups
+
+const showPopup = (titulos, errors) => {
+  PopupValues.value.titulo = titulos;
+  PopupValues.value.error = errors;
+  CamposVaciosPopup.value = true;
+};
+
 // Método para registrar usuario
 async function register() {
   if (!registerData.value.nombre || !registerData.value.correo || !registerData.value.contrasena) {
-    alert('⚠ Error: Campos vacíos');
+    showPopup("Error", "Campos vacios!");
     return;
   }
 
@@ -141,18 +169,19 @@ async function register() {
     });
 
     if (response.data.error) {
+      showPopup("Error", `${response.data.error}`);
       alert(response.data.error);
       return;
     }
 
     if (response.data.result === 'El usuario ya existe') {
-      alert('⚠ Error: El usuario ya existe');
+      showPopup("Error", `El usuario ya existe!`);
       return;
     }
     console.log(response.data);
     if (response.data.id_alumno) {
       localStorage.setItem('id_alumno', response.data.id_alumno);
-      alert(`✅ Cuenta creada con éxito: ${registerData.value.nombre}`);
+      showPopup("Exito!", `Cuenta ${registerData.value.nombre} creada con exito`);
       router.push('/panel_inicio');
     } else {
       alert('❌ Error:' + response.data.error);
@@ -167,7 +196,7 @@ async function register() {
 // Método para iniciar sesión
 async function login() {
   if (!loginData.value.nombre || !loginData.value.contrasena) {
-    alert('⚠ Error: Campos vacíos');
+    showPopup("Error", "Campos vacios!");
     return;
   }
 
@@ -181,19 +210,19 @@ async function login() {
     const datos = response.data;
 
     if (datos === 'Error: campos vacíos') {
-      alert(datos);
+      showPopup("Error", `Los campos estan vacios!`);
       return;
     }
 
     if (datos.id_alumno) {
       localStorage.setItem('id_alumno', datos.id_alumno);
-      alert(`✅ ¡Bienvenido ${loginData.value.nombre}!`);
+      showPopup("¡Bienvenido!", `${loginData.value.nombre}`);
       router.push('/panel_inicio');
     } else {
-      alert('❌ ERROR: Usuario o contraseña incorrectos');
+      showPopup("Error!", `Usuario o contraseña incorrectos`);
     }
   } catch (_error) {
-    alert('❌ Error en el servidor. Intente nuevamente: ' + _error);
+    showPopup("Error!", `Error en el servidor intente nuevamente \n${_error}`);
   } finally {
     loading.value = false;
   }
@@ -202,7 +231,7 @@ async function login() {
 // Método para restaurar contraseña
 async function restorePassword() {
   if (!restoreData.value.correo) {
-    alert('⚠ Error: Campo vacío');
+    showPopup("Error!", `Campo vacío`);
     return;
   }
 
@@ -220,12 +249,12 @@ async function restorePassword() {
 
     if (response.data.success) {
       showLoginForm();
-      alert('✅ Correo enviado. Revisa tu bandeja de entrada.');
+      showPopup("Correo enviado", `Revisa tu bandeja de entrada`);
     } else {
-      alert('❌ Error al restaurar contraseña');
+      showPopup("Error!", `No se pudo restaurar la contraseña`);
     }
   } catch (_error) {
-    alert('❌ Error en el servidor. Intente nuevamente: ' + _error);
+    showPopup("Error!", `Error en el servidor intente nuevamente \n${_error}`);
   } finally {
     loading.value = false;
   }
