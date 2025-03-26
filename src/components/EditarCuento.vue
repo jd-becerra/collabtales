@@ -41,7 +41,7 @@ const cargarCuento = async () => {
   }
 
   try {
-    const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_cuento.php`, {
+    const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_cuentos.php`, {
       params: { id_cuento }
     });
 

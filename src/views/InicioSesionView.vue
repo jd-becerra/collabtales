@@ -148,7 +148,7 @@ const router = useRouter();
 
 // Metodo para mostrar pop ups
 
-const showPopup = (titulos, errors) => {
+const showPopup = (titulos: string, errors: string) => {
   PopupValues.value.titulo = titulos;
   PopupValues.value.error = errors;
   CamposVaciosPopup.value = true;

@@ -95,6 +95,7 @@ export default {
 
     <!-- Botón para eliminar cuento -->
     <v-btn color="red" class="mt-4" @click="showDeleteCuentoPopup = true">🗑️ Eliminar Cuento</v-btn>
+    <v-btn color="blue" class="mt-4" :to="'/editar_cuento'">✏️ Editar Cuento</v-btn>
 
     <!-- Popup Eliminar Cuento -->
     <v-dialog v-model="showDeleteCuentoPopup" max-width="400">
