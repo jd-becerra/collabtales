@@ -8,6 +8,7 @@ import Panel_Inicio from '@/views/PanelInicioView.vue';
 import VerCuento from '@/views/VerCuentoView.vue';
 import EditarCuento from '@/components/EditarCuento.vue';
 import RestaurarContraseña from '@/views/ValidarTokenRestauracionView.vue';
+import EditarAportacion from '@/components/EditarAportacion.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,6 +52,11 @@ const router = createRouter({
       path: '/editar_cuento',
       name: 'editar_cuento',
       component: EditarCuento
+    },
+    {
+      path: '/editar_aportacion',
+      name: 'editar_aportacion',
+      component: EditarAportacion
     },
     {
       path: '/restaurar_contrasena',  // NOTA: contrasena no lleva "ñ"

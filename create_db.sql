@@ -177,6 +177,10 @@ BEGIN
         INSERT INTO Historial (fk_alumno, fk_cuento, accion) 
         VALUES (id_owner, cuento_id, 'Creó el cuento');
 
+        -- Crear una aportación inicial vacía para el cuento y el alumno
+        INSERT INTO Aportacion (contenido, fk_cuento, fk_alumno) 
+        VALUES ('', cuento_id, id_owner);
+
         -- Devolver el ID del cuento creado
         SELECT cuento_id AS id_cuento_creado;
 END$$

@@ -23,7 +23,10 @@ if ($stmt = $conn->prepare($sql)) {
         $stmt->bind_result($cuento_id);
         $stmt->fetch();
 
-        echo json_encode(["success" => true, "id_cuento_creado" => $cuento_id]);
+        echo json_encode([
+            "success" => true, 
+            "id_cuento_creado" => $cuento_id
+        ]);
     } else {
         echo json_encode(["error" => "Error al ejecutar la consulta"]);
     }

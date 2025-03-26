@@ -25,14 +25,14 @@
                 📝 {{ cuento.descripcion || 'Sin descripción disponible' }}
               </v-list-item-subtitle>
             </v-list-item-content>
-            
+
             <v-list-item-action>
               <v-btn color="blue" outlined @click.stop="editarCuento(cuento.id_cuento)">Editar
               </v-btn>
             </v-list-item-action>
           </v-list-item>
         </template>
-        <p v-else class="no-cuentos-text">⚠️ Aún no tienes cuentos asignados. ¡Únete a uno o crea tu propia historia! 📖✨</p>
+        <p v-else class="no-cuentos-text">⚠️ Aún no tienes cuentos asignados. ¡Únete a uno o crea tu propia historia!</p>
       </v-list>
 
       <!-- Sección: Cuentos Globales -->

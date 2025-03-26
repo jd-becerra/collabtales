@@ -6,7 +6,8 @@ import router from './router';
 import { createVuetify } from 'vuetify';
 import 'vuetify/styles';
 
-const vuetify = createVuetify() 
+
+const vuetify = createVuetify()
 
 // Configuración de Axios
 import axios from 'axios';

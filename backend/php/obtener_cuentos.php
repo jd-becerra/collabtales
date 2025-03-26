@@ -9,8 +9,10 @@
 
     $id_alumno = intval($_GET['id_alumno']);
 
-    $sql = "CALL ListarCuentosAlumno($id_alumno)";
-    $result = $conn->query($sql);
+    $sql = $conn->prepare("CALL ListarCuentosAlumno(?)");
+    $sql->bind_param("i", $id_alumno);
+    $sql->execute();
+    $result = $sql->get_result();
 
     if ($result->num_rows > 0) {
         // Fetch all rows and store in an array
