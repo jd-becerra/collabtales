@@ -2,23 +2,31 @@
 include('cors_headers.php');
 include('config.php');
 
+// Read raw JSON input
 $data = json_decode(file_get_contents("php://input"), true);
-$id_cuento = $data['id_cuento'];
-$id_alumno = $data['id_alumno'];
-$aportacion = $data['aportacion'];
 
-if (empty($id_cuento) || empty($id_alumno) || empty($aportacion)) {
-  echo "Error: id_cuento, id_alumno and aportacion must be provided";
-  exit();
+// Validate input
+if (!isset($data['id_aportacion']) || !isset($data['contenido'])) {
+    http_response_code(400);
+    echo json_encode(["error" => "Datos incompletos"]);
+    exit();
 }
 
-$sql = "CALL EditarAportacion($id_alumno, $id_cuento, '$aportacion')";
+$id_aportacion = $data['id_aportacion'];
+$contenido = is_string($data['contenido']) ? $data['contenido'] : json_encode($data['contenido']);
 
-if ($conn->query($sql) === TRUE) {
-  echo "Aportación actualizada correctamente";
+// Prepare the SQL query
+$sql = $conn->prepare("CALL EditarAportacion(?, ?)");
+$sql->bind_param("is", $id_aportacion, $contenido);
+
+// Execute query
+if ($sql->execute()) {
+    echo json_encode(["success" => true, "message" => "Aportación actualizada"]);
 } else {
-  echo "Error: " . $sql . "<br>" . $conn->error;
+    echo json_encode(["error" => "Error al guardar en la BD"]);
 }
 
+// Close connection
+$sql->close();
 $conn->close();
 ?>

@@ -1,10 +1,10 @@
+<!-- eslint-disable vue/no-v-text-v-html-on-component -->
 <template>
-  <v-container class="vista-cuento">
-    <!-- Loading Overlay -->
-    <v-overlay :value="loading" absolute>
+      <v-overlay :value="loading" absolute>
+      <p>Loading</p>
       <v-progress-circular indeterminate color="primary"></v-progress-circular>
     </v-overlay>
-
+  <v-container class="vista-cuento" v-if="!loading">
     <v-btn color="primary" class="mb-4" :to="'/panel_inicio'">
       <v-icon left>mdi-arrow-left</v-icon>
       Volver a Mis Cuentos</v-btn>
@@ -32,7 +32,7 @@
           <v-list-item v-for="aportacion in aportaciones" :key="aportacion.id_aportacion" class="aportacion-item">
               <v-list-item-title class="text-body-1 font-weight-bold">{{ aportacion.nombre_alumno }}</v-list-item-title>
               <v-divider></v-divider>
-              <v-list-item-title class="text-body-1">{{ aportacion.contenido }}</v-list-item-title>
+              <v-list-item-title v-html="aportacion.contenido" class="contenido text-body-2"></v-list-item-title>
           </v-list-item>
         </v-list>
         <p v-else class="no-aportaciones">Actualmente no existen aportaciones en este cuento.</p>
@@ -78,7 +78,14 @@
 
 <script lang="ts">
 import axios from 'axios';
+import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 
+function convertDeltaToHtml(contenido: string | object): string {
+  const delta = typeof contenido === 'string' ? JSON.parse(contenido) : contenido;
+  const converter = new QuillDeltaToHtmlConverter(delta.ops, {}); // Ensure `.ops`
+  const html = converter.convert();
+  return html;
+}
 export default {
   name: 'CuentoView',
   data() {
@@ -91,18 +98,22 @@ export default {
       loading: false, // New loading state
     };
   },
-  mounted() {
-    if (!this.id_cuento) {
-      console.error("No se encontró el ID del cuento en localStorage.");
-      this.$router.push('/panel_inicio');
-      return;
+  async mounted() {
+    this.loading = true; // Start loading
+
+    try {
+      await Promise.all([
+        this.obtenerCuento(),
+        this.obtenerAportaciones()
+      ]);
+    } catch (error) {
+      console.error("Error cargando la vista del cuento:", error);
+    } finally {
+      this.loading = false; // Stop loading only when both requests finish
     }
-    this.obtenerCuento();
-    this.obtenerAportaciones();
   },
   methods: {
     async obtenerCuento() {
-      this.loading = true; // Start loading
       try {
         const response = await axios.get('/php/obtener_vista_cuento.php', {
           params: { id_cuento: this.id_cuento }
@@ -110,31 +121,34 @@ export default {
         this.cuento = response.data.length ? response.data[0] : [];
       } catch (error) {
         console.error("Error al obtener el cuento:", error);
-      } finally {
-        this.loading = false; // Stop loading
-      }
+      };
     },
     async obtenerAportaciones() {
-      this.loading = true; // Start loading
       try {
-        const response = await axios.get('/php/obtener_aportaciones.php',
-          {
-            params: {
-              id_cuento: this.id_cuento,
-              id_alumno: localStorage.getItem("id_alumno")
-            }
+        const response = await axios.get('/php/obtener_aportaciones.php', {
+          params: {
+            id_cuento: this.id_cuento,
+            id_alumno: localStorage.getItem("id_alumno")
           }
-        );
-        this.aportaciones = response.data.aportaciones.map((
-          { id_aportacion, contenido, nombre_alumno }: { id_aportacion: number; contenido: string; nombre_alumno: string }
-        ) => ({ id_aportacion, contenido, nombre_alumno }));
+        });
+
+        // Convert each aportacion's contenido
+        const newAportaciones = response.data.aportaciones.map(({ id_aportacion, contenido, nombre_alumno }: { id_aportacion: number; contenido: string; nombre_alumno: string }) => ({
+          id_aportacion,
+          contenido: convertDeltaToHtml(contenido),
+          nombre_alumno
+        }));
+
+        // Force Vue to detect reactivity changes
+        this.aportaciones = [];
+        this.$nextTick(() => {
+          this.aportaciones = newAportaciones;
+        });
 
         localStorage.setItem("id_aportacion", response.data.id_aportacion_alumno);
       } catch (error) {
         console.error("Error al obtener las aportaciones:", error);
-      } finally {
-        this.loading = false; // Stop loading
-      }
+      };
     },
     async eliminarCuento() {
       this.loading = true; // Start loading
@@ -173,3 +187,12 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.contenido {
+  font-size: 1.2em;
+  line-height: 1.5;
+  min-height: 100px;
+  padding: 10px;
+}
+</style>

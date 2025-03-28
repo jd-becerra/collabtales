@@ -55,6 +55,8 @@
 <script lang="ts">
 import axios from 'axios';
 import Quill from 'quill';
+import Delta from 'quill-delta';
+import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 import 'quill/dist/quill.snow.css';
 import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.bubble.css';
@@ -63,8 +65,9 @@ export default {
   name: 'EditarAportacion',
   data() {
     return {
-      contenido: '',
-      contenidoInicial: '',
+      contenido: new Delta(), // Initialize contenido as Delta
+      // Set contenidoInicial as Delta
+      contenidoInicial: new Delta(),
       id_cuento: localStorage.getItem("id_cuento") || null,
       id_aportacion: localStorage.getItem("id_aportacion") || null,
       loading: false,
@@ -84,34 +87,33 @@ export default {
     })
       .then((response) => {
         if (response.data?.contenido !== undefined) {
-          this.contenidoInicial = response.data.contenido;
-          this.contenido = response.data.contenido;
-
+          this.contenidoInicial = response.data.contenido ? JSON.parse(response.data.contenido) : new Delta();
+          this.contenido = this.contenidoInicial;
 
           // Insert contenidoInicial into lectura
           const lecturaElement = document.getElementById('lectura');
+          const converter = new QuillDeltaToHtmlConverter(this.contenidoInicial.ops || [], {});
+          const contenidoHTML = converter.convert();
+
           if (lecturaElement) {
-            lecturaElement.innerHTML = this.contenidoInicial;
+
+            lecturaElement.innerHTML = contenidoHTML;
           }
+          this.$nextTick(() => {
+            this.quill = new Quill('#editor', {
+              modules: {
+                toolbar: '#toolbar',
+              },
+              theme: 'snow',
+            });
 
-
-          // Initialize Quill editor
-          this.quill = new Quill('#editor', {
-            modules: {
-              toolbar: '#toolbar',
-            },
-            theme: 'snow',
-          });
-
-          // Insert the initial content
-          this.quill.root.innerHTML = this.contenidoInicial;
-
-          // Listen for text changes
-          this.quill.on('text-change', () => {
-            if (this.quill && this.quill.root) {
-              this.contenido = this.quill.root.innerHTML;
+            if (this.quill) {
+              this.quill.root.innerHTML = contenidoHTML;
+            } else {
+              console.error("Quill initialization failed");
             }
           });
+
         } else {
           console.error('Error: Response data is invalid or missing contenido.');
           this.$router.push('/ver_cuento');
@@ -128,11 +130,23 @@ export default {
   methods: {
     guardarCambios() {
       this.loading = true;
-      axios.put(`/php/editar_aportacion/${this.id_cuento}`, {
-        contenido: this.contenido,
+
+      // Save contenido as a Delta
+
+      if (!this.quill) {
+        console.error('Quill instance is not initialized.');
+        this.loading = false;
+        return;
+      }
+
+      const delta = JSON.stringify(this.quill.getContents());
+
+      axios.put(`/php/editar_aportacion.php`, {
+        id_aportacion: this.id_aportacion,
+        contenido: delta,
       })
         .then(() => {
-          this.$router.push('/ver_cuentos');
+          this.$router.push('/ver_cuento');
         })
         .catch((error) => {
           console.error('Error saving changes:', error);
@@ -155,6 +169,14 @@ export default {
   min-height: 200px;
   border: 1px solid #ccc;
 }
+
+#lectura {
+  height: 300px;
+  max-height: 500px;
+  min-height: 200px;
+  border: 1px solid #ccc;
+}
+
 .ql-container {
   height: 100%;
 }
