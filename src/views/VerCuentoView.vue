@@ -39,6 +39,10 @@
       </v-card-text>
     </v-card>
 
+    <!-- Botón para editar cuento -->
+
+    <v-btn color="blue" class="mt-4 float-right mr-2" :to="'/editar_cuento'">Editar Cuento</v-btn>
+
     <!-- Botón para eliminar cuento -->
     <v-btn color="red" class="mt-4" @click="showDeleteCuentoPopup = true">Eliminar Cuento</v-btn>
 

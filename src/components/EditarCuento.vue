@@ -30,24 +30,39 @@ import axios from 'axios';
 const nombre_cuento = ref('');
 const descripcion_cuento = ref('');
 const router = useRouter();
-const id_cuento = localStorage.getItem('id_cuento'); // Obtener el id del cuento
+const id_cuento = localStorage.getItem('id_cuento'); 
+const id_usuario = localStorage.getItem('id_usuario'); 
+const CamposVaciosPopup = ref(false);
+const PopupValues = ref({titulo: "Error!", error:""})
 
-// Cargar los datos actuales del cuento
+const showPopup = (titulos: string, errors: string) => {
+  PopupValues.value.titulo = titulos;
+  PopupValues.value.error = errors;
+  CamposVaciosPopup.value = true;
+};
+
+
+if (!id_usuario) {
+  showPopup("Error", "No tienes permiso para acceder a esta página.");
+  router.push('/panel_inicio');
+}
+
 const cargarCuento = async () => {
   if (!id_cuento) {
-    alert('Error: No se encontró el ID del cuento.');
+    alert('Error: No tienes permiso para acceder a esta página.');
     router.push('/panel_inicio');
     return;
   }
 
   try {
-    const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_cuentos.php`, {
+    const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_vista_cuento.php`, {
       params: { id_cuento }
     });
 
     if (response.data) {
-      nombre_cuento.value = response.data.nombre;
-      descripcion_cuento.value = response.data.descripcion;
+      nombre_cuento.value = response.data[0].nombre;
+      descripcion_cuento.value = response.data[0].descripcion;
+      console.log('Datos del cuento cargados:', response.data);
     } else {
       alert('Error: No se encontraron datos del cuento.');
       router.push('/panel_inicio');
@@ -59,8 +74,7 @@ const cargarCuento = async () => {
   }
 };
 
-// Guardar los cambios
-const editarCuento = async () => {
+  const editarCuento = async () => {
   if (!nombre_cuento.value.trim() || !descripcion_cuento.value.trim()) {
     alert('⚠️ Por favor, completa todos los campos.');
     return;
