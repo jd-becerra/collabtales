@@ -7,24 +7,36 @@ $id_cuento = $data['id_cuento'];
 $id_alumno = $data['id_alumno'];
 
 if (empty($id_cuento) || empty($id_alumno)) {
-    echo "Error: id_cuento and id_alumno must be provided";
+    echo json_encode(["error" => "Faltan parámetros obligatorios."]);
     exit();
 }
 
-$sql = "CALL UnirseCuento($id_cuento, $id_alumno);";
+// Verificar si el cuento existe
+$verificar_sql = "SELECT id_cuento FROM cuentos WHERE id_cuento = ?";
+$stmt_verificar = $conn->prepare($verificar_sql);
+$stmt_verificar->bind_param("i", $id_cuento);
+$stmt_verificar->execute();
+$result_verificar = $stmt_verificar->get_result();
 
-if ($conn->multi_query($sql)) {
-    do {
-        // Store result set
-        if ($result = $conn->store_result()) {
-            while ($row = $result->fetch_assoc()) {
-                echo $row['result'];
-            }
-            $result->free();
-        }
-    } while ($conn->more_results() && $conn->next_result());
-} 
+if ($result_verificar->num_rows === 0) {
+    echo json_encode(["error" => "El cuento no existe."]);
+    $stmt_verificar->close();
+    $conn->close();
+    exit();
+}
+$stmt_verificar->close();   
+
+// Si el cuento existe, proceder con la unión
+$sql = "CALL UnirseCuento(?, ?)";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ii", $id_cuento, $id_alumno);
+
+if ($stmt->execute()) {
+    echo json_encode(["success" => "Te has unido al cuento con éxito."]);
+} else {
+    echo json_encode(["error" => "Error al unirse al cuento."]);
+}
+
+$stmt->close();
 $conn->close();
-
 ?>
-

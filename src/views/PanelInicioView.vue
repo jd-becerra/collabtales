@@ -110,6 +110,8 @@ const getCuentosGlobal = async () => {
     const id_alumno = localStorage.getItem('id_alumno');
     if (!id_alumno) {
       console.error('No id_alumno found in localStorage');
+      alert('No tienes acceso a esta seccion.');
+      router.push('/');
       return;
     }
 
@@ -141,10 +143,15 @@ const unirseCuento = async (id_cuento: number) => {
       return;
     }
 
-    await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/unirse_cuento.php`, {
+    const response = await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/unirse_cuento.php`, {
       id_cuento,
       id_alumno
     });
+
+    if (response.data.error) {
+      alert(response.data.error); // Muestra el mensaje del servidor
+      return;
+    }
 
     alert('Te has unido al cuento con éxito 🎉');
     getCuentosAlumno();
@@ -154,6 +161,7 @@ const unirseCuento = async (id_cuento: number) => {
     alert('Hubo un error al unirse al cuento. Inténtalo nuevamente.');
   }
 };
+
 
 const confirmarUnirse = () => {
   if (!idCuentoUnirse.value.trim()) {
