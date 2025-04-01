@@ -1,13 +1,15 @@
 <!-- eslint-disable vue/no-v-text-v-html-on-component -->
 <template>
-      <v-overlay :value="loading" absolute>
-      <p>Loading</p>
-      <v-progress-circular indeterminate color="primary"></v-progress-circular>
-    </v-overlay>
+  <v-overlay :value="loading" absolute>
+    <p>Loading</p>
+    <v-progress-circular indeterminate color="primary"></v-progress-circular>
+  </v-overlay>
+  
   <v-container class="vista-cuento" v-if="!loading">
     <v-btn color="primary" class="mb-4" :to="'/panel_inicio'">
       <v-icon left>mdi-arrow-left</v-icon>
-      Volver a Mis Cuentos</v-btn>
+      Volver a Mis Cuentos
+    </v-btn>
 
     <v-card class="my-4 pa-4" elevation="6" v-if="cuento">
       <v-card-title class="text-h5 font-weight-bold">Título: {{ cuento.nombre }}</v-card-title>
@@ -40,14 +42,16 @@
     </v-card>
 
     <!-- Botón para editar cuento -->
-
     <v-btn color="blue" class="mt-4 float-right mr-2" :to="'/editar_cuento'">Editar Cuento</v-btn>
 
     <!-- Botón para eliminar cuento -->
     <v-btn color="red" class="mt-4" @click="showDeleteCuentoPopup = true">Eliminar Cuento</v-btn>
 
     <!-- Botón para editar aportación -->
-    <v-btn color="green" class="mt-4 float-right" @click=navegarAportacion()>Editar Aportación</v-btn>
+    <v-btn color="green" class="mt-4 float-right" @click="navegarAportacion()">Editar Aportación</v-btn>
+
+    <!-- Botón para publicar cuento -->
+    <v-btn color="purple" class="mt-4" @click="showPublishCuentoPopup = true">Publicar Cuento</v-btn>
 
     <!-- Popup Eliminar Cuento -->
     <v-dialog v-model="showDeleteCuentoPopup" max-width="400">
@@ -60,6 +64,20 @@
         <v-card-actions>
           <v-btn color="red" @click="eliminarCuento">Eliminar</v-btn>
           <v-btn color="gray" @click="showDeleteCuentoPopup = false">Cancelar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Popup Publicar Cuento -->
+    <v-dialog v-model="showPublishCuentoPopup" max-width="400">
+      <v-card>
+        <v-card-title>Publicar Cuento</v-card-title>
+        <v-card-text>
+          ¿Estás seguro de que quieres publicar este cuento?
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="purple" @click="publicarCuento">Publicar</v-btn>
+          <v-btn color="gray" @click="showPublishCuentoPopup = false">Cancelar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -86,34 +104,32 @@ import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 
 function convertDeltaToHtml(contenido: string | object): string {
   const delta = typeof contenido === 'string' ? JSON.parse(contenido) : contenido;
-  const converter = new QuillDeltaToHtmlConverter(delta.ops, {}); // Ensure `.ops`
+  const converter = new QuillDeltaToHtmlConverter(delta.ops, {});
   const html = converter.convert();
   return html;
 }
+
 export default {
   name: 'CuentoView',
   data() {
     return {
       cuento: {} as { id: number; nombre: string; descripcion: string } | null,
-      aportaciones: [] as { id_aportacion: number; contenido: string, nombre_alumno: string }[],
+      aportaciones: [] as Array<{ id_aportacion: number; contenido: string; nombre_alumno: string }>,
       showDeleteCuentoPopup: false,
       showDeleteAportacionPopup: false,
+      showPublishCuentoPopup: false, // Variable para controlar el modal de publicación
       id_cuento: localStorage.getItem("id_cuento") || null,
       loading: false, // New loading state
     };
   },
   async mounted() {
-    this.loading = true; // Start loading
-
+    this.loading = true;
     try {
-      await Promise.all([
-        this.obtenerCuento(),
-        this.obtenerAportaciones()
-      ]);
+      await Promise.all([this.obtenerCuento(), this.obtenerAportaciones()]);
     } catch (error) {
       console.error("Error cargando la vista del cuento:", error);
     } finally {
-      this.loading = false; // Stop loading only when both requests finish
+      this.loading = false;
     }
   },
   methods: {
@@ -125,7 +141,7 @@ export default {
         this.cuento = response.data.length ? response.data[0] : [];
       } catch (error) {
         console.error("Error al obtener el cuento:", error);
-      };
+      }
     },
     async obtenerAportaciones() {
       try {
@@ -136,14 +152,12 @@ export default {
           }
         });
 
-        // Convert each aportacion's contenido
         const newAportaciones = response.data.aportaciones.map(({ id_aportacion, contenido, nombre_alumno }: { id_aportacion: number; contenido: string; nombre_alumno: string }) => ({
           id_aportacion,
           contenido: convertDeltaToHtml(contenido),
           nombre_alumno
         }));
 
-        // Force Vue to detect reactivity changes
         this.aportaciones = [];
         this.$nextTick(() => {
           this.aportaciones = newAportaciones;
@@ -152,10 +166,30 @@ export default {
         localStorage.setItem("id_aportacion", response.data.id_aportacion_alumno);
       } catch (error) {
         console.error("Error al obtener las aportaciones:", error);
-      };
+      }
+    },
+    async publicarCuento() {
+      this.loading = true;
+      try {
+        const response = await axios.post('/php/publicar_cuento.php', {
+          id_cuento: this.id_cuento,
+          id_alumno: localStorage.getItem("id_alumno")
+        });
+
+        if (response.data.success) {
+          alert(response.data.success);
+        } else {
+          alert(response.data.error);
+        }
+      } catch (error) {
+        console.error("Error al publicar el cuento:", error);
+      } finally {
+        this.loading = false;
+        this.showPublishCuentoPopup = false; // Cerrar el modal después de publicar
+      }
     },
     async eliminarCuento() {
-      this.loading = true; // Start loading
+      this.loading = true;
       try {
         await axios.post('/php/eliminar_cuento.php', { id_cuento: this.id_cuento });
         localStorage.removeItem("id_cuento");
@@ -163,18 +197,18 @@ export default {
       } catch (error) {
         console.error("Error al eliminar el cuento:", error);
       } finally {
-        this.loading = false; // Stop loading
+        this.loading = false;
       }
     },
     async eliminarAportacion() {
-      this.loading = true; // Start loading
+      this.loading = true;
       try {
         await axios.post('/php/eliminar_aportacion.php', { id_cuento: this.id_cuento });
         this.obtenerAportaciones();
       } catch (error) {
         console.error("Error al eliminar la aportación:", error);
       } finally {
-        this.loading = false; // Stop loading
+        this.loading = false;
       }
     },
     async navegarAportacion() {
@@ -187,7 +221,7 @@ export default {
       } catch (error) {
         console.error("Error al obtener el ID de la aportación:", error);
       }
-    },
+    }
   }
 };
 </script>
@@ -198,5 +232,31 @@ export default {
   line-height: 1.5;
   min-height: 100px;
   padding: 10px;
+}
+
+.no-aportaciones {
+  text-align: center;
+  font-size: 1.2em;
+  color: #888;
+}
+
+.v-btn {
+  margin-top: 20px;
+}
+
+.v-dialog {
+  max-width: 400px;
+}
+
+.v-card-title {
+  font-weight: bold;
+}
+
+.v-list-item-title {
+  font-weight: normal;
+}
+
+.v-divider {
+  margin: 10px 0;
 }
 </style>
