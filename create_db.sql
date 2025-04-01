@@ -112,7 +112,7 @@ BEGIN
                 SELECT COUNT(*) INTO relacion_count FROM Relacion_Alumno_Cuento WHERE fk_cuento = cuento_id AND fk_alumno = alumno_id;
                 IF relacion_count = 0 THEN
                                 INSERT INTO `Relacion_Alumno_Cuento` (fk_cuento, fk_alumno) VALUES (cuento_id, alumno_id);
-                                INSERT INTO `Aportacion` (contenido, fk_cuento, fk_alumno) VALUES ('', cuento_id, alumno_id);
+                                INSERT INTO `Aportacion` (contenido, fk_cuento, fk_alumno) VALUES ('[]', cuento_id, alumno_id);
                                 SELECT 'El alumno se ha unido al cuento correctamente' AS result;
                 ELSE
                                 SELECT 'Error al unirse al cuento.' AS result;
@@ -179,7 +179,7 @@ BEGIN
 
                 -- Crear una aportación inicial vacía para el cuento y el alumno
                 INSERT INTO Aportacion (contenido, fk_cuento, fk_alumno) 
-                VALUES ('', cuento_id, id_owner);
+                VALUES ('[]', cuento_id, id_owner);
 
                 -- Devolver el ID del cuento creado
                 SELECT cuento_id AS id_cuento_creado;

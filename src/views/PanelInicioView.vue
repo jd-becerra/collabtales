@@ -1,8 +1,9 @@
 <template>
   <v-container>
     <v-card class="mt-4 pa-4 elevation-4">
-      <v-card-title class="text-h5 font-weight-bold text-center">
+      <v-card-title class="text-h5 font-weight-bold text-center d-flex justify-space-between align-center">
         📚 Biblioteca de Cuentos
+        <v-btn color="primary" @click="dialog = true">Unirse a un cuento</v-btn>
       </v-card-title>
       <v-divider class="my-3"></v-divider>
 
@@ -15,7 +16,6 @@
         </v-btn>
       </v-row>
 
-      <!-- Sección: Tus Cuentos -->
       <v-list v-if="showAlumno">
         <v-list-item
           v-for="cuento in cuentos"
@@ -51,6 +51,19 @@
         </v-list-item>
       </v-list>
     </v-card>
+
+    <v-dialog v-model="dialog" max-width="400">
+      <v-card>
+        <v-card-title class="text-h5">Unirse a un cuento</v-card-title>
+        <v-card-text>
+          <v-text-field v-model="idCuentoUnirse" label="ID del cuento" required></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" @click="confirmarUnirse">Unirse</v-btn>
+          <v-btn color="error" @click="dialog = false">Cancelar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -71,6 +84,8 @@ const cuentosGlobales = ref<Cuento[]>([]);
 const showAlumno = ref(true);
 const showGlobal = ref(false);
 const router = useRouter();
+const dialog = ref(false);
+const idCuentoUnirse = ref('');
 
 const getCuentosAlumno = async () => {
   try {
@@ -104,7 +119,6 @@ const getCuentosGlobal = async () => {
 
     console.log('Cuentos globales:', response.data);
 
-    // Marcar cuentos en los que el usuario ya está unido
     if (!response.data || !response.data.length) {
       cuentosGlobales.value = [];
       return;
@@ -127,20 +141,27 @@ const unirseCuento = async (id_cuento: number) => {
       return;
     }
 
-    const response = await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/unirse_cuento.php`, {
+    await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/unirse_cuento.php`, {
       id_cuento,
       id_alumno
     });
 
-    console.log('Respuesta del servidor:', response.data);
     alert('Te has unido al cuento con éxito 🎉');
-
     getCuentosAlumno();
     getCuentosGlobal();
   } catch (error) {
     console.error('Error al unirse al cuento:', error);
     alert('Hubo un error al unirse al cuento. Inténtalo nuevamente.');
   }
+};
+
+const confirmarUnirse = () => {
+  if (!idCuentoUnirse.value.trim()) {
+    alert('Por favor, ingresa un ID de cuento válido.');
+    return;
+  }
+  unirseCuento(Number(idCuentoUnirse.value));
+  dialog.value = false;
 };
 
 const verCuento = (id_cuento: number) => {
@@ -151,13 +172,11 @@ const verCuento = (id_cuento: number) => {
 const showAlumnoCuentos = () => {
   showAlumno.value = true;
   showGlobal.value = false;
-  getCuentosAlumno();
 };
 
 const showGlobalCuentos = () => {
   showAlumno.value = false;
   showGlobal.value = true;
-  getCuentosGlobal();
 };
 
 onMounted(() => {
@@ -165,34 +184,3 @@ onMounted(() => {
   getCuentosGlobal();
 });
 </script>
-
-<style scoped>
-/* Personalización de botones de navegación */
-.v-btn {
-  font-weight: bold;
-  text-transform: none;
-  border-radius: 10px;
-}
-
-.active-tab {
-  background-color: #42a5f5 !important;
-  color: white !important;
-}
-
-.cuento-item {
-  border-radius: 8px;
-  transition: background-color 0.3s ease-in-out;
-  padding: 10px;
-}
-
-.cuento-item:hover {
-  background-color: #e3f2fd;
-  cursor: pointer;
-}
-
-.v-btn.outlined {
-  border: 2px solid #2e7d32 !important;
-  color: #2e7d32 !important;
-  font-weight: bold;
-}
-</style>
