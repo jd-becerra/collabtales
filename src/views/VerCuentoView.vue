@@ -80,9 +80,7 @@ export default {
     return {
       cuento: {} as { id: number; nombre: string; descripcion: string } | null,
       aportaciones: [] as Array<{ id_aportacion: number; contenido: string; nombre_alumno: string }>,
-      showDeleteCuentoPopup: false,
       showDeleteAportacionPopup: false,
-      showPublishCuentoPopup: false, // Variable para controlar el modal de publicación
       id_cuento: localStorage.getItem("id_cuento") || null,
       loading: false, // New loading state
     };
