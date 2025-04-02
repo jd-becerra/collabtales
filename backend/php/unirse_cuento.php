@@ -24,9 +24,23 @@ if ($result_verificar->num_rows === 0) {
     $conn->close();
     exit();
 }
-$stmt_verificar->close();   
+$stmt_verificar->close();
 
-// Si el cuento existe, proceder con la unión
+$check_sql = "SELECT fk_alumno FROM relacion_alumno_cuento WHERE fk_cuento = ? AND fk_alumno = ?";
+$stmt_check = $conn->prepare($check_sql);
+$stmt_check->bind_param("ii", $id_cuento, $id_alumno);
+$stmt_check->execute();
+$result_check = $stmt_check->get_result();
+
+if ($result_check->num_rows > 0) {
+    echo json_encode(["error" => "Ya estás unido a este cuento."]);
+    $stmt_check->close();
+    $conn->close();
+    exit();
+}
+$stmt_check->close();
+
+// Si no está unido, proceder con la unión
 $sql = "CALL UnirseCuento(?, ?)";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ii", $id_cuento, $id_alumno);

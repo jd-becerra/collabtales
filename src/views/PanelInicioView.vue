@@ -149,12 +149,11 @@ const unirseCuento = async (id_cuento: number) => {
     });
 
     if (response.data.error) {
-      alert(response.data.error); // Muestra el mensaje del servidor
+      alert(response.data.error); 
       return;
     }
 
-    alert(response.data);
-    alert('Te has unido al cuento con éxito 🎉');
+    alert(response.data.success);
     getCuentosAlumno();
     getCuentosGlobal();
   } catch (error) {
