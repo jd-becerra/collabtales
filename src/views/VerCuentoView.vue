@@ -44,43 +44,8 @@
     <!-- Botón para editar cuento -->
     <v-btn color="blue" class="mt-4 float-right mr-2" :to="'/editar_cuento'">Editar Cuento</v-btn>
 
-    <!-- Botón para eliminar cuento -->
-    <v-btn color="red" class="mt-4" @click="showDeleteCuentoPopup = true">Eliminar Cuento</v-btn>
-
     <!-- Botón para editar aportación -->
     <v-btn color="green" class="mt-4 float-right" @click="navegarAportacion()">Editar Aportación</v-btn>
-
-    <!-- Botón para publicar cuento -->
-    <v-btn color="purple" class="mt-4" @click="showPublishCuentoPopup = true">Publicar Cuento</v-btn>
-
-    <!-- Popup Eliminar Cuento -->
-    <v-dialog v-model="showDeleteCuentoPopup" max-width="400">
-      <v-card>
-        <v-card-title>Eliminar Cuento</v-card-title>
-        <v-card-text>
-          ¿Estás seguro de que quieres eliminar este cuento?
-          <br />Tu aportación y la de tus compañeros también serán eliminadas.
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="red" @click="eliminarCuento">Eliminar</v-btn>
-          <v-btn color="gray" @click="showDeleteCuentoPopup = false">Cancelar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Popup Publicar Cuento -->
-    <v-dialog v-model="showPublishCuentoPopup" max-width="400">
-      <v-card>
-        <v-card-title>Publicar Cuento</v-card-title>
-        <v-card-text>
-          ¿Estás seguro de que quieres publicar este cuento?
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="purple" @click="publicarCuento">Publicar</v-btn>
-          <v-btn color="gray" @click="showPublishCuentoPopup = false">Cancelar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
 
     <!-- Popup Eliminar Aportación -->
     <v-dialog v-model="showDeleteAportacionPopup" max-width="400">
@@ -166,38 +131,6 @@ export default {
         localStorage.setItem("id_aportacion", response.data.id_aportacion_alumno);
       } catch (error) {
         console.error("Error al obtener las aportaciones:", error);
-      }
-    },
-    async publicarCuento() {
-      this.loading = true;
-      try {
-        const response = await axios.post('/php/publicar_cuento.php', {
-          id_cuento: this.id_cuento,
-          id_alumno: localStorage.getItem("id_alumno")
-        });
-
-        if (response.data.success) {
-          alert(response.data.success);
-        } else {
-          alert(response.data.error);
-        }
-      } catch (error) {
-        console.error("Error al publicar el cuento:", error);
-      } finally {
-        this.loading = false;
-        this.showPublishCuentoPopup = false; // Cerrar el modal después de publicar
-      }
-    },
-    async eliminarCuento() {
-      this.loading = true;
-      try {
-        await axios.post('/php/eliminar_cuento.php', { id_cuento: this.id_cuento });
-        localStorage.removeItem("id_cuento");
-        this.$router.push('/panel_inicio');
-      } catch (error) {
-        console.error("Error al eliminar el cuento:", error);
-      } finally {
-        this.loading = false;
       }
     },
     async eliminarAportacion() {
