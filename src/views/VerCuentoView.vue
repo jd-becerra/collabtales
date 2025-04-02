@@ -4,7 +4,7 @@
     <p>Loading</p>
     <v-progress-circular indeterminate color="primary"></v-progress-circular>
   </v-overlay>
-  
+
   <v-container class="vista-cuento" v-if="!loading">
     <v-btn color="primary" class="mb-4" :to="'/panel_inicio'">
       <v-icon left>mdi-arrow-left</v-icon>
@@ -83,20 +83,23 @@ export default {
       showDeleteAportacionPopup: false,
       id_cuento: localStorage.getItem("id_cuento") || null,
       loading: false, // New loading state
+      id_alumno: localStorage.getItem("id_alumno") || null, // Add id_alumno
+      es_dueno: false
     };
   },
   async mounted() {
-    this.id_cuento = localStorage.getItem("id_cuento");
-    const id_alumno = localStorage.getItem("id_alumno")
-
-    if (!this.id_cuento || !id_alumno) {
+    console.log("ID cuento:", this.id_cuento);
+    console.log("ID alumno:", this.id_alumno);
+    if (!this.id_cuento || !this.id_alumno) {
       alert("No tienes permiso para ver este cuento.");
-      this.$router.push('/panel_inicio');
       return;
-    } 
-
+    }
     this.loading = true;
     try {
+      const verificar = await this.verificarCuento();
+      if (!verificar)
+      return;
+
       await Promise.all([this.obtenerCuento(), this.obtenerAportaciones()]);
     } catch (error) {
       console.error("Error cargando la vista del cuento:", error);
@@ -105,6 +108,31 @@ export default {
     }
   },
   methods: {
+    async verificarCuento() {
+      try {
+        const response = await axios.post('/php/verificacion.php', {
+          id_cuento: this.id_cuento,
+          id_alumno: this.id_alumno
+        });
+
+        console.log(response.data);
+
+        if (response.data.error) {
+          console.log(response.data.error);
+          alert(response.data.error);
+          this.$router.push('/panel_inicio');
+          return false;
+        }
+
+        this.es_dueno = response.data.es_dueno;
+        return true;
+      } catch (error) {
+        console.error("Error en la verificación:", error);
+        alert("No tienes permiso.");
+        this.$router.push('/panel_inicio');
+        return false;
+      }
+    },
     async obtenerCuento() {
       try {
         const response = await axios.get('/php/obtener_vista_cuento.php', {

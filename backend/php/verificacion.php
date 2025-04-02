@@ -15,7 +15,7 @@ if (!$id_cuento || !$id_alumno) {
 }
 
 // 🔹 1️⃣ Verificar si el alumno está unido al cuento
-$query_union = "SELECT 1 FROM relacion_alumnos_cuentos WHERE fk_cuento = ? AND fk_alumno = ?";
+$query_union = "SELECT 1 FROM relacion_alumno_cuento WHERE fk_cuento = ? AND fk_alumno = ?";
 $stmt_union = $conn->prepare($query_union);
 $stmt_union->bind_param("ii", $id_cuento, $id_alumno);
 $stmt_union->execute();
