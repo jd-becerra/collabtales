@@ -43,8 +43,8 @@
                 </v-list-item-subtitle>
             </v-col>
             <v-col cols="3" class="d-flex justify-end">
-              <v-btn v-if="!cuento.unido" color="green" outlined @click="unirseCuento(cuento.id_cuento)">
-                Unirse
+              <v-btn v-if="!cuento.unido" color="green" outlined @click="verCuentoPublico(cuento.id_cuento)">
+                Ver cuento
               </v-btn>
             </v-col>
           </v-row>
@@ -162,6 +162,10 @@ const unirseCuento = async (id_cuento: number) => {
   }
 };
 
+const verCuentoPublico = (id_cuento: number) => {
+  localStorage.setItem('id_cuento', id_cuento.toString());
+  router.push('/ver_cuento_publico');
+};
 
 const confirmarUnirse = () => {
   if (!idCuentoUnirse.value.trim()) {

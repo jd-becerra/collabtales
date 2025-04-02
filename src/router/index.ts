@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import CrearCuento from '../components/CrearCuento.vue';
-import ListaCuentos from '@/components/ListaCuentos.vue';
 import Inicio_Sesion from '@/views/InicioSesionView.vue';
 import Crear_Cuento from '../components/CrearCuento.vue';
 import Perfil_Usuario from '@/views/PerfilUsuarioView.vue';
@@ -9,6 +8,7 @@ import VerCuento from '@/views/VerCuentoView.vue';
 import EditarCuento from '@/components/EditarCuento.vue';
 import RestaurarContraseña from '@/views/ValidarTokenRestauracionView.vue';
 import EditarAportacion from '@/components/EditarAportacion.vue';
+import VerCuentoPublicoView from '@/views/VerCuentoPublicoView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,14 +39,14 @@ const router = createRouter({
       component: CrearCuento
     },
     {
-      path: '/lista_cuentos',
-      name: 'lista_cuentos',
-      component: ListaCuentos
-    },
-    {
       path: '/ver_cuento',
       name: 'ver_cuento',
       component: VerCuento
+    },
+    {
+      path: '/ver_cuento_publico',
+      name: 'ver_cuento_publico',
+      component: VerCuentoPublicoView,
     },
     {
       path: '/editar_cuento',

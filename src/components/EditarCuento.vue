@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-card class="pa-4" max-width="500" outlined>
-      <v-card-title>✏️ Editar Cuento</v-card-title>
+      <v-card-title>Editar Cuento</v-card-title>
       <v-card-text>
         <v-form @submit.prevent="editarCuento">
           <v-text-field label="Nombre del cuento" v-model="nombre_cuento" required></v-text-field>
@@ -53,7 +53,7 @@ const nombre_cuento = ref('');
 const descripcion_cuento = ref('');
 const router = useRouter();
 const id_cuento = localStorage.getItem('id_cuento');
-const id_usuario = localStorage.getItem('id_usuario');
+const id_usuario = localStorage.getItem('id_alumno');
 const showPublishCuentoPopup = ref(false);
 const showDeleteCuentoPopup = ref(false);
 
@@ -109,10 +109,13 @@ const editarCuento = async () => {
 
 const publicarCuento = async () => {
   try {
+    console.log(id_cuento, id_usuario);
     const response = await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/publicar_cuento.php`, {
       id_cuento,
       id_alumno: id_usuario
     });
+    console.log(response.data);
+    console.log(response.data.success || response.data.error);  
     alert(response.data.success || response.data.error);
     showPublishCuentoPopup.value = false;
   } catch (error) {
