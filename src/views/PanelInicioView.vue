@@ -153,6 +153,7 @@ const unirseCuento = async (id_cuento: number) => {
       return;
     }
 
+    alert(response.data);
     alert('Te has unido al cuento con éxito 🎉');
     getCuentosAlumno();
     getCuentosGlobal();

@@ -12,7 +12,7 @@ if (empty($id_cuento) || empty($id_alumno)) {
 }
 
 // Verificar si el cuento existe
-$verificar_sql = "SELECT id_cuento FROM cuentos WHERE id_cuento = ?";
+$verificar_sql = "SELECT id_cuento FROM cuento WHERE id_cuento = ?";
 $stmt_verificar = $conn->prepare($verificar_sql);
 $stmt_verificar->bind_param("i", $id_cuento);
 $stmt_verificar->execute();
