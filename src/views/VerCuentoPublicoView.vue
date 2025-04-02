@@ -53,7 +53,7 @@ export default {
       aportaciones: [] as Array<{ id_aportacion: number; contenido: string; nombre_alumno: string }>,
       showDeleteAportacionPopup: false,
       id_cuento: localStorage.getItem("id_cuento") || null,
-      loading: false, // New loading state
+      loading: false, 
     };
   },
   async mounted() {

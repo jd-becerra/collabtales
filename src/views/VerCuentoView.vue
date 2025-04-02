@@ -86,6 +86,15 @@ export default {
     };
   },
   async mounted() {
+    this.id_cuento = localStorage.getItem("id_cuento");
+    const id_alumno = localStorage.getItem("id_alumno")
+
+    if (!this.id_cuento || !id_alumno) {
+      alert("No tienes permiso para ver este cuento.");
+      this.$router.push('/panel_inicio');
+      return;
+    } 
+
     this.loading = true;
     try {
       await Promise.all([this.obtenerCuento(), this.obtenerAportaciones()]);

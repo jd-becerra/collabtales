@@ -3,7 +3,7 @@
     <v-card class="pa-6 rounded-lg elevation-10 login-card">
       <v-slide-y-transition mode="out-in">
         <div v-if="showRegister" key="register">
-          <v-card-title class="text-center text-h5 font-weight-bold">✨ Crea tu cuenta ✨</v-card-title>
+          <v-card-title class="text-center text-h5 font-weight-bold">Crea tu cuenta</v-card-title>
           <v-card-subtitle class="text-center text-body-2">Únete y empieza a disfrutar de nuestras historias.</v-card-subtitle>
           <v-card-text>
             <v-form @submit.prevent="register">
@@ -45,7 +45,7 @@
         </div>
 
         <div v-else-if="showLogin" key="login">
-          <v-card-title class="text-center text-h5 font-weight-bold">🔐 Iniciar sesión</v-card-title>
+          <v-card-title class="text-center text-h5 font-weight-bold">Iniciar sesión</v-card-title>
           <v-card-subtitle class="text-center text-body-2">Bienvenido de nuevo. Ingresa tus credenciales.</v-card-subtitle>
           <v-card-text>
             <v-form @submit.prevent="login">
@@ -81,7 +81,7 @@
         </div>
 
         <div v-else-if="showRestore" key="restore">
-          <v-card-title class="text-center text-h5 font-weight-bold">🔑 Restaurar contraseña</v-card-title>
+          <v-card-title class="text-center text-h5 font-weight-bold">Restaurar contraseña</v-card-title>
           <v-card-subtitle class="text-center text-body-2">Ingresa tu correo para restaurar tu contraseña.</v-card-subtitle>
           <v-card-text>
             <v-form>

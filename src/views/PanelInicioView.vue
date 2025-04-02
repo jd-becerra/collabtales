@@ -2,7 +2,7 @@
   <v-container>
     <v-card class="mt-4 pa-4 elevation-4">
       <v-card-title class="text-h5 font-weight-bold text-center d-flex justify-space-between align-center">
-        📚 Biblioteca de Cuentos
+        Biblioteca de Cuentos
         <v-btn color="primary" @click="dialog = true">Unirse a un cuento</v-btn>
       </v-card-title>
       <v-divider class="my-3"></v-divider>
