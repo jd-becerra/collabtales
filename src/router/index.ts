@@ -8,6 +8,7 @@ import VerCuento from '@/views/VerCuentoView.vue';
 import EditarCuento from '@/components/EditarCuento.vue';
 import RestaurarContraseña from '@/views/ValidarTokenRestauracionView.vue';
 import EditarAportacion from '@/components/EditarAportacion.vue';
+import Descarga from '@/views/VerPDF.vue'
 import VerCuentoPublicoView from '@/views/VerCuentoPublicoView.vue';
 
 const router = createRouter({
@@ -57,6 +58,11 @@ const router = createRouter({
       path: '/editar_aportacion',
       name: 'editar_aportacion',
       component: EditarAportacion
+    },
+    {
+      path: '/descarga',
+      name: 'descarga',
+      component: Descarga
     },
     {
       path: '/restaurar_contrasena',  // NOTA: contrasena no lleva "ñ"

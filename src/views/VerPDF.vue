@@ -6,28 +6,22 @@
   </v-overlay>
 
   <v-container class="vista-cuento" v-if="!loading">
+    <v-btn color="danger" class="mb-4" @click="descargar">
+      <v-icon left>mdi-arrow-left</v-icon>
+      Descargar
+    </v-btn>
+
     <v-btn color="primary" class="mb-4" :to="'/panel_inicio'">
       <v-icon left>mdi-arrow-left</v-icon>
       Volver a Mis Cuentos
     </v-btn>
 
-    <v-btn color="secondary" class="mb-4" :to="'/descarga'">
-      <v-icon left>mdi-arrow-left</v-icon>
-      Descarga de cuento
-    </v-btn>
 
     <v-card class="my-4 pa-4" elevation="6" v-if="cuento">
       <v-card-title class="text-h5 font-weight-bold">Título: {{ cuento.nombre }}</v-card-title>
       <v-divider></v-divider>
       <v-card-text class="mt-2">
         <p class="text-body-1">Descripción: {{ cuento.descripcion }}</p>
-      </v-card-text>
-    </v-card>
-
-    <v-card class="pa-4 mb-4 code-card" elevation="6">
-      <v-card-title class="text-h6 font-weight-bold">Código para unirse</v-card-title>
-      <v-card-text class="text-center text-h5 font-weight-bold green--text">
-        {{ id_cuento }}
       </v-card-text>
     </v-card>
 
@@ -45,32 +39,14 @@
         <p v-else class="no-aportaciones">Actualmente no existen aportaciones en este cuento.</p>
       </v-card-text>
     </v-card>
-
-    <!-- Botón para editar cuento -->
-    <v-btn color="blue" class="mt-4 float-right mr-2" :to="'/editar_cuento'">Editar Cuento</v-btn>
-
-    <!-- Botón para editar aportación -->
-    <v-btn color="green" class="mt-4 float-right" @click="navegarAportacion()">Editar Aportación</v-btn>
-
-    <!-- Popup Eliminar Aportación -->
-    <v-dialog v-model="showDeleteAportacionPopup" max-width="400">
-      <v-card>
-        <v-card-title>Abandonar cuento</v-card-title>
-        <v-card-text>
-          ¿Estás seguro de abandonar este cuento? Tu aportación será eliminada permanentemente.
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="red" @click="eliminarAportacion">Abandonar</v-btn>
-          <v-btn color="gray" @click="showDeleteAportacionPopup = false">Cancelar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-container>
 </template>
 
 <script lang="ts">
 import axios from 'axios';
 import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
+// @ts-ignore
+import html2pdf from "html2pdf.js/dist/html2pdf.bundle.min.js"
 
 function convertDeltaToHtml(contenido: string | object): string {
   const delta = typeof contenido === 'string' ? JSON.parse(contenido) : contenido;
@@ -80,7 +56,7 @@ function convertDeltaToHtml(contenido: string | object): string {
 }
 
 export default {
-  name: 'CuentoView',
+  name: 'Descarga',
   data() {
     return {
       cuento: {} as { id: number; nombre: string; descripcion: string } | null,
@@ -156,8 +132,6 @@ export default {
             id_alumno: localStorage.getItem("id_alumno")
           }
         });
-        console.log(response.data);
-
 
         const newAportaciones = response.data.aportaciones.map(({ id_aportacion, contenido, nombre_alumno }: { id_aportacion: number; contenido: string; nombre_alumno: string }) => ({
           id_aportacion,
@@ -175,26 +149,36 @@ export default {
         console.error("Error al obtener las aportaciones:", error);
       }
     },
-    async eliminarAportacion() {
-      this.loading = true;
-      try {
-        await axios.post('/php/eliminar_aportacion.php', { id_cuento: this.id_cuento });
-        this.obtenerAportaciones();
-      } catch (error) {
-        console.error("Error al eliminar la aportación:", error);
-      } finally {
-        this.loading = false;
-      }
-    },
-    async navegarAportacion() {
+    async descargar() {
       try {
         if (this.aportaciones.length === 0) {
-          alert("No puedes editar una aportación que no existe.");
+          alert("No puedes descargar un cuento sin ninguna aportación!");
           return;
         }
-        this.$router.push('/editar_aportacion');
+
+        this.loading = true;
+        await Promise.all([this.obtenerCuento(), this.obtenerAportaciones()]);
+
+        const contenidoHTML = document.createElement('div');
+          contenidoHTML.innerHTML = `
+            <div style="font-family: Arial, sans-serif; color: #000; background: #fff; padding: 20px; max-width: 800px; margin: auto;">
+              <h1 style="color: #333;">${this.cuento?.nombre}</h1>
+              <p style="font-size: 14px; line-height: 1.6;">${this.cuento?.descripcion}</p>
+              <hr style="border: 1px solid #ccc;">
+              ${this.aportaciones.map(aport => `
+                <div style="margin-bottom: 15px; padding: 10px; solid #ddd">
+                  <p style="font-size: 14px; color: #555;">${aport.contenido}</p>
+                </div>
+              `).join('')}
+            </div>
+          `;
+
+        // 📥 Convertir a PDF y descargarlo
+        html2pdf().from(contenidoHTML).save(`${this.cuento?.nombre || 'cuento'}.pdf`);
       } catch (error) {
-        console.error("Error al obtener el ID de la aportación:", error);
+        console.error("Error descargando", error);
+      } finally {
+        alert("Cuento descargado")
       }
     }
   }

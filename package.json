@@ -16,7 +16,9 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@types/html-pdf": "^3.0.3",
     "axios": "^1.7.9",
+    "html2pdf.js": "^0.10.3",
     "quill": "^2.0.3",
     "quill-delta": "^5.1.0",
     "quill-delta-to-html": "^0.12.1",
