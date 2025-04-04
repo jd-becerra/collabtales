@@ -6,15 +6,12 @@
   </v-overlay>
 
   <v-container class="vista-cuento" v-if="!loading">
-    <v-btn color="primary" class="mb-4" :to="'/panel_inicio'">
+    <v-btn color="primary" class="mb-2" :to="'/panel_inicio'">
       <v-icon left>mdi-arrow-left</v-icon>
       Volver a Mis Cuentos
     </v-btn>
 
-    <v-btn color="secondary" class="mb-4" :to="'/descarga'">
-      <v-icon left>mdi-arrow-left</v-icon>
-      Descarga de cuento
-    </v-btn>
+    <v-btn color="blue" class="mb-2 ml-2" :to="'/editar_cuento'">Editar Cuento</v-btn>
 
     <v-card class="my-4 pa-4" elevation="6" v-if="cuento">
       <v-card-title class="text-h5 font-weight-bold">Título: {{ cuento.nombre }}</v-card-title>
@@ -36,8 +33,9 @@
       <v-divider></v-divider>
       <v-card-text class="mt-2">
         <v-list v-if="aportaciones.length > 0">
-          <v-list-item v-for="aportacion in aportaciones" :key="aportacion.id_aportacion" class="aportacion-item">
+          <v-list-item v-for="aportacion in aportaciones" :key="aportacion.id_aportacion" class="aportacion-item" :class="{ 'borde-rojo': Number(id_alumno) === aportacion.id_alumno }">
               <v-list-item-title class="text-body-1 font-weight-bold">{{ aportacion.nombre_alumno }}</v-list-item-title>
+              <v-btn color="green" v-if="Number(id_alumno) === aportacion.id_alumno" class="float-right" @click="navegarAportacion()">Editar Aportación</v-btn>
               <v-divider></v-divider>
               <v-list-item-title v-html="aportacion.contenido" class="contenido text-body-2"></v-list-item-title>
           </v-list-item>
@@ -46,11 +44,10 @@
       </v-card-text>
     </v-card>
 
-    <!-- Botón para editar cuento -->
-    <v-btn color="blue" class="mt-4 float-right mr-2" :to="'/editar_cuento'">Editar Cuento</v-btn>
-
-    <!-- Botón para editar aportación -->
-    <v-btn color="green" class="mt-4 float-right" @click="navegarAportacion()">Editar Aportación</v-btn>
+    <v-btn color="secondary" class="mt-4 float-right mr-2 mb-4" :to="'/descarga'">
+      <v-icon left>mdi-arrow-left</v-icon>
+      Visualizar cuento
+    </v-btn>
 
     <!-- Popup Eliminar Aportación -->
     <v-dialog v-model="showDeleteAportacionPopup" max-width="400">
@@ -84,7 +81,7 @@ export default {
   data() {
     return {
       cuento: {} as { id: number; nombre: string; descripcion: string } | null,
-      aportaciones: [] as Array<{ id_aportacion: number; contenido: string; nombre_alumno: string }>,
+      aportaciones: [] as Array<{ id_aportacion: number; contenido: string; nombre_alumno: string; id_alumno: number }>,
       showDeleteAportacionPopup: false,
       id_cuento: localStorage.getItem("id_cuento") || null,
       loading: false, // New loading state
@@ -159,10 +156,11 @@ export default {
         console.log(response.data);
 
 
-        const newAportaciones = response.data.aportaciones.map(({ id_aportacion, contenido, nombre_alumno }: { id_aportacion: number; contenido: string; nombre_alumno: string }) => ({
+        const newAportaciones = response.data.aportaciones.map(({ id_aportacion, contenido, nombre_alumno, id_alumno }: { id_aportacion: number; contenido: string; nombre_alumno: string; id_alumno: number }) => ({
           id_aportacion,
           contenido: convertDeltaToHtml(contenido),
-          nombre_alumno
+          nombre_alumno,
+          id_alumno
         }));
 
         this.aportaciones = [];
@@ -233,5 +231,11 @@ export default {
 
 .v-divider {
   margin: 10px 0;
+}
+
+.borde-rojo {
+  border: 2px solid red;
+  padding: 10px;
+  border-radius: 5px;
 }
 </style>

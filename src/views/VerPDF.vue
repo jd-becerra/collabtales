@@ -26,7 +26,7 @@
     </v-card>
 
     <v-card class="pa-4 aportaciones-card" elevation="6">
-      <v-card-title class="text-h6 font-weight-bold">Aportaciones</v-card-title>
+      <v-card-title class="text-h6 font-weight-bold" >Aportaciones</v-card-title>
       <v-divider></v-divider>
       <v-card-text class="mt-2">
         <v-list v-if="aportaciones.length > 0">
@@ -180,6 +180,7 @@ export default {
       } finally {
         alert("Cuento descargado")
       }
+      this.$router.push('/ver_cuento');
     }
   }
 };
