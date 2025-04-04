@@ -28,8 +28,6 @@
           <v-card-text>
             <!-- Toolbar for Quill.js -->
             <div id="toolbar">
-              <select class="ql-font"></select>
-              <select class="ql-size"></select>
               <button class="ql-bold"></button>
               <button class="ql-italic"></button>
               <button class="ql-underline"></button>
