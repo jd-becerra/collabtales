@@ -202,6 +202,13 @@ export default {
 </script>
 
 <style scoped>
+.aportacion-item {
+  border: 2px solid rgb(192, 192, 192);
+  padding: 10px;
+  border-radius: 5px;
+  margin: 20px;
+}
+
 .contenido {
   font-size: 1.2em;
   line-height: 1.5;
@@ -239,5 +246,6 @@ export default {
   border: 2px solid black;
   padding: 10px;
   border-radius: 5px;
+  margin:20px;
 }
 </style>
