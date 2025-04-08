@@ -6,16 +6,14 @@
   </v-overlay>
 
   <v-container class="vista-cuento" v-if="!loading">
-    <v-btn color="danger" class="mb-4" @click="descargar">
-      <v-icon left>mdi-arrow-left</v-icon>
-      Descargar
-    </v-btn>
-
-    <v-btn color="primary" class="mb-4" :to="'/panel_inicio'">
-      <v-icon left>mdi-arrow-left</v-icon>
-      Volver a Mis Cuentos
-    </v-btn>
-
+    <div class="d-flex justify-end">
+      <v-btn color="primary" class="mb-4 mr-4" :to="'/panel_inicio'">
+        Volver a Mis Cuentos
+      </v-btn>
+        <v-btn class="justify-end" color="danger" @click="descargar">
+        Descargar
+        </v-btn>
+    </div>
 
     <v-card class="my-4 pa-4" elevation="6" v-if="cuento">
       <v-card-title class="text-h5 font-weight-bold">Título: {{ cuento.nombre }}</v-card-title>

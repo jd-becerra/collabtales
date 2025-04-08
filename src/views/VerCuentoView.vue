@@ -11,7 +11,7 @@
       Volver a Mis Cuentos
     </v-btn>
 
-    <v-btn color="blue" class="mb-2 ml-2" :to="'/editar_cuento'">Editar Cuento</v-btn>
+    <v-btn v-if=es_dueno color="blue" class="mb-2 ml-2" :to="'/editar_cuento'">Editar Cuento</v-btn>
 
     <v-card class="my-4 pa-4" elevation="6" v-if="cuento">
       <v-card-title class="text-h5 font-weight-bold">Título: {{ cuento.nombre }}</v-card-title>
@@ -92,8 +92,6 @@ export default {
     };
   },
   async mounted() {
-    console.log("ID cuento:", this.id_cuento);
-    console.log("ID alumno:", this.id_alumno);
     if (!this.id_cuento || !this.id_alumno) {
       alert("No tienes permiso para ver este cuento.");
       return;

@@ -73,7 +73,7 @@ const cargarCuento = async () => {
     const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_vista_cuento.php`, {
       params: { id_cuento }
     });
-    
+
     if (response.data) {
       nombre_cuento.value = response.data[0].nombre;
       descripcion_cuento.value = response.data[0].descripcion;
@@ -100,7 +100,7 @@ const editarCuento = async () => {
       descripcion_cuento: descripcion_cuento.value,
     });
     alert(response.data);
-    router.push('/panel_inicio');
+    router.push('/ver_cuento');
   } catch (error) {
     console.error('Error al actualizar el cuento:', error);
     alert('❌ Error al actualizar el cuento. Intente nuevamente.');
@@ -115,9 +115,10 @@ const publicarCuento = async () => {
       id_alumno: id_usuario
     });
     console.log(response.data);
-    console.log(response.data.success || response.data.error);  
+    console.log(response.data.success || response.data.error);
     alert(response.data.success || response.data.error);
     showPublishCuentoPopup.value = false;
+    router.push('/ver_cuento');
   } catch (error) {
     console.error('Error al publicar el cuento:', error);
   }
@@ -134,7 +135,7 @@ const eliminarCuento = async () => {
 };
 
 const cancelar = () => {
-  router.push('/panel_inicio');
+  router.push('/ver_cuento');
 };
 
 onMounted(cargarCuento);
