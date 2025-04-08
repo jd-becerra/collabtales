@@ -41,6 +41,7 @@ const cerrarSesion = () => {
           <!-- Si el usuario está logeado -->
           <template v-if="idAlumno">
             <v-btn variant="text" to="/crear_cuento" color="white">Crear Cuento</v-btn>
+            <v-btn variant="text" to="/perfil_usuario" color="white">Mi Perfil</v-btn>
             <v-btn variant="text" @click="cerrarSesion">Cerrar Sesión</v-btn>
           </template>
 

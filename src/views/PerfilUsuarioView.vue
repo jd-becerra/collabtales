@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 import axios from 'axios';
 
 const router = useRouter();
-const datosAlumno = ref({ id_alumno: '', nombre: '', contrasena: '' });
+const datosAlumno = ref({ id_alumno: '', nombre: '' });
 const showDeleteDialog = ref(false);
 const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 
@@ -27,7 +27,10 @@ function getDatosAlumno() {
       }
     })
     .then((response) => {
-      datosAlumno.value = response.data;
+      datosAlumno.value = {
+        id_alumno: response.data.id_alumno,
+        nombre: response.data.nombre
+      };
     })
     .catch((error) => {
       console.error('Error al obtener datos del alumno:', error);
@@ -37,9 +40,8 @@ function getDatosAlumno() {
 function editarAlumno() {
   axios
     .put(`${PHP_URL}/php/editar_alumno.php`, {
-      id_alumno: localStorage.getItem('id_alumno'),
+      id_alumno: datosAlumno.value.id_alumno,
       nombre: datosAlumno.value.nombre,
-      contrasena: datosAlumno.value.contrasena,
     },
     {
       headers: {
@@ -48,11 +50,10 @@ function editarAlumno() {
       }
     })
     .then((response) => {
-      console.log(response.data);
 
       if (response.data.message) {  // Si hay un mensaje de éxito
         alert(response.data.message);
-        router.push('/perfil_usuario');
+        router.push('/panel_inicio');
       } else if (response.data.error) {  // Si hay un mensaje de error
         alert(response.data.error);
       } else {
@@ -94,14 +95,12 @@ function eliminarAlumno() {
       <v-card-text>
         <v-form @submit.prevent="editarAlumno">
           <v-text-field v-model="datosAlumno.nombre" label="Nombre" outlined required />
-          <v-text-field v-model="datosAlumno.contrasena" label="Contraseña" type="password" outlined required />
           <v-btn block color="green-darken-3" class="mt-3" type="submit">Guardar Cambios</v-btn>
           <v-btn block variant="text" class="mt-2" @click="router.push('/panel_inicio')">Cancelar</v-btn>
           <v-btn block color="red-darken-3" class="mt-2" @click="showDeleteDialog = true">Eliminar Cuenta </v-btn>
         </v-form>
       </v-card-text>
     </v-card>
-
 
     <v-dialog v-model="showDeleteDialog" max-width="400">
       <v-card>

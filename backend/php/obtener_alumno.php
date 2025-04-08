@@ -14,15 +14,15 @@ if ($id_alumno <= 0) {
     exit;
 }
 
-$stmt = $conn->prepare("SELECT nombre, correo FROM Alumno WHERE id_alumno = ?");
+$stmt = $conn->prepare("SELECT id_alumno, nombre, correo FROM Alumno WHERE id_alumno = ?");
 $stmt->bind_param("i", $id_alumno);
 $stmt->execute();
 $stmt->store_result();
-$stmt->bind_result($nombre, $correo);
+$stmt->bind_result($id_alumno, $nombre, $correo);
 $stmt->fetch();
 
 if ($stmt->num_rows > 0) {
-    echo json_encode(["nombre" => $nombre, "correo" => $correo]);
+    echo json_encode(["id_alumno" => $id_alumno, "nombre" => $nombre, "correo" => $correo]);
 } else {
     echo json_encode(["error" => "Alumno not found"]);
 }
