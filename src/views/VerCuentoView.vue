@@ -34,9 +34,11 @@
       <v-card-text class="mt-2">
         <v-list v-if="aportaciones.length > 0">
           <v-list-item v-for="aportacion in aportaciones" :key="aportacion.id_aportacion" class="aportacion-item" :class="{ 'borde-rojo': Number(id_alumno) === aportacion.id_alumno }">
+            <div class="d-flex justify-space-between align-center w-100">
               <v-list-item-title class="text-body-1 font-weight-bold">{{ aportacion.nombre_alumno }}</v-list-item-title>
-              <v-btn color="green" v-if="Number(id_alumno) === aportacion.id_alumno" class="float-right" @click="navegarAportacion()">Editar Aportación</v-btn>
-              <v-divider></v-divider>
+              <v-btn color="green" v-if="Number(id_alumno) === aportacion.id_alumno" @click="navegarAportacion()">Editar Aportación</v-btn>
+            </div>
+            <v-divider></v-divider>
               <v-list-item-title v-html="aportacion.contenido" class="contenido text-body-2"></v-list-item-title>
           </v-list-item>
         </v-list>
@@ -234,7 +236,7 @@ export default {
 }
 
 .borde-rojo {
-  border: 2px solid red;
+  border: 2px solid black;
   padding: 10px;
   border-radius: 5px;
 }
