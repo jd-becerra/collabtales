@@ -123,32 +123,25 @@ DELIMITER ;
 -- Procedure: EditarAlumno
 DELIMITER $$
 CREATE PROCEDURE `EditarAlumno`(
-                IN id_alumno_param INT,
-                IN nuevo_nombre VARCHAR(255),
-                IN nueva_contrasena VARCHAR(255),
-                IN nuevo_correo VARCHAR(255)
+        IN id_alumno_param INT,
+        IN nuevo_nombre VARCHAR(255)
 )
 BEGIN
-                DECLARE nombre_existente INT;
-                DECLARE correo_existente INT;
+        DECLARE nombre_existente INT;
+        
+        -- Verificar si el nuevo nombre ya existe en otro usuario
+        SELECT COUNT(*) INTO nombre_existente FROM Alumno 
+        WHERE nombre = nuevo_nombre AND id_alumno <> id_alumno_param;
+        
+        IF nombre_existente = 0 THEN
+                UPDATE Alumno 
+                SET nombre = nuevo_nombre
+                WHERE id_alumno = id_alumno_param;
                 
-                -- Verificar si el nuevo nombre ya existe en otro usuario
-                SELECT COUNT(*) INTO nombre_existente FROM Alumno 
-                WHERE nombre = nuevo_nombre AND id_alumno <> id_alumno_param;
-                
-                -- Verificar si el nuevo correo ya existe en otro usuario
-                SELECT COUNT(*) INTO correo_existente FROM Alumno 
-                WHERE correo = nuevo_correo AND id_alumno <> id_alumno_param;
-                
-                IF nombre_existente = 0 AND correo_existente = 0 THEN
-                                UPDATE Alumno 
-                                SET nombre = nuevo_nombre, contrasena = nueva_contrasena, correo = nuevo_correo
-                                WHERE id_alumno = id_alumno_param;
-                                
-                                SELECT 'Alumno actualizado correctamente' AS result;
-                ELSE
-                                SELECT 'El nombre de usuario o correo ya existe' AS result;
-                END IF;
+                SELECT 'Alumno actualizado correctamente' AS result;
+        ELSE
+                SELECT 'El nombre de usuario ya existe' AS result;
+        END IF;
 END$$
 DELIMITER ;
 
