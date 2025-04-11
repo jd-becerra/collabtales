@@ -19,7 +19,7 @@
       <v-card-title class="text-h5 font-weight-bold">Título: {{ cuento.nombre }}</v-card-title>
       <v-divider></v-divider>
       <v-card-text class="mt-2">
-        <p class="text-body-1">Descripción: {{ cuento.descripcion }}</p>
+        <p class="text-body-1 text-wrap">Descripción: {{ cuento.descripcion }}</p>
       </v-card-text>
     </v-card>
 
@@ -31,7 +31,7 @@
           <v-list-item v-for="aportacion in aportaciones" :key="aportacion.id_aportacion" class="aportacion-item">
               <v-list-item-title class="text-body-1 font-weight-bold">{{ aportacion.nombre_alumno }}</v-list-item-title>
               <v-divider></v-divider>
-              <v-list-item-title v-html="aportacion.contenido" class="contenido text-body-2"></v-list-item-title>
+              <v-list-item-title v-html="aportacion.contenido" class="contenido text-wrap"></v-list-item-title>
           </v-list-item>
         </v-list>
         <p v-else class="no-aportaciones">Actualmente no existen aportaciones en este cuento.</p>

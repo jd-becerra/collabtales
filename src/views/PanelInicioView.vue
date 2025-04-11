@@ -149,7 +149,7 @@ const unirseCuento = async (id_cuento: number) => {
     });
 
     if (response.data.error) {
-      alert(response.data.error); 
+      alert(response.data.error);
       return;
     }
 
