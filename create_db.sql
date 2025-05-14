@@ -66,6 +66,16 @@ CREATE TABLE `Historial` (
                 FOREIGN KEY (`fk_cuento`) REFERENCES `Cuento`(`id_cuento`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Tabla que impide a algunos usuarios acceder a cuentos donde el creador los ha bloqueado
+CREATE TABLE `ListaNegra` (
+        `id_listanegra` INT(11) NOT NULL AUTO_INCREMENT,
+        `fk_alumno` INT(11) NOT NULL,
+        `fk_cuento` INT(11) NOT NULL,
+        PRIMARY KEY (`id_listanegra`),
+        FOREIGN KEY (`fk_alumno`) REFERENCES `Alumno`(`id_alumno`) ON DELETE CASCADE ON UPDATE CASCADE,
+        FOREIGN KEY (`fk_cuento`) REFERENCES `Cuento`(`id_cuento`) ON DELETE CASCADE ON UPDATE CASCADE	
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Procedure: AñadirAlumno
 DELIMITER $$
 CREATE PROCEDURE `AñadirAlumno`(IN username VARCHAR(255), IN pass VARCHAR(255), IN email VARCHAR(255))
@@ -247,5 +257,35 @@ BEGIN
                                 -- Si no existe la aportación, mostrar error
                                 SELECT 'La aportación no existe para el ID especificado' AS result;
                 END IF;
+END$$
+DELIMITER ;
+
+-- Procedure: EliminarAlumnoCuento (elimina a un alumno de un cuento, además de su aportación, pero NO lo bloquea)
+DELIMITER $$
+CREATE PROCEDURE `EliminarAlumnoCuento`(
+                IN id_alumno_param INT,
+                IN id_cuento_param INT
+)
+BEGIN
+                DELETE FROM Relacion_Alumno_Cuento
+                WHERE fk_alumno = id_alumno_param AND fk_cuento = id_cuento_param;
+                
+                DELETE FROM Aportacion
+                WHERE fk_alumno = id_alumno_param AND fk_cuento = id_cuento_param;
+END$$
+DELIMITER ;
+
+-- Procedure: BloquearAlumno (elimina a un alumno de un cuento y lo añade a la lista negra)
+DELIMITER $$
+CREATE PROCEDURE `BloquearAlumno`(
+                IN id_alumno_param INT,
+                IN id_cuento_param INT
+)
+BEGIN
+                DELETE FROM Relacion_Alumno_Cuento
+                WHERE fk_alumno = id_alumno_param AND fk_cuento = id_cuento_param;
+                
+                INSERT INTO ListaNegra (fk_alumno, fk_cuento)
+                VALUES (id_alumno_param, id_cuento_param);
 END$$
 DELIMITER ;

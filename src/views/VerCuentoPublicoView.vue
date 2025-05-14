@@ -41,7 +41,7 @@
 <script lang="ts">
 import axios from 'axios';
 import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
-// @ts-ignore
+// @ts-expect-error: TypeScript cannot find module definitions for html2pdf.js
 import html2pdf from "html2pdf.js/dist/html2pdf.bundle.min.js"
 
 function convertDeltaToHtml(contenido: string | object): string {
