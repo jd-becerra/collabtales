@@ -44,7 +44,10 @@ const crearCuento = () => {
     nombre: nombre_cuento.value,
     descripcion: descripcion_cuento.value,
   }),
-  { headers: { 'Content-Type': 'application/json' } }
+  { headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+  } }
   )
   .then(() => {
     alert('Cuento creado exitosamente.');

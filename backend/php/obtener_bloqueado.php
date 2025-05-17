@@ -1,5 +1,8 @@
 <?php
 include('cors_headers.php');
+include('jwt_auth.php');
+$user = authenticate();
+
 include('config.php');
 
 $id_cuento = $_GET['id_cuento'] ?? null;

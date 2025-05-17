@@ -1,7 +1,15 @@
 <?php
 include('cors_headers.php');
-include('config.php');
+include('jwt_auth.php');
+$user = authenticate();
 
+if ($user['id_alumno'] <= 0) {
+    echo json_encode(["error" => "Unauthorized"]);
+    http_response_code(401);
+    exit;
+}
+
+include('config.php');
 if (!isset($_GET['id_alumno'])) {
     echo json_encode(["error" => "Invalid request: id_alumno is missing"]);
     exit;

@@ -1,6 +1,7 @@
 <?php
 include('cors_headers.php');
 include('config.php');
+include("jwt.php");
 
 $data = json_decode(file_get_contents("php://input"), true);
 
@@ -31,7 +32,13 @@ if ($stmt->num_rows > 0) {
     $stmt->fetch();
 
     if (password_verify($contrasena, $hash_contrasena)) {
-        echo json_encode(["id_alumno" => $id_alumno]);
+        // El usuario ha iniciado sesión correctamente
+        $payload = ["id_alumno" => $id_alumno];
+        $token = generate_jwt($payload);
+        echo json_encode([
+            "token" => $token,
+            "id_alumno" => $id_alumno
+        ]);
     } else {
         echo json_encode(["error" => "Credenciales incorrectas"]);
     }

@@ -71,6 +71,9 @@ const cargarCuento = async () => {
 
   try {
     const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_vista_cuento.php`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
       params: { id_cuento }
     });
 
@@ -94,10 +97,16 @@ const editarCuento = async () => {
     return;
   }
   try {
-    const response = await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/editar_cuento.php`, {
+    const response = await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/editar_cuento.php`,
+    {
       id_cuento,
       nombre_cuento: nombre_cuento.value,
       descripcion_cuento: descripcion_cuento.value,
+    },
+    {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
     });
     alert(response.data);
     router.push('/ver_cuento');
@@ -110,9 +119,15 @@ const editarCuento = async () => {
 const publicarCuento = async () => {
   try {
     console.log(id_cuento, id_usuario);
-    const response = await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/publicar_cuento.php`, {
+    const response = await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/publicar_cuento.php`,
+    {
       id_cuento,
       id_alumno: id_usuario
+    },
+    {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
     });
     console.log(response.data);
     console.log(response.data.success || response.data.error);
@@ -126,7 +141,13 @@ const publicarCuento = async () => {
 
 const eliminarCuento = async () => {
   try {
-    await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/eliminar_cuento.php`, { id_cuento });
+    await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/eliminar_cuento.php`,
+    { id_cuento },
+    {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
     localStorage.removeItem("id_cuento");
     router.push('/panel_inicio');
   } catch (error) {

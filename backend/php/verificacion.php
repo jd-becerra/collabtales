@@ -1,5 +1,8 @@
 <?php
 include('cors_headers.php');
+include('jwt_auth.php');
+$user = authenticate();
+
 include('config.php');
 
 header('Content-Type: application/json');

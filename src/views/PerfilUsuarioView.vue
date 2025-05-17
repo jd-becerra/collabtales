@@ -22,6 +22,9 @@ function getDatosAlumno() {
 
   axios
     .get(`${PHP_URL}/php/obtener_alumno.php`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
       params: {
         id_alumno: id_alumno
       }
@@ -46,7 +49,8 @@ function editarAlumno() {
     {
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
     })
     .then((response) => {
@@ -74,7 +78,8 @@ function eliminarAlumno() {
     {
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
     })
     .then(() => {

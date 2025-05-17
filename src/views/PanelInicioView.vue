@@ -96,8 +96,12 @@ const getCuentosAlumno = async () => {
     }
 
     const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_cuentos.php`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
       params: { id_alumno }
     });
+    console.log(response.data);
 
     cuentos.value = response.data;
   } catch (error) {
@@ -116,10 +120,13 @@ const getCuentosGlobal = async () => {
     }
 
     const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_cuentos_globales.php`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
       params: { id_alumno }
     });
 
-    console.log('Cuentos globales:', response.data);
+    console.log(response.data);
 
     if (!response.data || !response.data.length) {
       cuentosGlobales.value = [];
@@ -142,11 +149,13 @@ const unirseCuento = async (id_cuento: number) => {
       console.error('No id_alumno found in localStorage');
       return;
     }
-
-    const response = await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/unirse_cuento.php`, {
+    const response = await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/unirse_cuento.php`,
+    {
       id_cuento,
       id_alumno
     });
+
+    console.log('Response:', response.data);
 
     if (response.data.error) {
       alert(response.data.error);

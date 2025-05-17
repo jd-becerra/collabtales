@@ -1,6 +1,7 @@
 <?php
 include('cors_headers.php');
 include('config.php');
+include("jwt.php");
 
 $data = json_decode(file_get_contents("php://input"), true);
 
@@ -53,12 +54,21 @@ $stmt->execute();
 $stmt->bind_result($result);
 $stmt->fetch();
 
-if ($result == -1) {
-    echo json_encode(["result" => "El usuario ya existe"]);
+if ($result == "El usuario ya existe") {
+    echo json_encode(["error" => "El usuario ya existe"]);
+    exit;
 } elseif ($result > 0) {
-    echo json_encode(["id_alumno" => $result]);
+    // El usuario ha creado una cuenta correctamente, permitir iniciar sesión
+    $payload = ["id_alumno" => $result];
+    $token = generate_jwt($payload);
+    echo json_encode([
+        "token" => $token,
+        "id_alumno" => $result
+    ]);
+    exit;
 } else {
     echo json_encode(["error" => "Error al crear el usuario"]);
+    exit;
 }
 $stmt->close();
 ?>

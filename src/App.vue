@@ -45,11 +45,11 @@ const cerrarSesion = () => {
             <v-btn variant="text" @click="cerrarSesion">Cerrar Sesión</v-btn>
           </template>
 
-          <!-- Si el usuario NO está logeado -->
+          <!-- Si el usuario NO está logeado
           <template v-else>
             <v-btn variant="text" to="/login" color="white">Iniciar Sesión</v-btn>
             <v-btn variant="text" to="/register" color="white">Registrarse</v-btn>
-          </template>
+          </template> -->
         </div>
 
         <v-app-bar-nav-icon class="hidden-md-and-up" @click="drawer = !drawer" />
@@ -70,10 +70,11 @@ const cerrarSesion = () => {
           </v-list-item>
         </template>
 
+        <!--
         <template v-else>
           <v-list-item to="/login" title="Iniciar Sesión" />
           <v-list-item to="/register" title="Registrarse" />
-        </template>
+        </template>-->
       </v-list>
     </v-navigation-drawer>
 

@@ -112,10 +112,15 @@ export default {
   methods: {
     async verificarCuento() {
       try {
-        const response = await axios.post('/php/verificacion.php', {
+        const response = await axios.post('/php/verificacion.php',
+        {
           id_cuento: this.id_cuento,
           id_alumno: this.id_alumno
-        });
+        },
+        {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        }
+        );
 
         console.log(response.data);
 
@@ -138,6 +143,7 @@ export default {
     async obtenerCuento() {
       try {
         const response = await axios.get('/php/obtener_vista_cuento.php', {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
           params: { id_cuento: this.id_cuento }
         });
         this.cuento = response.data.length ? response.data[0] : [];
@@ -148,6 +154,7 @@ export default {
     async obtenerAportaciones() {
       try {
         const response = await axios.get('/php/obtener_aportaciones.php', {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
           params: {
             id_cuento: this.id_cuento,
             id_alumno: localStorage.getItem("id_alumno")
@@ -176,7 +183,12 @@ export default {
     async eliminarAportacion() {
       this.loading = true;
       try {
-        await axios.post('/php/eliminar_aportacion.php', { id_cuento: this.id_cuento });
+        await axios.post('/php/eliminar_aportacion.php',
+        { id_cuento: this.id_cuento },
+        {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        }
+        );
         this.obtenerAportaciones();
       } catch (error) {
         console.error("Error al eliminar la aportación:", error);

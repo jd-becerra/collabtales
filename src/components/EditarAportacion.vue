@@ -79,6 +79,9 @@ export default {
     }
     this.loading = true;
     axios.get('/php/obtener_aportacion_individual.php', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
       params: {
         id_aportacion: this.id_aportacion,
       },
@@ -139,10 +142,17 @@ export default {
 
       const delta = JSON.stringify(this.quill.getContents());
 
-      axios.put(`/php/editar_aportacion.php`, {
+      axios.put(`/php/editar_aportacion.php`,
+      {
         id_aportacion: this.id_aportacion,
         contenido: delta,
-      })
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      }
+      )
         .then(() => {
           this.$router.push('/ver_cuento');
         })

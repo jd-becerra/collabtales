@@ -11,13 +11,13 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  
+
     <v-btn color="orange" class="mt-4" @click="showPublishModal = true">Publicar Cuento</v-btn>
   </template>
-  
+
   <script lang="ts">
   import axios from 'axios';
-  
+
   export default {
     data() {
       return {
@@ -28,8 +28,14 @@
     methods: {
       async publicarCuento() {
         try {
-          const response = await axios.post('/php/publicar_cuento.php', {
+          const response = await axios.post('/php/publicar_cuento.php',
+          {
             id_cuento: this.id_cuento
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            }
           });
           alert(response.data.mensaje);
           this.showPublishModal = false;
@@ -40,4 +46,3 @@
     }
   };
   </script>
-  

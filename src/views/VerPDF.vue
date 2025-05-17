@@ -90,9 +90,13 @@ export default {
   methods: {
     async verificarCuento() {
       try {
-        const response = await axios.post('/php/verificacion.php', {
+        const response = await axios.post('/php/verificacion.php',
+        {
           id_cuento: this.id_cuento,
           id_alumno: this.id_alumno
+        },
+        {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
 
         console.log(response.data);
@@ -115,9 +119,11 @@ export default {
     },
     async obtenerCuento() {
       try {
-        const response = await axios.get('/php/obtener_vista_cuento.php', {
+        const response = await axios.get('/php/obtener_vista_cuento.php',
+        {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
           params: { id_cuento: this.id_cuento }
-        });
+        },);
         this.cuento = response.data.length ? response.data[0] : [];
       } catch (error) {
         console.error("Error al obtener el cuento:", error);
@@ -126,6 +132,7 @@ export default {
     async obtenerAportaciones() {
       try {
         const response = await axios.get('/php/obtener_aportaciones.php', {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
           params: {
             id_cuento: this.id_cuento,
             id_alumno: localStorage.getItem("id_alumno")

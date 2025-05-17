@@ -1,21 +1,24 @@
 <?php
-    include('cors_headers.php');
-    include('config.php');
+include('cors_headers.php');
+include('jwt_auth.php');
+$user = authenticate();
 
-    // Obtener todos los cuentos globales
-    $sql = "SELECT c.id_cuento, c.nombre, c.descripcion FROM Cuento c where c.publicado = 1";
-    $result = $conn->query($sql);
+include('config.php');
 
-    if ($result->num_rows > 0) {
-        $rows = array();
-        while ($row = $result->fetch_assoc()) {
-            $rows[] = $row;
-        }
+// Obtener todos los cuentos globales
+$sql = "SELECT c.id_cuento, c.nombre, c.descripcion FROM Cuento c where c.publicado = 1";
+$result = $conn->query($sql);
 
-        echo json_encode($rows);
-    } else {
-        echo json_encode([]);
+if ($result->num_rows > 0) {
+    $rows = array();
+    while ($row = $result->fetch_assoc()) {
+        $rows[] = $row;
     }
 
-    $conn->close();
-    ?>
+    echo json_encode($rows);
+} else {
+    echo json_encode([]);
+}
+
+$conn->close();
+?>

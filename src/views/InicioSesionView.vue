@@ -167,10 +167,8 @@ async function register() {
     const response = await axios.post(`${PHP_URL}/php/crear_alumno.php`, registerData.value, {
       headers: { 'Content-Type': 'application/json' }
     });
-
     if (response.data.error) {
       showPopup("Error", `${response.data.error}`);
-      alert(response.data.error);
       return;
     }
 
@@ -178,16 +176,16 @@ async function register() {
       showPopup("Error", `El usuario ya existe!`);
       return;
     }
-    console.log(response.data);
     if (response.data.id_alumno) {
       localStorage.setItem('id_alumno', response.data.id_alumno);
+      localStorage.setItem('token', response.data.token);
       showPopup("Exito!", `Cuenta ${registerData.value.nombre} creada con exito`);
       router.push('/panel_inicio');
     } else {
-      alert('❌ Error:' + response.data.error);
+      showPopup('Error:', response.data.error);
     }
   } catch (_error) {
-    alert('❌ Error en el servidor. Intente nuevamente: ' + _error);
+    showPopup('Error: ', `Error en el servidor, intente nuevamente: \n${_error}`);
   } finally {
     loading.value = false;
   }

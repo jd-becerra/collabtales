@@ -1,5 +1,6 @@
 <?php
 include('cors_headers.php');
+// ESTE ARCHIVO NO NECESITA JWT
 include('config.php');
 
 $token = $_GET['token'] ?? null;
