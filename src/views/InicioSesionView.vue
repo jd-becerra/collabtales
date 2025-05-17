@@ -214,6 +214,7 @@ async function login() {
 
     if (datos.id_alumno) {
       localStorage.setItem('id_alumno', datos.id_alumno);
+      localStorage.setItem('token', datos.token);
       showPopup("¡Bienvenido!", `${loginData.value.nombre}`);
       router.push('/panel_inicio');
     } else {
