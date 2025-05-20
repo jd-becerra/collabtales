@@ -2,6 +2,17 @@
 include('cors_headers.php');
 // ESTE ARCHIVO NO NECESITA JWT
 include('config.php');
+include("rate_limit.php");
+
+// Primero, checar que no se exceda de 10 peticiones por minuto
+$ip = $_SERVER['REMOTE_ADDR'];
+$endpoint_name = "validar_token_restauracion";
+$limit = 10; // 10 peticiones
+$interval_seconds = 60; // 1 minuto
+if (is_rate_limited($conn, $endpoint_name, $ip, $limit, $interval_seconds)) {
+    echo json_encode(["error" => "Demasiadas peticiones. Intenta de nuevo más tarde."]);
+    exit;
+}
 
 $token = $_GET['token'] ?? null;
 $correo = $_GET['correo'] ?? null;

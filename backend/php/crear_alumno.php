@@ -1,7 +1,20 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 include('cors_headers.php');
 include('config.php');
 include("jwt.php");
+include("rate_limit.php");
+
+// Primero, checar que no se exceda de 10 peticiones por minuto
+$ip = $_SERVER['REMOTE_ADDR'];
+$endpoint_name = "registrar_alumno";
+$limit = 10; // 10 peticiones
+$interval_seconds = 60; // 1 minuto
+if (is_rate_limited($conn, $endpoint_name, $ip, $limit, $interval_seconds)) {
+    echo json_encode(["error" => "Demasiadas peticiones. Intenta de nuevo más tarde."]);
+    exit;
+}
 
 $data = json_decode(file_get_contents("php://input"), true);
 

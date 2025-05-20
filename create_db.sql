@@ -289,3 +289,54 @@ BEGIN
                 VALUES (id_alumno_param, id_cuento_param);
 END$$
 DELIMITER ;
+
+-- Implementacion de rate limiting para evitar ataques de fuerza bruta
+CREATE TABLE API_RATE_LIMIT (
+    id_api_rate_limit INT AUTO_INCREMENT PRIMARY KEY,
+    endpoint_name VARCHAR(50),
+    ip_address VARCHAR(45),
+    request_time INT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE PROCEDURE `ObtenerRateLimitRecientes` (
+    IN p_endpoint VARCHAR(50),
+    IN p_ip VARCHAR(45),
+    IN p_time_limit INT
+)
+BEGIN
+    SELECT COUNT(*) AS request_count
+    FROM API_RATE_LIMIT
+    WHERE endpoint_name = p_endpoint
+      AND ip_address = p_ip
+      AND request_time >= UNIX_TIMESTAMP(NOW()) - p_time_limit;
+END$$
+
+CREATE PROCEDURE `InsertarRateLimit`(
+    IN p_endpoint VARCHAR(50),
+    IN p_ip VARCHAR(45),
+    IN p_request_time INT
+)
+BEGIN
+    INSERT INTO API_RATE_LIMIT (endpoint_name, ip_address, request_time)
+    VALUES (p_endpoint, p_ip, p_request_time);
+END$$
+
+-- Si el usuario logra hacer login, se eliminan las entradas de rate limit para no bloquearlo
+CREATE PROCEDURE `ResetearRateLimit`(
+    IN p_endpoint VARCHAR(50),
+    IN p_ip VARCHAR(45)
+)
+BEGIN
+    DELETE FROM API_RATE_LIMIT
+    WHERE endpoint_name = p_endpoint
+      AND ip_address = p_ip;
+END$$
+
+-- Eliminar entradas viejas de la tabla API_RATE_LIMIT cada hora
+CREATE EVENT IF NOT EXISTS `LimpiezaRateLimit`
+ON SCHEDULE EVERY 1 HOUR
+DO
+BEGIN
+    DELETE FROM API_RATE_LIMIT
+    WHERE request_time < UNIX_TIMESTAMP(NOW()) - 3600;
+END$$
