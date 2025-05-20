@@ -10,7 +10,7 @@ include('config.php');
 // Parse PUT data into $_PUT
 parse_str(file_get_contents("php://input"), $_PUT);
 
-$id_alumno = $_PUT['id_alumno'] ?? null;
+$id_alumno = $user['id_alumno'] ?? null;
 $nombre = $_PUT['nombre'] ?? null;
 
 if (empty($id_alumno) || empty($nombre)) {

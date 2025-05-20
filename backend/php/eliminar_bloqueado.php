@@ -7,19 +7,17 @@ $user = authenticate();
 
 include('config.php');
 
-$data = json_decode(file_get_contents("php://input"), true);
-$id_cuento = $data['id_cuento'];
-$id_alumno = $data['id_alumno'];
+$id_cuento = $_GET['id_cuento'];
+$id_alumno = $user['id_alumno'];
+$stmt = $conn->prepare("DELETE FROM ListaNegra WHERE id_cuento = ? AND id_alumno = ?");
+$stmt->bind_param("ii", $id_cuento, $id_alumno);
 
-$sql = "DELETE FROM ListaNegra WHERE id_cuento = '$id_cuento' AND id_alumno = '$id_alumno';";
-
-if ($conn->query($sql) === TRUE) {
+if ($stmt->execute()) {
     echo "Alumno desbloqueado correctamente";
 } else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+    echo "Error: " . $stmt->error;
 }
 
+$stmt->close();
 $conn->close();
-
-
 ?>

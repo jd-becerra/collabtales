@@ -8,7 +8,17 @@ $user = authenticate();
 include('config.php');
 
 // Obtener todos los cuentos globales
-$sql = "SELECT c.id_cuento, c.nombre, c.descripcion FROM Cuento c where c.publicado = 1";
+$sql = "SELECT 
+        c.id_cuento, 
+        c.nombre, 
+        c.descripcion,
+        GROUP_CONCAT(DISTINCT a.nombre ORDER BY a.nombre SEPARATOR ', ') AS autores
+    FROM Cuento c
+    JOIN Relacion_Alumno_Cuento rac ON c.id_cuento = rac.fk_cuento
+    JOIN Alumno a ON rac.fk_alumno = a.id_alumno
+    WHERE c.publicado = 1
+    GROUP BY c.id_cuento, c.nombre, c.descripcion
+";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {

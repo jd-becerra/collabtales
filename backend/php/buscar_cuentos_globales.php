@@ -20,15 +20,14 @@ include("jwt_auth.php");
 $user = authenticate();
 
 // Recibimos simplemente el parametro de búsqueda
-$data = json_decode(file_get_contents("php://input"), true);
-if (empty($data['busqueda'])) {
+if (empty($_GET['busqueda'])) {
     http_response_code(400);
     echo json_encode(["error" => "Faltan parámetros"]);
     exit;
 }
 
 // Sanitizamos la búsqueda
-$busqueda = trim(htmlspecialchars($data['busqueda']));
+$busqueda = trim(htmlspecialchars($_GET['busqueda']));
 if (strlen($busqueda) > 100) {
     http_response_code(400);
     echo json_encode(["error" => "Parametro excede el tamaño permitido"]);
@@ -45,7 +44,6 @@ $stmt = $conn->prepare("
     FROM Cuento c
     JOIN Relacion_Alumno_Cuento rac ON c.id_cuento = rac.fk_cuento
     JOIN Alumno a ON rac.fk_alumno = a.id_alumno
-    LEFT JOIN Relacion_Alumno_Cuento r ON c.id_cuento = r.fk_cuento AND r.fk_alumno = ?
     WHERE c.publicado = 1 
       AND (c.nombre LIKE ? OR c.descripcion LIKE ?)
     GROUP BY c.id_cuento, c.nombre, c.descripcion

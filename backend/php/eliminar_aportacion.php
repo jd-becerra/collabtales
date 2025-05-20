@@ -7,24 +7,24 @@ $user = authenticate();
 
 include('config.php');
 
-$data = json_decode(file_get_contents("php://input"), true);
-$id_cuento = $data['id_cuento'];
-$id_alumno = $data['id_alumno'];
-
+$id_cuento = $_GET['id_cuento'];
+$id_alumno = $user['id_alumno'];
 if (empty($id_cuento) || empty($id_alumno)) {
-    echo "Error: id_cuento and id_alumno must be provided";
+    http_response_code(400);
+    echo json_encode(["error" => "Faltan parámetros obligatorios."]);
     exit();
 }
 
-$sql = "CALL AbandonarCuento('$id_cuento','$id_alumno');";
+$stmt = $conn->prepare("CALL AbandonarCuento(?, ?)");
+$stmt->bind_param("ii", $id_cuento, $id_alumno);
 
-if ($conn->query($sql) === TRUE) {
-    echo "Has abandonado el cuento correctamente";
+if ($stmt->execute()) {
+    echo json_encode(["message" => "Aportación eliminada correctamente"]);
 } else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+    http_response_code(500);
+    echo json_encode(["error" => "Error al eliminar la aportación: " . $stmt->error]);
 }
 
+$stmt->close();
 $conn->close();
-
-
 ?>

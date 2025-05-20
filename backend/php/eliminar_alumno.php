@@ -1,27 +1,30 @@
 <?php
 include('cors_headers.php');
+include('validate_method.php');
+validate_method("DELETE");
 include('jwt_auth.php');
 $user = authenticate();
 include('config.php');
 
-$data = json_decode(file_get_contents("php://input"), true);
-$id_alumno = $data['id_alumno'];
+$id_alumno = isset($user['id_alumno']) ? filter_var($user['id_alumno'], FILTER_VALIDATE_INT) : null;
 
 if (empty($id_alumno)) {
-    echo "Error: id_alumno must be provided";
+    http_response_code(400);
+    echo json_encode(["error" => "Faltan parámetros obligatorios."]);
     exit();
 }
 
-$sql = "CALL EliminarAlumno('$id_alumno')";
+$stmt = $conn->prepare("CALL EliminarAlumno(?)");
+$stmt->bind_param("i", $id_alumno);
 
-if ($conn->query($sql) === TRUE) {
-    echo "Tu cuenta ha sido eliminada correctamente";
+if ($stmt->execute()) {
+    echo json_encode(["message" => "Usuario eliminado correctamente"]);
 } else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+    http_response_code(500);
+    echo json_encode(["error" => "Error al eliminar el usuario: " . $stmt->error]);
 }
 
+$stmt->close();
 $conn->close();
-
-
 ?>
 
