@@ -97,7 +97,7 @@ const editarCuento = async () => {
     return;
   }
   try {
-    const response = await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/editar_cuento.php`,
+    const response = await axios.put(`${import.meta.env.VITE_PHP_SERVER}/php/editar_cuento.php`,
     {
       id_cuento,
       nombre_cuento: nombre_cuento.value,
@@ -118,11 +118,9 @@ const editarCuento = async () => {
 
 const publicarCuento = async () => {
   try {
-    console.log(id_cuento, id_usuario);
-    const response = await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/publicar_cuento.php`,
+    const response = await axios.put(`${import.meta.env.VITE_PHP_SERVER}/php/publicar_cuento.php`,
     {
-      id_cuento,
-      id_alumno: id_usuario
+      id_cuento: id_cuento,
     },
     {
       headers: {
@@ -138,12 +136,12 @@ const publicarCuento = async () => {
     console.error('Error al publicar el cuento:', error);
   }
 };
-
 const eliminarCuento = async () => {
   try {
-    await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/eliminar_cuento.php`,
-    { id_cuento },
-    {
+    await axios.delete(`${import.meta.env.VITE_PHP_SERVER}/php/eliminar_cuento.php`, {
+      params: {
+        id_cuento: id_cuento,
+      },
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }

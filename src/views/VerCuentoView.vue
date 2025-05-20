@@ -112,15 +112,13 @@ export default {
   methods: {
     async verificarCuento() {
       try {
-        const response = await axios.post('/php/verificacion.php',
-        {
-          id_cuento: this.id_cuento,
-          id_alumno: this.id_alumno
-        },
-        {
+        const response = await axios.get('/php/verificacion.php', {
+          params: {
+            id_cuento: this.id_cuento,
+            id_alumno: this.id_alumno
+          },
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        }
-        );
+        });
 
         console.log(response.data);
 

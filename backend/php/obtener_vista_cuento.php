@@ -1,6 +1,8 @@
 
 <?php
 include('cors_headers.php');
+include('validate_method.php');
+validate_method("GET");
 include('jwt_auth.php');
 $user = authenticate();
 

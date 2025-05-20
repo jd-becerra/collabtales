@@ -1,7 +1,8 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 include('cors_headers.php');
+include('validate_method.php');
+validate_method("POST"); // Validar que el método sea POST
+
 include('config.php');
 include("jwt.php");
 include("rate_limit.php");

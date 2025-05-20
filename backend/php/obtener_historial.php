@@ -1,12 +1,13 @@
 <?php
 include('cors_headers.php');
+include('validate_method.php');
+validate_method("GET");
 include('jwt_auth.php');
 $user = authenticate();
 
 include('config.php');
 
-$data = json_decode(file_get_contents("php://input"), true);
-$id_cuento = $data['id_cuento'];
+$id_cuento = $_GET['id_cuento'];
 
 if(empty($id_cuento)){
     echo json_encode(["error" => "id_cuento es obligatorio"]);

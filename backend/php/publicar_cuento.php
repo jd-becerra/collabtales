@@ -1,5 +1,7 @@
 <?php
 include('cors_headers.php');
+include('validate_method.php');
+validate_method("PUT");
 include('jwt_auth.php');
 $user = authenticate();
 
@@ -7,7 +9,7 @@ include('config.php');
 
 $data = json_decode(file_get_contents("php://input"), true);
 $id_cuento = isset($data['id_cuento']) ? filter_var($data['id_cuento'], FILTER_VALIDATE_INT) : null;
-$id_alumno = isset($data['id_alumno']) ? filter_var($data['id_alumno'], FILTER_VALIDATE_INT) : null;
+$id_alumno = isset($user['id_alumno']) ? filter_var($user['id_alumno'], FILTER_VALIDATE_INT) : null;
 
 if (!$id_cuento || !$id_alumno) {
     http_response_code(400);

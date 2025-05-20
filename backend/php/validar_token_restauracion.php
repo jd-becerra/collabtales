@@ -1,5 +1,7 @@
 <?php
 include('cors_headers.php');
+include('validate_method.php');
+validate_method("GET");
 // ESTE ARCHIVO NO NECESITA JWT
 include('config.php');
 include("rate_limit.php");

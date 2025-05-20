@@ -1,5 +1,7 @@
 <?php
 include('cors_headers.php');
+include('validate_method.php');
+validate_method("POST");
 // ESTA RUTA NO USA JWT
 include('config.php');
 include("rate_limit.php");

@@ -1,14 +1,17 @@
 <?php
 include('cors_headers.php');
+include('validate_method.php');
+validate_method("PUT");
 include('jwt_auth.php');
 $user = authenticate();
 
 include('config.php');
 
-$data = json_decode(file_get_contents("php://input"), true);
+// Parse PUT data into $_PUT
+parse_str(file_get_contents("php://input"), $_PUT);
 
-$id_alumno = $data['id_alumno'] ?? null;
-$nombre = $data['nombre'] ?? null;
+$id_alumno = $_PUT['id_alumno'] ?? null;
+$nombre = $_PUT['nombre'] ?? null;
 
 if (empty($id_alumno) || empty($nombre)) {
     echo json_encode(["error" => "ID y nombre son obligatorios"]);

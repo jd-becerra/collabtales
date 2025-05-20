@@ -1,8 +1,9 @@
 <?php
 include('cors_headers.php');
+include('validate_method.php');
+validate_method("PUT");
 include('jwt_auth.php');
 $user = authenticate();
-
 include('config.php');
 
 // Read raw JSON input

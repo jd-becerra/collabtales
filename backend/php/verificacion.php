@@ -1,8 +1,7 @@
 <?php
-ini_set("display_errors", 1);
-ini_set("display_startup_errors", 1);
-error_reporting(E_ALL);
 include('cors_headers.php');
+include('validate_method.php');
+validate_method("GET");
 include('jwt_auth.php');
 $user = authenticate();
 
@@ -10,15 +9,8 @@ include('config.php');
 
 header('Content-Type: application/json');
 
-$data = json_decode(file_get_contents("php://input"), true);
-if (!is_array($data)) {
-    http_response_code(400);
-    echo json_encode(["error" => "Formato inválido."]);
-    exit();
-}
-
-$id_cuento = isset($data['id_cuento']) ? filter_var($data['id_cuento'], FILTER_VALIDATE_INT) : null;
-$id_alumno = isset($data['id_alumno']) ? filter_var($data['id_alumno'], FILTER_VALIDATE_INT) : null;
+$id_cuento = isset($_GET['id_cuento']) ? filter_var($_GET['id_cuento'], FILTER_VALIDATE_INT) : null;
+$id_alumno = isset($_GET['id_alumno']) ? filter_var($_GET['id_alumno'], FILTER_VALIDATE_INT) : null;
 
 if (is_null($id_cuento) || is_null($id_alumno)) {
     http_response_code(400);
