@@ -7,12 +7,13 @@ $user = authenticate();
 
 include('config.php');
 
-if (!isset($_GET['id_alumno'])) {
-    echo json_encode(["error" => "Invalid request: id_alumno is missing"]);
+$id_alumno = $user['id_alumno'];
+$id_alumno = intval($id_alumno);
+if (!isset($id_alumno) || $id_alumno <= 0) {
+    http_response_code(401);
+    echo json_encode(["error" => "Usuario no autorizado"]);
     exit;
 }
-
-$id_alumno = intval($_GET['id_alumno']);
 
 $sql = $conn->prepare("CALL ListarCuentosAlumno(?)");
 $sql->bind_param("i", $id_alumno);

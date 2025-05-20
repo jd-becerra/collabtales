@@ -12,12 +12,12 @@ if ($user['id_alumno'] <= 0) {
 }
 
 include('config.php');
-if (!isset($_GET['id_alumno'])) {
+$id_alumno = $user['id_alumno'];
+if (!isset($id_alumno)) {
     echo json_encode(["error" => "Invalid request: id_alumno is missing"]);
     exit;
 }
-
-$id_alumno = intval($_GET['id_alumno']);
+$id_alumno = intval($id_alumno);
 
 if ($id_alumno <= 0) {
     echo json_encode(["error" => "Invalid id_alumno"]);
