@@ -131,6 +131,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { el } from 'vuetify/locale';
 
 // Reactive state
 const showRegister = ref(false);
@@ -182,10 +183,20 @@ async function register() {
       showPopup("Exito!", `Cuenta ${registerData.value.nombre} creada con exito`);
       router.push('/panel_inicio');
     } else {
-      showPopup('Error:', response.data.error);
+      if (response.data.error) {
+        if (response.status === 500) {
+          showPopup("Error", `Error en el servidor, intente nuevamente.`);
+        } else if (response.status === 400) {
+          showPopup("Error", `Parametros incorrectos. Llena todos los campos correctamente.`);
+        } else if (response.status === 401) {
+          showPopup("Error", `Credenciales incorrectas. Verifica tu usuario y contraseña.`);
+        } else if (response.status === 429) {
+          showPopup("Error", `Has excedido el límite de intentos. Intenta más tarde.`);
+        }
+      }
     }
   } catch (_error) {
-    showPopup('Error: ', `Error en el servidor, intente nuevamente: \n${_error}`);
+    showPopup('Error: ', `Error en el servidor, intente nuevamente.`);
   } finally {
     loading.value = false;
   }
@@ -194,7 +205,7 @@ async function register() {
 // Método para iniciar sesión
 async function login() {
   if (!loginData.value.nombre || !loginData.value.contrasena) {
-    showPopup("Error", "Campos vacios!");
+    showPopup("Error", "Hay campos vacíos.");
     return;
   }
 
@@ -217,11 +228,17 @@ async function login() {
       localStorage.setItem('token', datos.token);
       showPopup("¡Bienvenido!", `${loginData.value.nombre}`);
       router.push('/panel_inicio');
-    } else {
-      showPopup("Error!", `Usuario o contraseña incorrectos`);
     }
-  } catch (_error) {
-    showPopup("Error!", `Error en el servidor intente nuevamente \n${_error}`);
+  } catch (error) {
+    if (error.status === 500) {
+      showPopup("Error", `Error en el servidor, intente nuevamente.`);
+    } else if (error.status === 400) {
+      showPopup("Error", `Parametros incorrectos. Llena todos los campos correctamente.`);
+    } else if (error.status === 401) {
+      showPopup("Error", `Credenciales incorrectas. Verifica tu usuario y contraseña.`);
+    } else if (error.status === 429) {
+      showPopup("Error", `Has excedido el límite de intentos permitido. Intenta más tarde.`);
+    }
   } finally {
     loading.value = false;
   }
@@ -253,7 +270,7 @@ async function restorePassword() {
       showPopup("Error!", `No se pudo restaurar la contraseña`);
     }
   } catch (_error) {
-    showPopup("Error!", `Error en el servidor intente nuevamente \n${_error}`);
+    showPopup("Error!", `Error en el servidor. Intente nuevamente más tarde.`);
   } finally {
     loading.value = false;
   }

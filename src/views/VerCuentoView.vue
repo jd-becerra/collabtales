@@ -133,9 +133,18 @@ export default {
 
         this.es_dueno = response.data.es_dueno;
         return true;
-      } catch (error) {
-        console.error("Error en la verificación:", error);
-        alert("No tienes permiso.");
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        if (error.response) {
+          if (error.response.status === 403)
+            alert("No tienes permiso para ver este cuento.");
+          else if (error.response.status === 400)
+            alert("Parametros incorrectos.");
+        } else {
+          console.error("Error al verificar el cuento:", error);
+        }
+
         this.$router.push('/panel_inicio');
         return false;
       }

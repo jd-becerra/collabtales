@@ -2,6 +2,38 @@ DROP DATABASE IF EXISTS `cuentosBD`;
 CREATE DATABASE `cuentosBD` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `cuentosBD`;
 
+-- Drop tables if they exist (in reverse dependency order)
+DROP TABLE IF EXISTS `ListaNegra`;
+DROP TABLE IF EXISTS `Historial`;
+DROP TABLE IF EXISTS `Aportacion`;
+DROP TABLE IF EXISTS `Relacion_Alumno_Cuento`;
+DROP TABLE IF EXISTS `TokenRestauracion`;
+DROP TABLE IF EXISTS `Cuento`;
+DROP TABLE IF EXISTS `Alumno`;
+DROP TABLE IF EXISTS `API_RATE_LIMIT`;
+
+-- Drop procedures if they exist
+DROP PROCEDURE IF EXISTS `AñadirAlumno`;
+DROP PROCEDURE IF EXISTS `EliminarAlumno`;
+DROP PROCEDURE IF EXISTS `ListarCuentosAlumno`;
+DROP PROCEDURE IF EXISTS `UnirseCuento`;
+DROP PROCEDURE IF EXISTS `EditarAlumno`;
+DROP PROCEDURE IF EXISTS `CrearCuento`;
+DROP PROCEDURE IF EXISTS `ListarCuentoAportacionesConAlumnos`;
+DROP PROCEDURE IF EXISTS `EditarAportacion`;
+DROP PROCEDURE IF EXISTS `EliminarAlumnoCuento`;
+DROP PROCEDURE IF EXISTS `BloquearAlumno`;
+DROP PROCEDURE IF EXISTS `ObtenerRateLimitRecientes`;
+DROP PROCEDURE IF EXISTS `InsertarRateLimit`;
+DROP PROCEDURE IF EXISTS `ResetearRateLimit`;
+
+-- Drop triggers if they exist
+DROP TRIGGER IF EXISTS `After_UnirseCuento`;
+DROP TRIGGER IF EXISTS `After_Aportacion`;
+
+-- Drop event if it exists
+DROP EVENT IF EXISTS `LimpiezaRateLimit`;
+
 -- Table: Alumno
 CREATE TABLE `Alumno` (
         `id_alumno` INT(11) NOT NULL AUTO_INCREMENT,
@@ -74,6 +106,13 @@ CREATE TABLE `ListaNegra` (
         PRIMARY KEY (`id_listanegra`),
         FOREIGN KEY (`fk_alumno`) REFERENCES `Alumno`(`id_alumno`) ON DELETE CASCADE ON UPDATE CASCADE,
         FOREIGN KEY (`fk_cuento`) REFERENCES `Cuento`(`id_cuento`) ON DELETE CASCADE ON UPDATE CASCADE	
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE API_RATE_LIMIT (
+    id_api_rate_limit INT AUTO_INCREMENT PRIMARY KEY,
+    endpoint_name VARCHAR(50),
+    ip_address VARCHAR(45),
+    request_time INT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Procedure: AñadirAlumno
@@ -291,13 +330,7 @@ END$$
 DELIMITER ;
 
 -- Implementacion de rate limiting para evitar ataques de fuerza bruta
-CREATE TABLE API_RATE_LIMIT (
-    id_api_rate_limit INT AUTO_INCREMENT PRIMARY KEY,
-    endpoint_name VARCHAR(50),
-    ip_address VARCHAR(45),
-    request_time INT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+DELIMITER $$
 CREATE PROCEDURE `ObtenerRateLimitRecientes` (
     IN p_endpoint VARCHAR(50),
     IN p_ip VARCHAR(45),
@@ -310,7 +343,9 @@ BEGIN
       AND ip_address = p_ip
       AND request_time >= UNIX_TIMESTAMP(NOW()) - p_time_limit;
 END$$
+DELIMITER ;
 
+DELIMITER $$
 CREATE PROCEDURE `InsertarRateLimit`(
     IN p_endpoint VARCHAR(50),
     IN p_ip VARCHAR(45),
@@ -320,8 +355,10 @@ BEGIN
     INSERT INTO API_RATE_LIMIT (endpoint_name, ip_address, request_time)
     VALUES (p_endpoint, p_ip, p_request_time);
 END$$
+DELIMITER ;
 
 -- Si el usuario logra hacer login, se eliminan las entradas de rate limit para no bloquearlo
+DELIMITER $$
 CREATE PROCEDURE `ResetearRateLimit`(
     IN p_endpoint VARCHAR(50),
     IN p_ip VARCHAR(45)
@@ -331,8 +368,10 @@ BEGIN
     WHERE endpoint_name = p_endpoint
       AND ip_address = p_ip;
 END$$
+DELIMITER ;
 
 -- Eliminar entradas viejas de la tabla API_RATE_LIMIT cada hora
+DELIMITER $$
 CREATE EVENT IF NOT EXISTS `LimpiezaRateLimit`
 ON SCHEDULE EVERY 1 HOUR
 DO
@@ -340,3 +379,4 @@ BEGIN
     DELETE FROM API_RATE_LIMIT
     WHERE request_time < UNIX_TIMESTAMP(NOW()) - 3600;
 END$$
+DELIMITER ;

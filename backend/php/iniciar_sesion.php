@@ -10,6 +10,7 @@ $endpoint_name = "iniciar_sesion";
 $limit = 10; // 10 peticiones
 $interval_seconds = 60; // 1 minuto
 if (is_rate_limited($conn, $endpoint_name, $ip, $limit, $interval_seconds)) {
+    http_response_code(429);
     echo json_encode(["error" => "Demasiadas peticiones. Intenta de nuevo más tarde."]);
     exit;
 }
@@ -17,19 +18,17 @@ if (is_rate_limited($conn, $endpoint_name, $ip, $limit, $interval_seconds)) {
 $data = json_decode(file_get_contents("php://input"), true);
 
 if (empty($data['nombre']) || empty($data['contrasena'])) {
-    echo json_encode(["error" => "Nombre y contraseña son obligatorios"]);
+    http_response_code(400);
+    echo json_encode(["error" => "Faltan parámetros obligatorios."]);
     exit;
 }
 
 $nombre = trim(htmlspecialchars($data['nombre'], ENT_QUOTES, 'UTF-8'));
 $contrasena = trim($data['contrasena']);
 
-if (strlen($nombre) > 50) {
-    echo json_encode(["error" => "El nombre es demasiado largo"]);
-    exit;
-}
-if (strlen($contrasena) > 72) {
-    echo json_encode(["error" => "La contraseña no debe superar los 72 caracteres"]);
+if (strlen($nombre) > 50 || strlen($contrasena) > 72) {
+    http_response_code(400);
+    echo json_encode(["error" => "Campos exceden el tamaño permitido"]);
     exit;
 }
 
@@ -57,11 +56,16 @@ if ($stmt->num_rows > 0) {
             "token" => $token,
             "id_alumno" => $id_alumno
         ]);
+        exit;
     } else {
+        http_response_code(401);
         echo json_encode(["error" => "Credenciales incorrectas"]);
+        exit;
     }
 } else {
+    http_response_code(401);
     echo json_encode(["error" => "Error al iniciar sesión"]);
+    exit;
 }
 
 $stmt->close();
