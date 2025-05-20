@@ -87,18 +87,16 @@ export default {
   methods: {
     async verificarCuento() {
       try {
-        const response = await axios.post('/php/verificacion.php',
-        {
+      const response = await axios.get('/php/verificacion.php', {
+        params: {
           id_cuento: this.id_cuento,
           id_alumno: this.id_alumno
         },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          }
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
-      );
+      });
 
         console.log(response.data);
 
