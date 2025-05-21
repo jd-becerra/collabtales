@@ -57,6 +57,7 @@
                 required
                 class="custom-input"
               />
+
               <v-text-field
                 label="Contraseña"
                 prepend-inner-icon="mdi-lock"
@@ -132,6 +133,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import { el } from 'vuetify/locale';
+import Gbutton from '@/components/elements/gbutton.vue';
 
 // Reactive state
 const showRegister = ref(false);
