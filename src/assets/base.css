@@ -1,14 +1,28 @@
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
-  --vt-c-white: #ffffff;
-  --vt-c-white-soft: #f8f8f8;
-  --vt-c-white-mute: #f2f2f2;
+  --vt-c-white: #FFFFFF;
+  --vt-c-white-soft: #FAFAFA;
+  --vt-c-white-mute: #F0F0F0;
 
-  --vt-c-black: #181818;
-  --vt-c-black-soft: #222222;
+  --vt-c-black: #000000;
+  --vt-c-black-soft: #151515;
   --vt-c-black-mute: #282828;
 
   --vt-c-indigo: #2c3e50;
+
+  --vt-c-gray-dark: #535353;
+  --vt-c-gray-soft: #B5AFB2;
+  --vt-c-gray-soft: #B5AFB2;
+
+  --vt-c-blue-dark: #005F70;
+  --vt-c-blue-bright: #00A8C3;
+  --vt-c-blue-soft: #D4F9FF;
+
+  --vt-c-red: #A30000;
+
+  --vt-c-purple: #461088;
+
+  --vt-c-green: #006103;
 
   --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
   --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
@@ -19,21 +33,47 @@
   --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+
+  --vt-c-dark-border: var(var(--vt-c-black-soft));
 }
 
 /* semantic color variables for this project */
 :root {
-  --color-background: var(--vt-c-white);
+  --color-background: var(--vt-c-white-soft);
   --color-background-soft: var(--vt-c-white-soft);
   --color-background-mute: var(--vt-c-white-mute);
+  --color-background-padding: var(--vt-c-blue-soft);
+  --background-padding-height: 7vh;
 
   --color-border: var(--vt-c-divider-light-2);
   --color-border-hover: var(--vt-c-divider-light-1);
 
   --color-heading: var(--vt-c-text-light-1);
-  --color-text: var(--vt-c-text-light-1);
+  --color-text: var(--vt-c-black);
+
+  --color-error: var(--vt-c-red);
+  --color-save: var(--vt-c-green);
+  --color-edit: var(--vt-c-purple);
+
+  --color-text-input-fg-default: var(--vt-c-gray-dark);
+  --color-text-input-border: var(--vt-c-black-soft);
+  --color-text-input-bg-default: var(--vt-c-white-soft);
+  --color-text-input-bg-inactive: var(--vt-c-white-mute);
+  --color-password-input-icon: var(--vt-c-gray-soft);
+  
+  --color-btn-blue-bg: var(--vt-c-blue-bright);
+  --color-text-blue: var(--vt-c-blue-dark);
+  --color-border-blue: var(--vt-c-blue-dark);
+
+  --color-btn-white-bg: var(--vt-c-white);
+
+  --color-small-text: var(--vt-c-gray-dark);
+  --color-border-default: var(--vt-c-black-soft);
 
   --section-gap: 160px;
+
+  --font-family-small-text: 'Inter', sans-serif;
+  --font-size-small-text: 0.8rem;
 }
 
 @media (prefers-color-scheme: dark) {
