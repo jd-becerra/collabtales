@@ -1,6 +1,6 @@
 <template>
   <BackgroundPadding />
-  <v-container class="full-width fill-height">
+  <v-container class="full-width fill-height ">
     <LogoCollabtalesLg />
 
     <div class="forms-container align-left justify-start">
@@ -19,6 +19,12 @@
         />
     </div>
   </v-container>
+  <v-img
+    class="logo-image"
+    src="/img/logo_inicio.png"
+    position="center center"
+    alt="Logo de Collabtales, con dos personas enmarcados por un libro de donde sale una planta."
+  />
 </template>
 
 <script setup lang="ts">
@@ -56,4 +62,19 @@ function showRestoreForm() {
 </script>
 
 <style scoped>
+.logo-image {
+  position: absolute;
+  /* Put vertically in the center */
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+
+  width: 60%;
+  height: 60%;
+  padding: 0;
+  margin: 0;
+
+  border-radius: 5px;
+}
+
 </style>

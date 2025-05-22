@@ -3,9 +3,9 @@
     <h1 class="logo-collabtales">
       <span class="logo-collabtales-text">Collabtales</span>
     </h1>
-    <h3 class="slogan-collabtales">
+    <h2 class="slogan-collabtales">
       <span class="logo-collabtales-text">¡Imagina, escribe, comparte, colabora!</span>
-    </h3>
+    </h2>
   </v-container>
 </template>
 
