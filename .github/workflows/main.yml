@@ -40,7 +40,7 @@ jobs:
 
     - name: Upload Vue.js files to Hostinger
       env:
-        DEST_FOLDER: ~/domains/avaldez0.com/public_html/Collabtales/frontend
+        DEST_FOLDER: ~/domains/avaldez0.com/public_html/Collabtales/
       run: |
         ssh -o StrictHostKeyChecking=no -p 65002 u418653278@46.202.198.126 "mkdir -p $DEST_FOLDER"
         rsync -avz --delete -e "ssh -p 65002" --exclude '.git' ./dist/ u418653278@46.202.198.126:$DEST_FOLDER/
