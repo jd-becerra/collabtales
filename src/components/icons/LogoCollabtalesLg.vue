@@ -18,6 +18,7 @@ import '../../assets/base.css'
   padding: 0;
   margin: 0;
   pointer-events: none;
+
 }
 .logo-collabtales {
   font-family: 'Lucida Handwriting', 'cursive';
@@ -27,7 +28,7 @@ import '../../assets/base.css'
   margin: 0;
 }
 .slogan-collabtales {
-  font-family: 'Kameron', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 1.5rem;
   padding: 0;
   margin: 0;

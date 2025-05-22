@@ -26,6 +26,22 @@ import '../assets/base.css'
 @media (max-width: 1366px) {
   .boton-azul {
     font-size: 1.2rem;
+    height: var(--input-height-md);
   }
+}
+@media (max-width: 1366px) {
+
+}
+
+@media (max-width: 1024px) {
+
+}
+
+@media (max-width: 768px) {
+
+}
+
+@media (max-width: 600px) {
+
 }
 </style>

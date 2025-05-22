@@ -24,16 +24,16 @@
       </small>
     </v-container>
 
-    <v-container class="login-buttons">
+    <v-container class="login-buttons d-flex flex-column">
+      <small>
+        ¿Olvidaste tu contraseña? <a class="goto-restore" href="#" @click="$emit('show-restore')">Haz click aquí</a>
+      </small>
       <BotonAzul :disabled="loading" @click="login">
         <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
         Iniciar Sesión
       </BotonAzul>
       <v-btn block color="blue-darken-3" class="mt-3 rounded-lg" @click="$emit('show-register')">
         Crear una cuenta
-      </v-btn>
-      <v-btn block color="text-blue-darken-2" class="mt-3 rounded-lg" @click="$emit('show-restore')">
-        ¿Olvidaste tu contraseña?
       </v-btn>
     </v-container>
   </v-form>
@@ -111,9 +111,26 @@ async function login() {
 </script>
 
 <style scoped>
+
+.login-fields {
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.login-buttons {
+  margin-left: 0;
+  padding-left: 0;
+}
+
 .result-msg {
   font-size: 0.9rem;
   padding: 0;
   margin-top: -0.5rem;
+}
+.goto-restore {
+  color: var( --color-text-blue);
+  text-decoration: underline;
+  cursor: pointer;
+  margin-bottom: 2px;
 }
 </style>
