@@ -27,11 +27,6 @@ jobs:
       run: |
         npm run build
 
-    - name: Set up SSH
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
     - name: Clean old backend folder
       run: |
         ssh -o StrictHostKeyChecking=no -p 65002 u418653278@46.202.198.126 "rm -rf ~/public_html/colabtales/backend"
