@@ -36,22 +36,27 @@ defineEmits(['update:modelValue'])
 .text-input-md {
   display: flex;
   flex-direction: column;
-  margin-bottom: 1rem;
+  padding: 0;
+  margin: 0;
 }
 
 .text-input {
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border-default);
   border-radius: var(--border-radius-default);
   font-size: var(--font-size-md);
-  color: var(--color-text-input-fg-default);
+  color: var(--color-text-black);
   border-color: var(--color-border-default);
   width: var(--input-width-lg);
-}
-.text-input:focus {
-  border-color: var(--vt-c-blue-dark);
-  outline: none;
-  font-family: var(--font-size-md);
+  height: var(--input-height-md);
+
+  &::placeholder {
+  color: var(--color-text-input-fg-default);
+  }
+  &:focus {
+    border-color: var(--vt-c-blue-dark);
+    outline: none;
+  }
 }
 
 .text-caption {
@@ -66,6 +71,24 @@ defineEmits(['update:modelValue'])
   }
   .text-caption {
     font-size: var(--font-size-xs);
+  }
+}
+
+@media (max-width: 1024px) {
+  .text-input {
+    width: var(--input-width-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .text-input {
+    width: var(--input-width-sm);
+  }
+}
+
+@media (max-width: 600px) {
+  .text-input {
+    width: var(--input-width-md);
   }
 }
 

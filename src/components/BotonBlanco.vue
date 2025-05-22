@@ -1,6 +1,6 @@
 <template>
   <v-btn
-    class="boton-azul"
+    class="boton-blanco"
   >
     <slot></slot>
   </v-btn>
@@ -11,9 +11,10 @@ import '../assets/base.css'
 </script>
 
 <style scoped>
-.boton-azul {
-  background-color: var(--color-btn-blue-bg);
-  color: var(--color-text-white);
+.boton-blanco {
+  background-color: var(--color-btn-white-bg);
+  border: 1px solid var(--color-border-blue);
+  color: var(--color-text-blue);
   font-size: var(--font-size-md);
   font-weight: 500;
   border-radius: var(--border-radius-default);
@@ -24,24 +25,30 @@ import '../assets/base.css'
 }
 
 @media (max-width: 1366px) {
-  .boton-azul {
+  .boton-blanco {
     font-size: 1.2rem;
-    height: var(--input-height-md);
+    height: 50px;
   }
-}
-@media (max-width: 1366px) {
-
 }
 
 @media (max-width: 1024px) {
-
+  .boton-blanco {
+    font-size: 1rem;
+    width: var(--input-width-md);
+  }
 }
 
 @media (max-width: 768px) {
-
+  .boton-blanco {
+    font-size: 0.9rem;
+    width: var(--input-width-sm);
+  }
 }
 
 @media (max-width: 600px) {
-
+  .boton-blanco {
+    font-size: 0.8rem;
+    width: var(--input-width-md);
+  }
 }
 </style>

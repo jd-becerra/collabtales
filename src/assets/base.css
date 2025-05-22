@@ -49,7 +49,7 @@
   --color-border-hover: var(--vt-c-divider-light-1);
 
   --color-heading: var(--vt-c-text-light-1);
-  --color-text: var(--vt-c-black);
+  --color-text-black: var(--vt-c-black);
   --color-text-white: var(--vt-c-white);
 
   --color-error: var(--vt-c-red);
@@ -63,6 +63,7 @@
   --color-password-input-icon: var(--vt-c-gray-soft);
   
   --color-btn-blue-bg: var(--vt-c-blue-dark);
+  --color-btn-white-bg: var(--vt-c-white);
   --color-text-blue: var(--vt-c-blue-dark);
   --color-border-blue: var(--vt-c-blue-dark);
   --input-width-lg: 480px;
@@ -71,7 +72,7 @@
   --input-width-xs: 160px;
 
   --input-height-lg: 56px;
-  --input-height-md: 50px;
+  --input-height-md: 46px;
 
   --color-btn-white-bg: var(--vt-c-white);
 

@@ -5,9 +5,6 @@ Como esta apliación es de escritorio, estos son los tamaños por los que nos pr
 @media (max-width: 1366px) {
 
 }
-@media (max-width: 1366px) {
-
-}
 
 @media (max-width: 1024px) {
 

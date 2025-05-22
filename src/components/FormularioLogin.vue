@@ -1,6 +1,6 @@
 <template>
   <v-form @submit.prevent="login">
-    <v-container class="login-fields">
+    <v-container class="login-fields d-flex flex-column">
       <TextInputMd
         label="Nombre de usuario"
         v-model="loginData.nombre"
@@ -25,16 +25,16 @@
     </v-container>
 
     <v-container class="login-buttons d-flex flex-column">
-      <small>
+      <small class="mb-1">
         ¿Olvidaste tu contraseña? <a class="goto-restore" href="#" @click="$emit('show-restore')">Haz click aquí</a>
       </small>
-      <BotonAzul :disabled="loading" @click="login">
+      <BotonMd color_type="blue" :disabled="loading" @click="login" >
         <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
         Iniciar Sesión
-      </BotonAzul>
-      <v-btn block color="blue-darken-3" class="mt-3 rounded-lg" @click="$emit('show-register')">
-        Crear una cuenta
-      </v-btn>
+      </BotonMd>
+      <BotonMd @click="$emit('show-register')" class="mt-3">
+        Crear Cuenta
+      </BotonMd>
     </v-container>
   </v-form>
 </template>
@@ -46,7 +46,7 @@ import axios from 'axios';
 
 // Componentes
 import TextInputMd from '@/components/TextInputMd.vue';
-import BotonAzul from './BotonAzul.vue';
+import BotonMd from './BotonMd.vue';
 
 const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 
@@ -115,6 +115,7 @@ async function login() {
 .login-fields {
   margin-left: 0;
   padding-left: 0;
+  gap: 0.5rem;
 }
 
 .login-buttons {

@@ -58,6 +58,7 @@ import '../../assets/base.css'
   }
   .slogan-collabtales {
     font-size: 1rem;
+    margin-top: -1.2rem;
   }
 }
 
@@ -68,6 +69,7 @@ import '../../assets/base.css'
   }
   .slogan-collabtales {
     font-size: 0.8rem;
+    margin-top: -1.0rem;
   }
 }
 
@@ -78,6 +80,7 @@ import '../../assets/base.css'
   }
   .slogan-collabtales {
     font-size: 0.6rem;
+    margin-top: -0.5rem;
   }
 }
 </style>
