@@ -42,7 +42,7 @@ defineEmits(['update:modelValue'])
   border-color: var(--color-border-default);
 }
 .text-input:focus {
-  border-color: var(--vt-c-blue-bright);
+  border-color: var(--vt-c-blue-dark);
   outline: none;
 }
 

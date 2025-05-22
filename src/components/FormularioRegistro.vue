@@ -25,7 +25,7 @@
       class="custom-input"
     />
     <TextInputMd
-      label="Repetir contraseña"
+      label="Repite tu contraseña"
       v-model="registerData.repetir_contrasena"
       type="password"
       outlined
@@ -78,13 +78,12 @@ function showPopup(title: string, msg: string) {
 }
 
 async function register() {
-  if (!registerData.value.nombre || !registerData.value.correo || !registerData.value.contrasena) {
-    showPopup("Error", "Campos vacios!");
+  if (!registerData.value.nombre || !registerData.value.correo || !registerData.value.contrasena || !registerData.value.repetir_contrasena) {
+    showPopup("Error", "Asegúrate de llenar todos los campos.");
     return;
   }
 
   loading.value = true;
-
   try {
     const response = await axios.post(`${PHP_URL}/php/crear_alumno.php`, registerData.value, {
       headers: { 'Content-Type': 'application/json' }
