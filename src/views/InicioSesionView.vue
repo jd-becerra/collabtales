@@ -1,8 +1,8 @@
 <template>
   <BackgroundPadding />
-  <v-container class="forms-column-container d-flex fill-height pa-0">
+  <v-container class="d-flex fill-height pa-0">
     <!-- A la izquierda tenemos el formulario y el logo con eslogan -->
-    <v-col>
+    <v-col class="forms-column-container">
       <LogoCollabtalesLg />
       <div class="forms-container d-flex align-left justify-start">
           <FormularioRegistro
@@ -66,14 +66,6 @@ function showRestoreForm() {
 </script>
 
 <style scoped>
-/* .forms-column-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items:  start;
-} */
-
 .logo-image {
   width: 40%;
   height: 40%;
@@ -83,6 +75,32 @@ function showRestoreForm() {
 
   margin-top: 20%;
   border-radius: 5px;
+}
+
+.forms-column-container {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.forms-container {
+  animation: slideY 0.5s ease-in-out;
+}
+
+@keyframes slideY {
+  0% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 </style>

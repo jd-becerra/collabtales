@@ -1,42 +1,42 @@
 <template>
-  <v-form @submit.prevent="login">
-    <v-container class="login-fields d-flex flex-column">
-      <TextInputMd
-        label="Nombre de usuario"
-        v-model="loginData.nombre"
-        type="text"
-        placeholder="Ejemplo: usuario123"
-        outlined
-        required
-        class="custom-input"
-      />
-      <TextInputMd
-        label="Contraseña"
-        v-model="loginData.contrasena"
-        type="password"
-        placeholder="Escribe tu contraseña aquí"
-        outlined
-        required
-        class="custom-input"
-      />
-      <small class="result-msg" :style="{ color: popupValues.color }" v-if="popupValues.mensaje">
-        {{ popupValues.mensaje }}
-      </small>
-    </v-container>
+    <v-form @submit.prevent="login">
+      <v-container class="login-fields d-flex flex-column">
+        <TextInputMd
+          label="Nombre de usuario"
+          v-model="loginData.nombre"
+          type="text"
+          placeholder="Ejemplo: usuario123"
+          outlined
+          required
+          class="custom-input"
+        />
+        <TextInputMd
+          label="Contraseña"
+          v-model="loginData.contrasena"
+          type="password"
+          placeholder="Escribe tu contraseña aquí"
+          outlined
+          required
+          class="custom-input"
+        />
+        <small class="result-msg" :style="{ color: popupValues.color }" v-if="popupValues.mensaje">
+          {{ popupValues.mensaje }}
+        </small>
+      </v-container>
 
-    <v-container class="login-buttons d-flex flex-column">
-      <small class="mb-1">
-        ¿Olvidaste tu contraseña? <a class="goto-restore" href="#" @click="$emit('show-restore')">Haz click aquí</a>
-      </small>
-      <BotonMd color_type="blue" :disabled="loading" @click="login" >
-        <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
-        Iniciar Sesión
-      </BotonMd>
-      <BotonMd @click="$emit('show-register')" class="mt-3">
-        Crear Cuenta
-      </BotonMd>
-    </v-container>
-  </v-form>
+      <v-container class="login-buttons d-flex flex-column">
+        <small class="mb-1">
+          ¿Olvidaste tu contraseña? <a class="goto-restore" href="#" @click="$emit('show-restore')">Haz click aquí</a>
+        </small>
+        <BotonMd color_type="blue" :disabled="loading" @click="login" >
+          <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
+          Iniciar Sesión
+        </BotonMd>
+        <BotonMd @click="$emit('show-register')" class="mt-3">
+          Crear Cuenta
+        </BotonMd>
+      </v-container>
+    </v-form>
 </template>
 
 <script lang="ts" setup>

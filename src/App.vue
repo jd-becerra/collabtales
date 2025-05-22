@@ -2,7 +2,6 @@
 import './assets/base.css'
 import { ref, onMounted, watchEffect } from 'vue'
 import { RouterView } from 'vue-router'
-import LogoCollabtalesSm from './components/icons/LogoCollabtalesSm.vue'
 
 const idAlumno = ref<string | null>(null)
 
