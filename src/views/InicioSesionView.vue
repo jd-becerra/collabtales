@@ -16,6 +16,7 @@
           />
           <FormularioRestaurar v-if="showRestore" key="restore"
             @show-register="showRegisterForm"
+            @show-login="showLoginForm"
           />
       </div>
     </v-col>
