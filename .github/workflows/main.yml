@@ -34,9 +34,10 @@ jobs:
 
     - name: Clean old backend folder
       run: |
-        ssh -o StrictHostKeyChecking=no -p 65002 u418653278@46.202.198.126 "rm -rf ~/public_html/colabtales/backend"
+        ssh -o StrictHostKeyChecking=no -p 65002 u418653278@46.202.198.126 "rm -rf ~/public_html/Collabtales/backend"
 
     - name: Upload Vue.js files to Hostinger
+      # Para una carga mas limpia, usamos --delete para eliminar archivos en el servidor que no están en local
       run: |
-        ssh -o StrictHostKeyChecking=no -p 65002 u418653278@46.202.198.126 "mkdir -p ~/public_html/colabtales/frontend"
-        rsync -avz -e "ssh -p 65002" --exclude '.git' ./frontend/dist/ u418653278@46.202.198.126:~/public_html/colabtales/frontend/
+        ssh -o StrictHostKeyChecking=no -p 65002 u418653278@46.202.198.126 "mkdir -p ~/public_html/Collabtales/frontend"
+        rsync -avz --delete -e "ssh -p 65002" --exclude '.git' ./frontend/dist/ u418653278@46.202.198.126:~/public_html/Collabtales/frontend/
