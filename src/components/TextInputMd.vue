@@ -6,8 +6,12 @@
       :type="type"
       class="text-input"
       :value="modelValue"
+      :placeholder="placeholder"
       @input="$emit('update:modelValue', ($event.target as HTMLInputElement)?.value)"
     />
+    <small v-if="small" class="text-caption font-weight-medium mb-1">
+      {{ small }}
+    </small>
   </div>
 </template>
 
@@ -21,6 +25,8 @@ defineProps<{
   modelValue: string
   id?: string
   type?: string
+  placeholder?: string
+  small?: string
 }>()
 
 defineEmits(['update:modelValue'])

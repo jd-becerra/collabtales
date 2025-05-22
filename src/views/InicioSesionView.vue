@@ -1,4 +1,5 @@
 <template>
+  <BackgroundPadding />
   <v-container class="full-width fill-height">
     <LogoCollabtalesLg />
 
@@ -28,6 +29,7 @@ import FormularioRegistro from '@/components/FormularioRegistro.vue';
 import FormularioLogin from '@/components/FormularioLogin.vue';
 import LogoCollabtalesLg from '@/components/icons/LogoCollabtalesLg.vue';
 import FormularioRestaurar from '@/components/FormularioRestaurar.vue';
+import BackgroundPadding from '@/components/BackgroundPadding.vue';
 
 const showRegister = ref(false);
 const showLogin = ref(true);

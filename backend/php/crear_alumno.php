@@ -31,28 +31,34 @@ $correo = trim(htmlspecialchars($data['correo']));
 
 // Validar longitud de nombre y contraseña para evitar ataques DoS, entre otros
 if (strlen($nombre) > 50) {
-    echo json_encode(["error" => "El nombre es demasiado largo"]);
-    exit;
-}
-if (strlen($contrasena) > 72) { // BCRYPT sólo toma en cuenta los primeros 72 caracteres
-    echo json_encode(["error" => "La contraseña no debe superar los 72 caracteres"]);
+    http_response_code(400);
+    echo json_encode(["error" => "Campos no válidos"]);
     exit;
 }
 
-// Validar longitud mínima de la nueva contraseña
+if (strlen($contrasena) > 72) { // BCRYPT sólo toma en cuenta los primeros 72 caracteres
+    http_response_code(400);
+    echo json_encode(["error" => "Campos no válidos"]);
+    exit;
+}
+
+// Validar longitud mínima de la nueva contraseña (min 8 caracteres)
 if (strlen($contrasena) < 8) {
-    echo json_encode(["error" => "La contraseña debe tener mínimo 8 caracteres"]);
+    http_response_code(400);
+    echo json_encode(["error" => "Campos no válidos"]);
     exit;
 }
 
 // Validar que la nueva contraseña tenga al menos un carácter especial
 if (!preg_match('/[^a-zA-Z0-9]/', $contrasena)) {
-    echo json_encode(["error" => "La contraseña debe tener al menos un carácter especial"]);
+    http_response_code(400);
+    echo json_encode(["error" => "Campos no válidos"]);
     exit;
 }
 
 if (strlen($correo) > 100 or !filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-    echo json_encode(["error" => "Correo no válido"]);
+    http_response_code(400);
+    echo json_encode(["error" => "Campos no válidos"]);
     exit;
 }
 
@@ -69,19 +75,23 @@ $stmt->bind_result($result);
 $stmt->fetch();
 
 if ($result == "El usuario ya existe") {
-    echo json_encode(["error" => "El usuario ya existe"]);
+    http_response_code(409);
+    echo json_encode(["error" => "Registro ya existente"]);
     exit;
 } elseif ($result > 0) {
     // El usuario ha creado una cuenta correctamente, permitir iniciar sesión
     $payload = ["id_alumno" => $result];
     $token = generate_jwt($payload);
+
+    http_response_code(201);
     echo json_encode([
         "token" => $token,
         "id_alumno" => $result
     ]);
     exit;
 } else {
-    echo json_encode(["error" => "Error al crear el usuario"]);
+    http_response_code(500);
+    echo json_encode(["error" => "Error de servidor"]);
     exit;
 }
 $stmt->close();

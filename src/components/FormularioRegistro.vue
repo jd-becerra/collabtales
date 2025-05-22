@@ -4,6 +4,7 @@
       label="Nombre de usuario  "
       v-model="registerData.nombre"
       type="text"
+      placeholder="Ejemplo: usuario123"
       outlined
       required
       class="custom-input"
@@ -12,14 +13,16 @@
       label="Correo"
       v-model="registerData.correo"
       type="email"
+      placeholder="Ejemplo: correo@gmail.com"
       outlined
       required
       class="custom-input"
     />
     <TextInputMd
-      label="Contraseña"
+      label="Contraseña (al menos 8 caracteres y un carácter especial)"
       v-model="registerData.contrasena"
       type="password"
+      placeholder="Escribe tu contraseña aquí"
       outlined
       required
       class="custom-input"
@@ -28,6 +31,7 @@
       label="Repite tu contraseña"
       v-model="registerData.repetir_contrasena"
       type="password"
+      placeholder="Asegúrate de que tus contraseñas coincidan"
       outlined
       required
       class="custom-input"
@@ -83,6 +87,18 @@ async function register() {
     return;
   }
 
+  if (registerData.value.contrasena !== registerData.value.repetir_contrasena) {
+    showPopup("Error", "Las contraseñas no coinciden.");
+    return;
+  }
+
+  // Validar que las contraseñas tengan al menos 8 caracteres (letras o numeros) y al menos un caracter especial
+  const passwordRegex = /^(?=.*[!@#$%^&*+]).{8,}$/;
+  if (!passwordRegex.test(registerData.value.contrasena)) {
+    showPopup("Error", "La contraseña debe tener al menos 8 caracteres y un carácter especial.");
+    return;
+  }
+
   loading.value = true;
   try {
     const response = await axios.post(`${PHP_URL}/php/crear_alumno.php`, registerData.value, {
@@ -93,10 +109,6 @@ async function register() {
       return;
     }
 
-    if (response.data.result === 'El usuario ya existe') {
-      showPopup("Error", `El usuario ya existe!`);
-      return;
-    }
     if (response.data.id_alumno) {
       localStorage.setItem('id_alumno', response.data.id_alumno);
       localStorage.setItem('token', response.data.token);
@@ -109,7 +121,7 @@ async function register() {
       showPopup("Error", `Error en el servidor, intente nuevamente.`);
     } else if (error.status === 400) {
       showPopup("Error", `Parametros incorrectos. Llena todos los campos correctamente.`);
-    } else if (error.status === 401) {
+    } else if (error.status === 409) {
       showPopup("Error", `Usuario o correo ya registrados.`);
     } else if (error.status === 429) {
       showPopup("Error", `Has excedido el límite de intentos permitido. Intenta más tarde.`);

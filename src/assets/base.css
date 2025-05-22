@@ -50,6 +50,7 @@
 
   --color-heading: var(--vt-c-text-light-1);
   --color-text: var(--vt-c-black);
+  --color-text-white: var(--vt-c-white);
 
   --color-error: var(--vt-c-red);
   --color-save: var(--vt-c-green);

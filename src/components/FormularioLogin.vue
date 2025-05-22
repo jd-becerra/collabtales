@@ -4,6 +4,7 @@
       label="Nombre de usuario"
       v-model="loginData.nombre"
       type="text"
+      placeholder="Ejemplo: usuario123"
       outlined
       required
       class="custom-input"
@@ -12,6 +13,7 @@
       label="Contraseña"
       v-model="loginData.contrasena"
       type="password"
+      placeholder="Escribe tu contraseña aquí"
       outlined
       required
       class="custom-input"

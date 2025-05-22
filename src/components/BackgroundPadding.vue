@@ -9,10 +9,14 @@ import '../assets/base.css'
 
 <style scoped>
 .background-wrapper {
-  background-color: var(--color-background);
+  background-color: var(--color-background-padding);
   width: 100%;
-  height: 10vh;
+  height: var(--background-padding-height);
   margin: 0;
   padding: 0;
+
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 </style>
