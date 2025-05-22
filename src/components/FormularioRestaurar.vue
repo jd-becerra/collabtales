@@ -1,23 +1,34 @@
 <template>
    <v-form>
-    <TextInputMd
-      label="Correo"
-      v-model="restoreData.correo"
-      type="email"
-      outlined
-      required
-      class="custom-input"
-    />
-    <small class="result-msg" :style="{ color: popupValues.color }" v-if="popupValues.mensaje">
-      {{ popupValues.mensaje }}
-    </small>
-    <v-btn block color="green-darken-3" class="mt-3 rounded-lg" @click="restorePassword">
-      <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
-      Restaurar contraseña
-    </v-btn>
-    <v-btn block color="blue-darken-3" class="mt-3 rounded-lg" @click="$emit('show-register')">
-      Crear una cuenta
-    </v-btn>
+      <v-container class="restore-fields d-flex flex-column">
+      <TextInputMd
+        label="Correo"
+        v-model="restoreData.correo"
+        type="email"
+        placeholder="Ejemplo: micorreo@gmail.com"
+        outlined
+        required
+        class="custom-input"
+      />
+      <small class="result-msg" :style="{ color: popupValues.color }" v-if="popupValues.mensaje">
+        {{ popupValues.mensaje }}
+      </small>
+    </v-container>
+
+    <v-container class="restore-buttons-container d-flex flex-column">
+      <small class="restore-small">
+        ¿Ya tienes una cuenta? <a class="goto-login" href="#" @click="$emit('show-login')">Inicia sesión aquí</a>
+      </small>
+      <v-container class="restore-buttons d-flex flex-column">
+        <BotonMd color_type="blue" @click="restorePassword">
+          <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
+          Restaurar contraseña
+        </BotonMd>
+        <BotonMd @click="$emit('show-register')">
+          Crea una cuenta
+        </BotonMd>
+      </v-container>
+    </v-container>
   </v-form>
 </template>
 
@@ -27,6 +38,7 @@ import { ref } from 'vue';
 import axios from 'axios';
 // Componentes
 import TextInputMd from '@/components/TextInputMd.vue';
+import BotonMd from './BotonMd.vue';
 
 const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 const restoreData = ref({ correo: '' });
@@ -57,17 +69,18 @@ async function restorePassword() {
     return;
   }
 
+  // Si el correo no es válido, mostramos un mensaje de error
+  if (!/\S+@\S+\.\S+/.test(restoreData.value.correo)) {
+    showPopup("Error", "Por favor, ingresa un correo electrónico válido.");
+    return;
+  }
+
   loading.value = true;
 
   try {
     const response = await axios.post(`${PHP_URL}/php/generar_token_restauracion.php`, restoreData.value, {
       headers: { 'Content-Type': 'application/json' }
     });
-
-    if (response.data.error) {
-      alert(response.data.error);
-      return;
-    }
 
     if (response.data.success) {
       showPopup("Éxito", `Correo enviado, revisa tu bandeja de entrada`);
@@ -76,10 +89,49 @@ async function restorePassword() {
       showPopup("Error", `No se pudo restaurar la contraseña`);
     }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (error) {
+  } catch (error: any) {
+    if (error.status === 404) {
+      showPopup("Error", `El correo electrónico no está registrado.`);
+      return;
+    }
+
     showPopup("Error", `Hubo un error en el servidor. Intente nuevamente más tarde.`);
   } finally {
     loading.value = false;
   }
 }
 </script>
+
+<style scoped>
+.restore-fields {
+  margin-left: 0;
+  padding-left: 0;
+  gap: 1rem;
+}
+
+.restore-buttons-container {
+  margin-left: 0;
+  padding-left: 0;
+  margin-top: 0.1rem;
+}
+.restore-buttons {
+  margin-left: 0;
+  padding-left: 0;
+  gap: 1rem;
+}
+.restore-small {
+  margin-bottom: -0.5rem;
+}
+
+.result-msg {
+  font-size: 0.9rem;
+  padding: 0;
+  margin-top: -0.5rem;
+}
+.goto-login {
+  color: var( --color-text-blue);
+  text-decoration: underline;
+  cursor: pointer;
+  margin-bottom: 2px;
+}
+</style>

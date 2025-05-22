@@ -1,51 +1,56 @@
 <template>
   <v-form @submit.prevent="register">
-    <TextInputMd
-      label="Nombre de usuario  "
-      v-model="registerData.nombre"
-      type="text"
-      placeholder="Ejemplo: usuario123"
-      outlined
-      required
-      class="custom-input"
-    />
-    <TextInputMd
-      label="Correo"
-      v-model="registerData.correo"
-      type="email"
-      placeholder="Ejemplo: correo@gmail.com"
-      outlined
-      required
-      class="custom-input"
-    />
-    <TextInputMd
-      label="Contraseña (al menos 8 caracteres y un carácter especial)"
-      v-model="registerData.contrasena"
-      type="password"
-      placeholder="Escribe tu contraseña aquí"
-      outlined
-      required
-      class="custom-input"
-    />
-    <TextInputMd
-      label="Repite tu contraseña"
-      v-model="registerData.repetir_contrasena"
-      type="password"
-      placeholder="Asegúrate de que tus contraseñas coincidan"
-      outlined
-      required
-      class="custom-input"
-    />
-    <small class="result-msg" :style="{ color: popupValues.color }" v-if="popupValues.mensaje">
-      {{ popupValues.mensaje }}
-    </small>
-    <v-btn block color="green-darken-3" class="mt-3 rounded-lg" type="submit" :disabled="loading">
-      <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
-      Registrarse
-    </v-btn>
-    <v-btn block color="primary" class="mt-3 rounded-lg" @click="$emit('show-login')">
-      Ya tengo una cuenta
-    </v-btn>
+    <v-container class="register-fields d-flex flex-column">
+      <TextInputMd
+        label="Nombre de usuario  "
+        v-model="registerData.nombre"
+        type="text"
+        placeholder="Ejemplo: usuario123"
+        outlined
+        required
+        class="custom-input"
+      />
+      <TextInputMd
+        label="Correo"
+        v-model="registerData.correo"
+        type="email"
+        placeholder="Ejemplo: correo@gmail.com"
+        outlined
+        required
+        class="custom-input"
+      />
+      <TextInputMd
+        label="Contraseña (al menos 8 caracteres y un carácter especial)"
+        v-model="registerData.contrasena"
+        type="password"
+        placeholder="Escribe tu contraseña aquí"
+        outlined
+        required
+        class="custom-input"
+      />
+      <TextInputMd
+        label="Repite tu contraseña"
+        v-model="registerData.repetir_contrasena"
+        type="password"
+        placeholder="Asegúrate que las contraseñas coincidan"
+        outlined
+        required
+        class="custom-input"
+      />
+      <small class="result-msg" :style="{ color: popupValues.color }" v-if="popupValues.mensaje">
+        {{ popupValues.mensaje }}
+      </small>
+    </v-container>
+
+    <v-container class="register-buttons d-flex flex-column">
+      <small class="mb-1">
+        Ya tienes una cuenta <a class="goto-login" href="#" @click="$emit('show-login')">Inicia sesión aquí</a>
+      </small>
+      <BotonMd :disabled="loading" @click="register">
+        <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
+        Regístrate
+      </BotonMd>
+    </v-container>
   </v-form>
 </template>
 
@@ -54,6 +59,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios';
 import TextInputMd from '@/components/TextInputMd.vue';
+import BotonMd from './BotonMd.vue';
 
 const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 
@@ -129,3 +135,29 @@ async function register() {
   }
 }
 </script>
+
+<style scoped>
+.register-fields {
+  margin-left: 0;
+  padding-left: 0;
+  gap: 0.5rem;
+}
+
+.register-buttons {
+  margin-left: 0;
+  padding-left: 0;
+  margin-top: 0.2rem;
+}
+
+.result-msg {
+  font-size: 0.9rem;
+  padding: 0;
+  margin-top: -0.5rem;
+}
+.goto-login {
+  color: var( --color-text-blue);
+  text-decoration: underline;
+  cursor: pointer;
+  margin-bottom: 2px;
+}
+</style>

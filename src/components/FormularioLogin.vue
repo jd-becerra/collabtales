@@ -33,7 +33,7 @@
           Iniciar Sesión
         </BotonMd>
         <BotonMd @click="$emit('show-register')" class="mt-3">
-          Crear Cuenta
+          Crea una cuenta
         </BotonMd>
       </v-container>
     </v-form>
@@ -111,7 +111,6 @@ async function login() {
 </script>
 
 <style scoped>
-
 .login-fields {
   margin-left: 0;
   padding-left: 0;
@@ -121,6 +120,7 @@ async function login() {
 .login-buttons {
   margin-left: 0;
   padding-left: 0;
+  margin-top: 1.5rem;
 }
 
 .result-msg {

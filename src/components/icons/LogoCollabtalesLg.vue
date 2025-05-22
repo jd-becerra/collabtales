@@ -1,7 +1,7 @@
 <template>
   <v-container class="d-flex flex-column justify-start logo-lg-container align-left">
     <h1 class="logo-collabtales">
-      <span class="logo-collabtales-text">Collabtales</span>
+      <span class="logo-collabtales-text">Collabtales</span><span class="copyright"> &copy;</span>
     </h1>
     <h2 class="slogan-collabtales">
       <span class="logo-collabtales-text">¡Imagina, escribe, comparte, colabora!</span>
@@ -19,6 +19,9 @@ import '../../assets/base.css'
   margin: 0;
   pointer-events: none;
 
+  position: absolute;
+  top: 10%;
+
 }
 .logo-collabtales {
   font-family: 'Lucida Handwriting', 'cursive';
@@ -27,6 +30,10 @@ import '../../assets/base.css'
   margin: 0;
   text-align: left;
   margin-left: -0.5rem;
+}
+.copyright {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.5rem;
 }
 .slogan-collabtales {
   font-family: 'Inter', sans-serif;
@@ -44,10 +51,10 @@ import '../../assets/base.css'
 /* Estilos responsivos para pantallas más pequeñas */
 @media (max-width: 1366px) {
   .logo-collabtales {
-    font-size: 6rem;
+    font-size: 5.5rem;
   }
   .slogan-collabtales {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     margin-top: -2.5rem;
   }
 }

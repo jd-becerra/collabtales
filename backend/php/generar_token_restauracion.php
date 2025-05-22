@@ -21,14 +21,16 @@ $data = json_decode(file_get_contents("php://input"), true);
 $email = $data['correo'] ?? null;
 
 if (empty($email)) {
-    echo json_encode(["error" => "El correo es obligatorio"]);
+    http_response_code(400);
+    echo json_encode(["error" => "Campos inválidos"]);
     exit;
 }
 
 // Validar y sanitizar correo
 $email = filter_var(trim($email), FILTER_VALIDATE_EMAIL);
 if (!$email) {
-    echo json_encode(["error" => "Correo inválido"]);
+    http_response_code(400);
+    echo json_encode(["error" => "Campos inválidos"]);
     exit;
 }
 
@@ -41,7 +43,8 @@ $stmt->fetch();
 $stmt->close();
 
 if (!$id_alumno) {
-    echo json_encode(["error" => "No se encontró un usuario con ese correo"]);
+    http_response_code(404);
+    echo json_encode(["error" => "Registro no encontrado"]);
     exit;
 }
 
@@ -59,7 +62,8 @@ $cooldown = 60; // 1 minuto
 
 // Si el último token fue generado hace menos de 1 minuto, rechazamos la solicitud
 if ($last_token_time && ($current_time - $last_token_time < $cooldown)) {
-    echo json_encode(["error" => "Debes esperar 1 minuto antes de solicitar otro token. Revisa tu correo."]);
+    http_response_code(429); // Too Many Requests
+    echo json_encode(["error" => "Se ha excedido el límite de peticiones. Intenta de nuevo más tarde."]);
     exit;
 }
 
@@ -126,10 +130,12 @@ $mail->Body = $message;
 // TODO: Eliminar token de este mensaje en producción
 try {
     $mail->send();
-    echo json_encode(["success" => "Se ha enviado un enlace a tu correo para restablecer tu contraseña. Link: $restore_link"]);
+    http_response_code(200);
+    echo json_encode(["success" => "Correo enviado"]);
 } catch (Exception $e) {
     var_dump(getenv("SMTP_PASS"));
-    echo json_encode(["error" => "Error al enviar el correo: " . $mail->ErrorInfo. " Link: $restore_link"]);
+    http_response_code(500);
+    echo json_encode(["error" => "Error en el servidor"]);
     exit;  // Stop further execution after failure
 }
 

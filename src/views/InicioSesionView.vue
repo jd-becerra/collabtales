@@ -82,6 +82,7 @@ function showRestoreForm() {
 }
 
 .forms-container {
+  margin-top: 30%;
   animation: slideY 0.5s ease-in-out;
 }
 
@@ -100,6 +101,12 @@ function showRestoreForm() {
   }
   100% {
     opacity: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .logo-image {
+    display: none;
   }
 }
 
