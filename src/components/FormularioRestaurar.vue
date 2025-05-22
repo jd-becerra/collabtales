@@ -8,6 +8,10 @@
       required
       class="custom-input"
     />
+    <span class="result-msg" :style="{ color: popupValues.color }">
+      {{ popupValues.titulo }}<span v-if="popupValues.titulo && popupValues.mensaje">
+      : </span>{{ popupValues.mensaje }}
+    </span>
     <v-btn block color="green-darken-3" class="mt-3 rounded-lg" @click="restorePassword">
       <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
       Restaurar contraseña
@@ -29,14 +33,25 @@ const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 const restoreData = ref({ correo: '' });
 const loading = ref(false);
 
-const emit = defineEmits(['show-register', 'show-login', 'popup']);
-function showPopup(title: string, msg: string) {
-  emit('popup', {
-    title: title,
-    msg: msg
-  });
-}
+// Aquí necesitamos definir emit para regresar a la vista de inicio de sesión
+const emit = defineEmits(['show-register', 'show-login']);
 
+const popupValues = ref({ titulo: '', mensaje: '', color: '' });
+function getCSSVar(variable: string): string {
+  // Esta función obtiene el valor de una variable CSS definida en assets/base.css
+  return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+}
+function showPopup(title: string, msg: string) {
+  // Para mayor compatibilidad, usaremos solamente valores CSS ya definidos
+  const color =
+    title.toLowerCase().includes('error') ? getCSSVar('--color-error') : getCSSVar('--color-save');
+
+  popupValues.value = {
+    titulo: title,
+    mensaje: msg,
+    color
+  };
+}
 async function restorePassword() {
   if (!restoreData.value.correo) {
     showPopup("Error", "Por favor, ingresa tu correo electrónico.");

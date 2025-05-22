@@ -44,7 +44,6 @@ import TextInputMd from '@/components/TextInputMd.vue';
 const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 
 const loginData = ref({ nombre: '', contrasena: '' });
-const popupValues = ref({ titulo: '', mensaje: '', color: '' });
 const router = useRouter();
 const loading = ref(false);
 
@@ -54,7 +53,7 @@ function getCSSVar(variable: string): string {
   // Esta función obtiene el valor de una variable CSS definida en assets/base.css
   return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
 }
-
+const popupValues = ref({ titulo: '', mensaje: '', color: '' });
 function showPopup(title: string, msg: string) {
   // Para mayor compatibilidad, usaremos solamente valores CSS ya definidos
   const color =
