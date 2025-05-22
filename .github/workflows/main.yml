@@ -36,8 +36,14 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no -p 65002 u418653278@46.202.198.126 "rm -rf ~/public_html/Collabtales/backend"
 
+    # For debugging purposes
+    - name: Confirm build output
+      run: |
+        echo "Listing contents of dist:"
+        ls -la ./dist
+
     - name: Upload Vue.js files to Hostinger
       # Para una carga mas limpia, usamos --delete para eliminar archivos en el servidor que no están en local
       run: |
         ssh -o StrictHostKeyChecking=no -p 65002 u418653278@46.202.198.126 "mkdir -p ~/public_html/Collabtales/frontend"
-        rsync -avz --delete -e "ssh -p 65002" --exclude '.git' ./frontend/dist/ u418653278@46.202.198.126:~/public_html/Collabtales/frontend/
+        rsync -avz --delete -e "ssh -p 65002" --exclude '.git' ./dist/ u418653278@46.202.198.126:~/public_html/Collabtales/frontend/
