@@ -15,7 +15,7 @@ import '../assets/base.css'
   margin: 0;
   padding: 0;
 
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
 }

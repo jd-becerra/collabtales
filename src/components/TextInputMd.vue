@@ -50,10 +50,12 @@ defineEmits(['update:modelValue'])
 .text-input:focus {
   border-color: var(--vt-c-blue-dark);
   outline: none;
+  font-family: 1.25rem;
 }
 
 .text-caption {
   margin-left: 0.5rem;
   color: var(--color-text-input-fg-label);
+  font-size: 1rem;
 }
 </style>
