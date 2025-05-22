@@ -7,7 +7,6 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import vuetify from 'vite-plugin-vuetify'
 
 export default defineConfig({
-  base: '/Collabtales/frontend/',
   plugins: [
     vue(),
     vueJsx(),
