@@ -22,8 +22,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import axios from 'axios';
-import { useRouter } from 'vue-router';
-
 // Componentes
 import TextInputMd from '@/components/TextInputMd.vue';
 
@@ -31,9 +29,17 @@ const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 const restoreData = ref({ correo: '' });
 const loading = ref(false);
 
+const emit = defineEmits(['show-register', 'show-login', 'popup']);
+function emitPopup(title: string, msg: string) {
+  emit('popup', {
+    title: title,
+    msg: msg
+  });
+}
+
 async function restorePassword() {
   if (!restoreData.value.correo) {
-    showPopup("Error!", `Campo vacío`);
+    emitPopup("Error", "Por favor, ingresa tu correo electrónico.");
     return;
   }
 
@@ -50,17 +56,16 @@ async function restorePassword() {
     }
 
     if (response.data.success) {
-      showLoginForm();
-      showPopup("Correo enviado", `Revisa tu bandeja de entrada`);
+      emitPopup("Éxito", `Correo enviado, revisa tu bandeja de entrada`);
+      emit('show-login');
     } else {
-      showPopup("Error!", `No se pudo restaurar la contraseña`);
+      emitPopup("Error", `No se pudo restaurar la contraseña`);
     }
-  } catch (_error) {
-    showPopup("Error!", `Error en el servidor. Intente nuevamente más tarde.`);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (error) {
+    emitPopup("Error", `Hubo un error en el servidor. Intente nuevamente más tarde.`);
   } finally {
     loading.value = false;
   }
 }
-
-defineEmits(['show-register']);
 </script>

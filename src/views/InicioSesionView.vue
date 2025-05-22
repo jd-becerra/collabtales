@@ -7,13 +7,16 @@
           v-if="showRegister"
           key="register"
           @show-login="showLoginForm"
+          @popup="showPopup"
         />
         <FormularioLogin v-else-if="showLogin" key="login"
           @show-register="showRegisterForm"
           @show-restore="showRestoreForm"
+          @popup="showPopup"
         />
         <FormularioRestaurar v-if="showRestore" key="restore"
           @show-register="showRegisterForm"
+          @popup="showPopup"
         />
     </div>
 
@@ -33,8 +36,6 @@
       <!-- pop up de registro-->
   </v-container>
 </template>
-
-
 
 <script setup lang="ts">
 import { ref } from 'vue';
@@ -82,39 +83,4 @@ function showRestoreForm() {
 </script>
 
 <style scoped>
-/* Fondo con degradado */
-.fill-height {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Estilo de la tarjeta */
-.login-card {
-  width: 400px;
-  border-radius: 12px;
-  background: white;
-  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
-}
-
-/* Campos de entrada personalizados */
-.custom-input {
-  background: #f4f6f8;
-  border-radius: 8px;
-}
-
-/* Botones estilizados */
-.v-btn {
-  font-weight: bold;
-  transition: 0.3s ease-in-out;
-}
-
-.v-btn:hover {
-  transform: scale(1.03);
-}
-
-.text-blue-darken-2 {
-  color: #1976d2 !important;
-}
 </style>

@@ -43,9 +43,17 @@ const loginData = ref({ nombre: '', contrasena: '' });
 const router = useRouter();
 const loading = ref(false);
 
+const emit = defineEmits(['show-register', 'show-restore', 'popup']);
+function emitPopup(title: string, msg: string) {
+  emit('popup', {
+    title: title,
+    msg: msg
+  });
+}
+
 async function login() {
   if (!loginData.value.nombre || !loginData.value.contrasena) {
-    showPopup("Error", "Hay campos vacíos.");
+    emitPopup("Error", "Asegúrate de llenar todos los campos.");
     return;
   }
 
@@ -58,31 +66,26 @@ async function login() {
 
     const datos = response.data;
 
-    if (datos === 'Error: campos vacíos') {
-      showPopup("Error", `Los campos estan vacios!`);
-      return;
-    }
-
     if (datos.id_alumno) {
       localStorage.setItem('id_alumno', datos.id_alumno);
       localStorage.setItem('token', datos.token);
-      showPopup("¡Bienvenido!", `${loginData.value.nombre}`);
+      emitPopup("Éxito:", `Bienvenido, ${loginData.value.nombre}`);
       router.push('/panel_inicio');
     }
-  } catch (error) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     if (error.status === 500) {
-      showPopup("Error", `Error en el servidor, intente nuevamente.`);
+      emitPopup("Error", `Error en el servidor, intente nuevamente.`);
     } else if (error.status === 400) {
-      showPopup("Error", `Parametros incorrectos. Llena todos los campos correctamente.`);
+      emitPopup("Error", `Parametros incorrectos. Llena todos los campos correctamente.`);
     } else if (error.status === 401) {
-      showPopup("Error", `Credenciales incorrectas. Verifica tu usuario y contraseña.`);
+      emitPopup("Error", `Credenciales incorrectas. Verifica tu usuario y contraseña.`);
     } else if (error.status === 429) {
-      showPopup("Error", `Has excedido el límite de intentos permitido. Intenta más tarde.`);
+      emitPopup("Error", `Has excedido el límite de intentos permitido. Intenta más tarde.`);
     }
   } finally {
     loading.value = false;
   }
 }
 
-defineEmits(['show-register', 'show-restore']);
 </script>

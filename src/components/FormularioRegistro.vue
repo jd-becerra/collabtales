@@ -46,9 +46,17 @@ const registerData = ref({ nombre: '', correo: '', contrasena: '' });
 const router = useRouter();
 const loading = ref(false);
 
+const emit = defineEmits(['show-login', 'popup']);
+function emitPopup(title: string, msg: string) {
+  emit('popup', {
+    title: title,
+    msg: msg
+  });
+}
+
 async function register() {
   if (!registerData.value.nombre || !registerData.value.correo || !registerData.value.contrasena) {
-    showPopup("Error", "Campos vacios!");
+    emitPopup("Error", "Campos vacios!");
     return;
   }
 
@@ -59,34 +67,33 @@ async function register() {
       headers: { 'Content-Type': 'application/json' }
     });
     if (response.data.error) {
-      showPopup("Error", `${response.data.error}`);
+      emitPopup("Error", `${response.data.error}`);
       return;
     }
 
     if (response.data.result === 'El usuario ya existe') {
-      showPopup("Error", `El usuario ya existe!`);
+      emitPopup("Error", `El usuario ya existe!`);
       return;
     }
     if (response.data.id_alumno) {
       localStorage.setItem('id_alumno', response.data.id_alumno);
       localStorage.setItem('token', response.data.token);
-      showPopup("Exito!", `Cuenta ${registerData.value.nombre} creada con exito`);
+      emitPopup("Éxito", `Cuenta ${registerData.value.nombre} creada correctamente.`);
       router.push('/panel_inicio');
     }
-  } catch (error) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     if (error.status === 500) {
-      showPopup("Error", `Error en el servidor, intente nuevamente.`);
+      emitPopup("Error", `Error en el servidor, intente nuevamente.`);
     } else if (error.status === 400) {
-      showPopup("Error", `Parametros incorrectos. Llena todos los campos correctamente.`);
+      emitPopup("Error", `Parametros incorrectos. Llena todos los campos correctamente.`);
     } else if (error.status === 401) {
-      showPopup("Error", `Usuario o correo ya registrados.`);
+      emitPopup("Error", `Usuario o correo ya registrados.`);
     } else if (error.status === 429) {
-      showPopup("Error", `Has excedido el límite de intentos permitido. Intenta más tarde.`);
+      emitPopup("Error", `Has excedido el límite de intentos permitido. Intenta más tarde.`);
     }
   } finally {
     loading.value = false;
   }
 }
-
-defineEmits(['show-login', 'show-restore']);
 </script>
