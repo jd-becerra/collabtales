@@ -32,27 +32,11 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Upload PHP files to Hostinger
+    - name: Clean old backend folder
       run: |
-        ssh -o StrictHostKeyChecking=no -p 65002 u418653278@46.202.198.126 "mkdir -p ~/public_html/colabtales/backend"
-        rsync -avz -e "ssh -p 65002" --exclude '.git' ./backend/ u418653278@46.202.198.126:~/public_html/colabtales/backend/
+        ssh -o StrictHostKeyChecking=no -p 65002 u418653278@46.202.198.126 "rm -rf ~/public_html/colabtales/backend"
 
     - name: Upload Vue.js files to Hostinger
       run: |
         ssh -o StrictHostKeyChecking=no -p 65002 u418653278@46.202.198.126 "mkdir -p ~/public_html/colabtales/frontend"
         rsync -avz -e "ssh -p 65002" --exclude '.git' ./frontend/dist/ u418653278@46.202.198.126:~/public_html/colabtales/frontend/
-
-    - name: Install PHP dependencies (si las tienes)
-      run: |
-        ssh -p 65002 u418653278@46.202.198.126 << 'EOF'
-          cd ~/public_html/colabtales/backend
-          composer install --no-dev --optimize-autoloader
-        EOF
-
-    - name: Set file permissions
-      run: |
-        ssh -p 65002 u418653278@46.202.198.126 << 'EOF'
-          cd ~/public_html/colabtales
-          sudo chown -R u418653278:u418653278 ~/public_html/colabtales
-          sudo chmod -R 755 ~/public_html/colabtales
-        EOF
