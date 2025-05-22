@@ -24,7 +24,6 @@ import '../../assets/base.css'
   font-family: 'Lucida Handwriting', 'cursive';
   font-size: 6.25rem;
   padding: 0;
-  padding-top: 4rem;
   margin: 0;
 }
 .slogan-collabtales {
@@ -43,11 +42,10 @@ import '../../assets/base.css'
 /* Estilos responsivos para pantallas más pequeñas */
 @media (max-width: 1366px) {
   .logo-collabtales {
-    padding-top: 4rem;
-    font-size: 4rem;
+    font-size: 5rem;
   }
   .slogan-collabtales {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
   }
 }
 

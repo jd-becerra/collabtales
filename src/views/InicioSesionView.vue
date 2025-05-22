@@ -1,23 +1,23 @@
 <template>
   <BackgroundPadding />
-  <v-container class="full-width fill-height ">
-    <LogoCollabtalesLg />
+  <v-container class="forms-column-container full-width fill-height ">
+      <LogoCollabtalesLg />
 
-    <div class="forms-container align-left justify-start">
+      <div class="forms-container align-left justify-start">
 
-        <FormularioRegistro
-          v-if="showRegister"
-          key="register"
-          @show-login="showLoginForm"
-        />
-        <FormularioLogin v-else-if="showLogin" key="login"
-          @show-register="showRegisterForm"
-          @show-restore="showRestoreForm"
-        />
-        <FormularioRestaurar v-if="showRestore" key="restore"
-          @show-register="showRegisterForm"
-        />
-    </div>
+          <FormularioRegistro
+            v-if="showRegister"
+            key="register"
+            @show-login="showLoginForm"
+          />
+          <FormularioLogin v-else-if="showLogin" key="login"
+            @show-register="showRegisterForm"
+            @show-restore="showRestoreForm"
+          />
+          <FormularioRestaurar v-if="showRestore" key="restore"
+            @show-register="showRegisterForm"
+          />
+      </div>
   </v-container>
   <v-img
     class="logo-image"
@@ -62,6 +62,14 @@ function showRestoreForm() {
 </script>
 
 <style scoped>
+.forms-column-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items:  start;
+}
+
 .logo-image {
   position: absolute;
   /* Put vertically in the center */
