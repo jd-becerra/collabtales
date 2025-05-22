@@ -88,7 +88,7 @@ async function restorePassword() {
     } else {
       showPopup("Error", `No se pudo restaurar la contraseña`);
     }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.status === 404) {
       showPopup("Error", `El correo electrónico no está registrado.`);
