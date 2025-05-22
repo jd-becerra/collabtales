@@ -32,10 +32,6 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Clean old backend folder
-      run: |
-        ssh -o StrictHostKeyChecking=no -p 65002 u418653278@46.202.198.126 "rm -rf ~/public_html/Collabtales/backend"
-
     # For debugging purposes
     - name: Confirm build output
       run: |
