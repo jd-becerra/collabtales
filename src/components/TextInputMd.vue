@@ -1,10 +1,53 @@
 <template>
-  <input type="text" id="input" v-model="inputValue" />
-  <label for="input">Input</label>
+  <div class="text-input-md">
+    <label v-if="label" class="text-caption font-weight-medium mb-1" :for="id">{{ label }}</label>
+    <input
+      :id="id"
+      :type="type"
+      class="text-input"
+      :value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import '../assets/base.css'
 
-const inputValue = ref('');
+import { defineProps, defineEmits } from 'vue'
+
+defineProps<{
+  label?: string
+  modelValue: string
+  id?: string
+  type?: string
+}>()
+
+defineEmits(['update:modelValue'])
 </script>
+
+<style scoped>
+.text-input-md {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.text-input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: var(--border-radius-default);
+  font-size: 1rem;
+  color: var(--color-text-input-fg-default);
+  border-color: var(--color-border-default);
+}
+.text-input:focus {
+  border-color: var(--vt-c-blue-bright);
+  outline: none;
+}
+
+.text-caption {
+  margin-left: 0.5rem;
+  color: var(--color-text-input-fg-label);
+}
+</style>

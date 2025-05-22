@@ -74,6 +74,8 @@
 
   --font-family-small-text: 'Inter', sans-serif;
   --font-size-small-text: 0.8rem;
+
+  --border-radius-default: 5px;
 }
 
 @media (prefers-color-scheme: dark) {

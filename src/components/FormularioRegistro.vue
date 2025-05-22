@@ -1,51 +1,50 @@
 <template>
-  <v-card-title class="text-center text-h5 font-weight-bold">Crea tu cuenta</v-card-title>
-  <v-card-subtitle class="text-center text-body-2">Únete y empieza a disfrutar de nuestras historias.</v-card-subtitle>
-  <v-card-text>
-    <v-form @submit.prevent="register">
-      <v-text-field
-        label="Usuario"
-        prepend-inner-icon="mdi-account"
-        v-model="registerData.nombre"
-        outlined
-        required
-        class="custom-input"
-      />
-      <v-text-field
-        label="Correo"
-        prepend-inner-icon="mdi-email"
-        v-model="registerData.correo"
-        type="email"
-        outlined
-        required
-        class="custom-input"
-      />
-      <v-text-field
-        label="Contraseña"
-        prepend-inner-icon="mdi-lock"
-        v-model="registerData.contrasena"
-        type="password"
-        outlined
-        required
-        class="custom-input"
-      />
-      <v-btn block color="green-darken-3" class="mt-3 rounded-lg" type="submit" :disabled="loading">
-        <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
-        Registrarse
-      </v-btn>
-      <v-btn block color="primary" class="mt-3 rounded-lg" @click="showLoginForm">
-        Ya tengo una cuenta
-      </v-btn>
-    </v-form>
-  </v-card-text>
+  <v-form @submit.prevent="register">
+    <TextInputMd
+      label="Nombre de usuario  "
+      v-model="registerData.nombre"
+      type="text"
+      outlined
+      required
+      class="custom-input"
+    />
+    <TextInputMd
+      label="Correo"
+      v-model="registerData.correo"
+      type="email"
+      outlined
+      required
+      class="custom-input"
+    />
+    <v-text-field
+      label="Contraseña"
+      v-model="registerData.contrasena"
+      type="password"
+      outlined
+      required
+      class="custom-input"
+    />
+    <v-btn block color="green-darken-3" class="mt-3 rounded-lg" type="submit" :disabled="loading">
+      <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
+      Registrarse
+    </v-btn>
+    <v-btn block color="primary" class="mt-3 rounded-lg" @click="$emit('show-login')">
+      Ya tengo una cuenta
+    </v-btn>
+  </v-form>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios';
+import TextInputMd from '@/components/TextInputMd.vue';
+
+const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 
 const registerData = ref({ nombre: '', correo: '', contrasena: '' });
+const router = useRouter();
+const loading = ref(false);
 
 async function register() {
   if (!registerData.value.nombre || !registerData.value.correo || !registerData.value.contrasena) {
@@ -89,4 +88,5 @@ async function register() {
   }
 }
 
+defineEmits(['show-login', 'show-restore']);
 </script>
