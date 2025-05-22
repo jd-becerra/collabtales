@@ -16,6 +16,10 @@
       required
       class="custom-input"
     />
+    <span class="result-msg" :style="{ color: popupValues.color }">
+      {{ popupValues.titulo }}<span v-if="popupValues.titulo && popupValues.mensaje">
+      : </span>{{ popupValues.mensaje }}
+    </span>
     <v-btn block color="green-darken-3" class="mt-3 rounded-lg" type="submit" :disabled="loading">
       <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
       Iniciar sesión
@@ -40,20 +44,32 @@ import TextInputMd from '@/components/TextInputMd.vue';
 const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 
 const loginData = ref({ nombre: '', contrasena: '' });
+const popupValues = ref({ titulo: '', mensaje: '', color: '' });
 const router = useRouter();
 const loading = ref(false);
 
-const emit = defineEmits(['show-register', 'show-restore', 'popup']);
-function emitPopup(title: string, msg: string) {
-  emit('popup', {
-    title: title,
-    msg: msg
-  });
+defineEmits(['show-register', 'show-restore']);
+
+function getCSSVar(variable: string): string {
+  // Esta función obtiene el valor de una variable CSS definida en assets/base.css
+  return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+}
+
+function showPopup(title: string, msg: string) {
+  // Para mayor compatibilidad, usaremos solamente valores CSS ya definidos
+  const color =
+    title.toLowerCase().includes('error') ? getCSSVar('--color-error') : getCSSVar('--color-save');
+
+  popupValues.value = {
+    titulo: title,
+    mensaje: msg,
+    color
+  };
 }
 
 async function login() {
   if (!loginData.value.nombre || !loginData.value.contrasena) {
-    emitPopup("Error", "Asegúrate de llenar todos los campos.");
+    showPopup("Error", "Asegúrate de llenar todos los campos.");
     return;
   }
 
@@ -69,19 +85,19 @@ async function login() {
     if (datos.id_alumno) {
       localStorage.setItem('id_alumno', datos.id_alumno);
       localStorage.setItem('token', datos.token);
-      emitPopup("Éxito:", `Bienvenido, ${loginData.value.nombre}`);
+      showPopup("Éxito:", `Bienvenido, ${loginData.value.nombre}`);
       router.push('/panel_inicio');
     }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.status === 500) {
-      emitPopup("Error", `Error en el servidor, intente nuevamente.`);
+      showPopup("Error", `Error en el servidor, intente nuevamente.`);
     } else if (error.status === 400) {
-      emitPopup("Error", `Parametros incorrectos. Llena todos los campos correctamente.`);
+      showPopup("Error", `Parametros incorrectos. Llena todos los campos correctamente.`);
     } else if (error.status === 401) {
-      emitPopup("Error", `Credenciales incorrectas. Verifica tu usuario y contraseña.`);
+      showPopup("Error", `Credenciales incorrectas. Verifica tu usuario y contraseña.`);
     } else if (error.status === 429) {
-      emitPopup("Error", `Has excedido el límite de intentos permitido. Intenta más tarde.`);
+      showPopup("Error", `Has excedido el límite de intentos permitido. Intenta más tarde.`);
     }
   } finally {
     loading.value = false;

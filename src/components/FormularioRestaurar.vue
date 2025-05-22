@@ -30,7 +30,7 @@ const restoreData = ref({ correo: '' });
 const loading = ref(false);
 
 const emit = defineEmits(['show-register', 'show-login', 'popup']);
-function emitPopup(title: string, msg: string) {
+function showPopup(title: string, msg: string) {
   emit('popup', {
     title: title,
     msg: msg
@@ -39,7 +39,7 @@ function emitPopup(title: string, msg: string) {
 
 async function restorePassword() {
   if (!restoreData.value.correo) {
-    emitPopup("Error", "Por favor, ingresa tu correo electrónico.");
+    showPopup("Error", "Por favor, ingresa tu correo electrónico.");
     return;
   }
 
@@ -56,14 +56,14 @@ async function restorePassword() {
     }
 
     if (response.data.success) {
-      emitPopup("Éxito", `Correo enviado, revisa tu bandeja de entrada`);
+      showPopup("Éxito", `Correo enviado, revisa tu bandeja de entrada`);
       emit('show-login');
     } else {
-      emitPopup("Error", `No se pudo restaurar la contraseña`);
+      showPopup("Error", `No se pudo restaurar la contraseña`);
     }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    emitPopup("Error", `Hubo un error en el servidor. Intente nuevamente más tarde.`);
+    showPopup("Error", `Hubo un error en el servidor. Intente nuevamente más tarde.`);
   } finally {
     loading.value = false;
   }
