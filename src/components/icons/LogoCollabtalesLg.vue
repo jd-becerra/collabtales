@@ -25,6 +25,8 @@ import '../../assets/base.css'
   font-size: 6.25rem;
   padding: 0;
   margin: 0;
+  text-align: left;
+  margin-left: -0.5rem;
 }
 .slogan-collabtales {
   font-family: 'Inter', sans-serif;
@@ -42,10 +44,11 @@ import '../../assets/base.css'
 /* Estilos responsivos para pantallas más pequeñas */
 @media (max-width: 1366px) {
   .logo-collabtales {
-    font-size: 5rem;
+    font-size: 6rem;
   }
   .slogan-collabtales {
     font-size: 1.4rem;
+    margin-top: -2.5rem;
   }
 }
 

@@ -1,10 +1,10 @@
 <template>
   <BackgroundPadding />
-  <v-container class="forms-column-container full-width fill-height ">
+  <v-container class="forms-column-container d-flex fill-height pa-0">
+    <!-- A la izquierda tenemos el formulario y el logo con eslogan -->
+    <v-col>
       <LogoCollabtalesLg />
-
-      <div class="forms-container align-left justify-start">
-
+      <div class="forms-container d-flex align-left justify-start">
           <FormularioRegistro
             v-if="showRegister"
             key="register"
@@ -18,13 +18,17 @@
             @show-register="showRegisterForm"
           />
       </div>
+    </v-col>
+
+    <!-- A la derecha tenemos la imagen principal -->
+    <v-col class="d-flex justify-end align-end">
+        <v-img
+          class="logo-image"
+          src="/img/logo_inicio.png"
+          alt="Logo de Collabtales, con dos personas enmarcados por un libro de donde sale una planta."
+        />
+    </v-col>
   </v-container>
-  <v-img
-    class="logo-image"
-    src="/img/logo_inicio.png"
-    position="center center"
-    alt="Logo de Collabtales, con dos personas enmarcados por un libro de donde sale una planta."
-  />
 </template>
 
 <script setup lang="ts">
@@ -62,23 +66,21 @@ function showRestoreForm() {
 </script>
 
 <style scoped>
-.forms-column-container {
+/* .forms-column-container {
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items:  start;
-}
+} */
 
 .logo-image {
-  position: absolute;
-  /* Put vertically in the center */
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
+  width: 40%;
+  height: 40%;
 
-  width: 60%;
-  height: 60%;
+  max-width: 70%;
+  max-height: 70%;
+
   padding: 0;
   margin: 0;
 
