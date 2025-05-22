@@ -78,12 +78,10 @@ function showRestoreForm() {
   width: 40%;
   height: 40%;
 
-  max-width: 70%;
-  max-height: 70%;
+  max-width: 68%;
+  max-height: 68%;
 
-  padding: 0;
-  margin: 0;
-
+  margin-top: 20%;
   border-radius: 5px;
 }
 
