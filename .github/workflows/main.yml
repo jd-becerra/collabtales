@@ -16,7 +16,7 @@ jobs:
     - name: Set up Node.js (para Vue.js)
       uses: actions/setup-node@v3
       with:
-        node-version: '22'  # Asegúrate de usar una versión compatible de Node.js
+        node-version: '20'  # Asegúrate de usar una versión compatible de Node.js
 
     - name: Clean npm cache and install dependencies
       run: |
@@ -25,7 +25,7 @@ jobs:
 
     - name: Build Vue.js app
       run: |
-        npm run build --force  # Fuerza el build si hay conflictos
+        npm run build
 
     - name: Set up SSH
       uses: webfactory/ssh-agent@v0.5.3
