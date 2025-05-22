@@ -16,7 +16,7 @@ jobs:
     - name: Set up Node.js (para Vue.js)
       uses: actions/setup-node@v3
       with:
-        node-version: '16'  # Asegúrate de usar una versión compatible de Node.js
+        node-version: '22'  # Asegúrate de usar una versión compatible de Node.js
 
     - name: Clean npm cache and install dependencies
       run: |
