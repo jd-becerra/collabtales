@@ -36,10 +36,9 @@
       required
       class="custom-input"
     />
-    <span class="result-msg" :style="{ color: popupValues.color }">
-      {{ popupValues.titulo }}<span v-if="popupValues.titulo && popupValues.mensaje">
-      : </span>{{ popupValues.mensaje }}
-    </span>
+    <small class="result-msg" :style="{ color: popupValues.color }" v-if="popupValues.mensaje">
+      {{ popupValues.mensaje }}
+    </small>
     <v-btn block color="green-darken-3" class="mt-3 rounded-lg" type="submit" :disabled="loading">
       <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
       Registrarse
@@ -64,7 +63,7 @@ const loading = ref(false);
 
 defineEmits(['show-login']);
 
-const popupValues = ref({ titulo: '', mensaje: '', color: '' });
+const popupValues = ref({ mensaje: '', color: '' });
 function getCSSVar(variable: string): string {
   // Esta función obtiene el valor de una variable CSS definida en assets/base.css
   return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
@@ -75,8 +74,7 @@ function showPopup(title: string, msg: string) {
     title.toLowerCase().includes('error') ? getCSSVar('--color-error') : getCSSVar('--color-save');
 
   popupValues.value = {
-    titulo: title,
-    mensaje: msg,
+    mensaje: title + ': ' + msg,
     color
   };
 }

@@ -1,37 +1,41 @@
 <template>
   <v-form @submit.prevent="login">
-    <TextInputMd
-      label="Nombre de usuario"
-      v-model="loginData.nombre"
-      type="text"
-      placeholder="Ejemplo: usuario123"
-      outlined
-      required
-      class="custom-input"
-    />
-    <TextInputMd
-      label="Contraseña"
-      v-model="loginData.contrasena"
-      type="password"
-      placeholder="Escribe tu contraseña aquí"
-      outlined
-      required
-      class="custom-input"
-    />
-    <span class="result-msg" :style="{ color: popupValues.color }">
-      {{ popupValues.titulo }}<span v-if="popupValues.titulo && popupValues.mensaje">
-      : </span>{{ popupValues.mensaje }}
-    </span>
-    <v-btn block color="green-darken-3" class="mt-3 rounded-lg" type="submit" :disabled="loading">
-      <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
-      Iniciar sesión
-    </v-btn>
-    <v-btn block color="blue-darken-3" class="mt-3 rounded-lg" @click="$emit('show-register')">
-      Crear una cuenta
-    </v-btn>
-    <v-btn block color="text-blue-darken-2" class="mt-3 rounded-lg" @click="$emit('show-restore')">
-      ¿Olvidaste tu contraseña?
-    </v-btn>
+    <v-container class="login-fields">
+      <TextInputMd
+        label="Nombre de usuario"
+        v-model="loginData.nombre"
+        type="text"
+        placeholder="Ejemplo: usuario123"
+        outlined
+        required
+        class="custom-input"
+      />
+      <TextInputMd
+        label="Contraseña"
+        v-model="loginData.contrasena"
+        type="password"
+        placeholder="Escribe tu contraseña aquí"
+        outlined
+        required
+        class="custom-input"
+      />
+      <small class="result-msg" :style="{ color: popupValues.color }" v-if="popupValues.mensaje">
+        {{ popupValues.mensaje }}
+      </small>
+    </v-container>
+
+    <v-container class="login-buttons">
+      <BotonAzul :disabled="loading" @click="login">
+        <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
+        Iniciar Sesión
+      </BotonAzul>
+      <v-btn block color="blue-darken-3" class="mt-3 rounded-lg" @click="$emit('show-register')">
+        Crear una cuenta
+      </v-btn>
+      <v-btn block color="text-blue-darken-2" class="mt-3 rounded-lg" @click="$emit('show-restore')">
+        ¿Olvidaste tu contraseña?
+      </v-btn>
+    </v-container>
   </v-form>
 </template>
 
@@ -42,6 +46,7 @@ import axios from 'axios';
 
 // Componentes
 import TextInputMd from '@/components/TextInputMd.vue';
+import BotonAzul from './BotonAzul.vue';
 
 const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 
@@ -55,15 +60,14 @@ function getCSSVar(variable: string): string {
   // Esta función obtiene el valor de una variable CSS definida en assets/base.css
   return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
 }
-const popupValues = ref({ titulo: '', mensaje: '', color: '' });
+const popupValues = ref({ mensaje: '', color: '' });
 function showPopup(title: string, msg: string) {
   // Para mayor compatibilidad, usaremos solamente valores CSS ya definidos
   const color =
     title.toLowerCase().includes('error') ? getCSSVar('--color-error') : getCSSVar('--color-save');
 
   popupValues.value = {
-    titulo: title,
-    mensaje: msg,
+    mensaje: title + ': ' + msg,
     color
   };
 }
@@ -104,5 +108,12 @@ async function login() {
     loading.value = false;
   }
 }
-
 </script>
+
+<style scoped>
+.result-msg {
+  font-size: 0.9rem;
+  padding: 0;
+  margin-top: -0.5rem;
+}
+</style>

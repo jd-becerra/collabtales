@@ -14,9 +14,18 @@ import '../assets/base.css'
 .boton-azul {
   background-color: var(--color-btn-blue-bg);
   color: var(--color-text-white);
-  font-size: 1.2rem;
-  padding: 0.5rem 1rem;
+  font-size: var(--font-size-md);
+  font-weight: 500;
   border-radius: var(--border-radius-default);
-  transition: background-color 0.3s ease;
+  width: var(--input-width-lg);
+  height: var(--input-height-lg);
+  text-transform: none;
+  font-family: 'Inter', sans-serif;
+}
+
+@media (max-width: 1366px) {
+  .boton-azul {
+    font-size: 1.2rem;
+  }
 }
 </style>

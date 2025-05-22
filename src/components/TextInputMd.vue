@@ -43,19 +43,30 @@ defineEmits(['update:modelValue'])
   padding: 0.5rem;
   border: 1px solid #ccc;
   border-radius: var(--border-radius-default);
-  font-size: 1rem;
+  font-size: var(--font-size-md);
   color: var(--color-text-input-fg-default);
   border-color: var(--color-border-default);
+  width: var(--input-width-lg);
 }
 .text-input:focus {
   border-color: var(--vt-c-blue-dark);
   outline: none;
-  font-family: 1.25rem;
+  font-family: var(--font-size-md);
 }
 
 .text-caption {
   margin-left: 0.5rem;
   color: var(--color-text-input-fg-label);
-  font-size: 1rem;
+  font-size: var(--font-size-sm);
 }
+
+@media (max-width: 1366px) {
+  .text-input {
+    font-size: var(--font-size-sm);
+  }
+  .text-caption {
+    font-size: var(--font-size-xs);
+  }
+}
+
 </style>
