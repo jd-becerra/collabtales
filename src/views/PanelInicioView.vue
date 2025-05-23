@@ -1,113 +1,89 @@
 <template>
   <v-container>
-    <v-card class="mt-4 pa-4 elevation-4">
-      <v-card-title class="text-h5 font-weight-bold text-center d-flex justify-space-between align-center">
-        Biblioteca de Cuentos
-        <v-btn color="primary" @click="dialog = true">Unirse a un cuento</v-btn>
-      </v-card-title>
-      <v-divider class="my-3"></v-divider>
+    <AppNavbar />
 
-      <v-row justify="center" class="mb-4">
-        <v-btn class="ma-2" :class="{ 'active-tab': showAlumno }" @click="showAlumnoCuentos">
-          Tus cuentos
-        </v-btn>
-        <v-btn class="ma-2" :class="{ 'active-tab': showGlobal }" @click="showGlobalCuentos">
-          Cuentos Globales
-        </v-btn>
-      </v-row>
+    <v-container class="d-flex flex-column align-start justify-star">
+      <div class="home-header-container d-flex align-start justify-start">
+        <v-img
+          class="icon"
+          src="/icons/public.svg"
+          alt="Ícono para cuentos públicos"
+          contain
+        />
+        <h1 class="home-header">BIBLIOTECA DE CUENTOS</h1>
+      </div>
+      <p class="home-subheader text-h6">Explora e interactúa con las historias que han escrito otros usuarios.</p>
+    </v-container>
 
-      <v-list v-if="showAlumno">
-        <v-list-item
-          v-for="cuento in cuentos"
-          :key="cuento.id_cuento"
-          class="cuento-item"
-          @click="verCuento(cuento.id_cuento)"
-        >
-            <v-list-item-title class="text-subtitle-1 font-weight-bold">📖 Título: {{ cuento.nombre }}</v-list-item-title>
-            <v-list-item-subtitle class="text-body-2 text--secondary">
-              📝 Descripción: {{ cuento.descripcion || 'Sin descripción disponible' }}
-            </v-list-item-subtitle>
-          <v-list-item-action>
-            <v-icon color="blue">mdi-chevron-right</v-icon>
-          </v-list-item-action>
-        </v-list-item>
-      </v-list>
+    <v-divider class="my-3"></v-divider>
 
-      <v-list v-if="showGlobal">
+  <v-container class="home-main-container d-flex flex-row justify-space-between">
+    <v-card class="lista-cuentos-container">
+      <v-list>
         <v-list-item v-for="cuento in cuentosGlobales" :key="cuento.id_cuento" class="cuento-item">
-          <v-row align="center" class="w-100">
-            <v-col cols="9">
-                <v-list-item-title class="text-subtitle-1 font-weight-bold">📖 Título: {{ cuento.nombre }}</v-list-item-title>
-                <v-list-item-subtitle class="text-body-2 text--secondary">
-                  📝 Descripción: {{ cuento.descripcion || 'Sin descripción disponible' }}
-                </v-list-item-subtitle>
-            </v-col>
-            <v-col cols="3" class="d-flex justify-end">
-              <v-btn v-if="!cuento.unido" color="green" outlined @click="verCuentoPublico(cuento.id_cuento)">
-                Ver cuento
-              </v-btn>
-            </v-col>
-          </v-row>
+            <v-list-item-title class="text-subtitle-1 font-weight-bold">
+              <a @click="verCuentoPublico(cuento.id_cuento)" class="text-decoration-none">
+              {{ cuento.nombre }}
+              </a>
+            </v-list-item-title>
+            <v-list-item-subtitle class="text-body-2 text--secondary">
+              Descripción: {{ cuento.descripcion || 'Sin descripción disponible' }}
+            </v-list-item-subtitle>
         </v-list-item>
       </v-list>
     </v-card>
 
-    <v-dialog v-model="dialog" max-width="400">
-      <v-card>
-        <v-card-title class="text-h5">Unirse a un cuento</v-card-title>
-        <v-card-text>
-          <v-text-field v-model="idCuentoUnirse" label="ID del cuento" required></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" @click="confirmarUnirse">Unirse</v-btn>
-          <v-btn color="error" @click="dialog = false">Cancelar</v-btn>
-        </v-card-actions>
-      </v-card>
+    <div  class="d-flex flex-column">
+      <TextInputSearch
+        class="mb-4"
+        placeholder="Buscar cuento por título"
+        v-model="searchQuery"
+        @keyup.enter="filterCuentos"
+      />
+      <BotonSm @click="dialog = true">Unirse a un cuento</BotonSm>
+    </div>
+  </v-container>
+
+  <v-dialog v-model="dialog" max-width="400">
+    <v-card>
+      <v-card-title class="text-h5">Unirse a un cuento</v-card-title>
+      <v-card-text>
+        <v-text-field v-model="idCuentoUnirse" label="ID del cuento" required></v-text-field>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" @click="confirmarUnirse">Unirse</v-btn>
+        <v-btn color="error" @click="dialog = false">Cancelar</v-btn>
+      </v-card-actions>
+    </v-card>
     </v-dialog>
   </v-container>
 </template>
 
 <script setup lang="ts">
+import '../assets/base.css';
+
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+
+// Componentes
+import AppNavbar from '@/components/AppNavbar.vue';
+import TextInputSearch from '@/components/TextInputSearch.vue';
+import BotonSm from '@/components/BotonSm.vue';
 
 interface Cuento {
   id_cuento: number;
   nombre: string;
   descripcion: string;
-  unido?: boolean;
+  autores?: string[];
 }
 
-const cuentos = ref<Cuento[]>([]);
 const cuentosGlobales = ref<Cuento[]>([]);
-const showAlumno = ref(true);
-const showGlobal = ref(false);
+
 const router = useRouter();
 const dialog = ref(false);
 const idCuentoUnirse = ref('');
-
-const getCuentosAlumno = async () => {
-  try {
-    const id_alumno = localStorage.getItem('id_alumno');
-    if (!id_alumno) {
-      console.error('No id_alumno found in localStorage');
-      return;
-    }
-
-    const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_cuentos.php`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      params: { id_alumno }
-    });
-    console.log(response.data);
-
-    cuentos.value = response.data;
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-};
+const searchQuery = ref('');
 
 const getCuentosGlobal = async () => {
   try {
@@ -135,7 +111,6 @@ const getCuentosGlobal = async () => {
 
     cuentosGlobales.value = response.data.map((cuento: Cuento) => ({
       ...cuento,
-      unido: cuentos.value.some((c) => c.id_cuento === cuento.id_cuento),
     }));
   } catch (error) {
     console.error('Error fetching global cuentos:', error);
@@ -171,9 +146,65 @@ const unirseCuento = async (id_cuento: number) => {
   }
 };
 
+// Opción preferible: filtrar los cuentos que ya existen (aqui podemos usar @input )
+/* const filterCuentos = () => {
+  if (!searchQuery.value) {
+    getCuentosGlobal();
+    return;
+  }
+
+  const filteredCuentos = cuentosGlobales.value.filter(cuento =>
+    cuento.nombre.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+
+  cuentosGlobales.value = filteredCuentos;
+};
+
 const verCuentoPublico = (id_cuento: number) => {
   localStorage.setItem('id_cuento', id_cuento.toString());
   router.push('/ver_cuento_publico');
+};
+ */
+
+const filterCuentos = () => {
+  if (!searchQuery.value) {
+    getCuentosGlobal();
+    return;
+  }
+
+  // Si hay un query, se hace la busqueda en el servidor
+  filterCuentosServer();
+};
+
+// Opción para escuela: obtener resultados de busqueda del servidor (usar @input resulta en muchas llamadas, por lo que usamos enter con @keyup.enter) )
+const filterCuentosServer = async () => {
+  try {
+    const id_alumno = localStorage.getItem('id_alumno');
+    if (!id_alumno) {
+      console.error('No id_alumno found in localStorage');
+      return;
+    }
+
+    const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/buscar_cuentos_globales.php`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      params: { busqueda: searchQuery.value}
+    });
+
+    console.log(response.data);
+
+    if (!response.data || !response.data.length) {
+      cuentosGlobales.value = [];
+      return;
+    }
+
+    cuentosGlobales.value = response.data.map((cuento: Cuento) => ({
+      ...cuento,
+    }));
+  } catch (error) {
+    console.error('Error fetching global cuentos:', error);
+  }
 };
 
 const confirmarUnirse = () => {
@@ -185,23 +216,23 @@ const confirmarUnirse = () => {
   dialog.value = false;
 };
 
-const verCuento = (id_cuento: number) => {
-  localStorage.setItem('id_cuento', id_cuento.toString());
-  router.push('/ver_cuento');
-};
-
-const showAlumnoCuentos = () => {
-  showAlumno.value = true;
-  showGlobal.value = false;
-};
-
-const showGlobalCuentos = () => {
-  showAlumno.value = false;
-  showGlobal.value = true;
-};
-
 onMounted(() => {
-  getCuentosAlumno();
   getCuentosGlobal();
 });
 </script>
+
+<style scoped>
+.icon {
+  width: var(--icon-size-default);
+  height: var(--icon-size-default);
+}
+
+.home-main-container {
+  width: 100%;
+}
+
+.lista-cuentos-container {
+  width: 100%;
+}
+
+</style>

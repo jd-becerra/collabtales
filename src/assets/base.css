@@ -44,6 +44,7 @@
   --color-background-mute: var(--vt-c-white-mute);
   --color-background-padding: var(--vt-c-blue-soft);
   --background-padding-height: 7vh;
+  --gutter: 2rem;
 
   --color-border: var(--vt-c-divider-light-2);
   --color-border-hover: var(--vt-c-divider-light-1);
@@ -87,6 +88,7 @@
   --font-size-xs: 0.875rem;
 
   --border-radius-default: 5px;
+  --icon-size-default: 50px;
 }
 
 @media (prefers-color-scheme: dark) {
