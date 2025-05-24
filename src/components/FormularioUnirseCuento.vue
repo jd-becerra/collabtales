@@ -126,7 +126,7 @@ const unirseCuento = async () => {
   padding: 0.3rem;
   margin: 0.5rem;
 
-  min-width: unset; /* override Vuetify's default min-width */
+  min-width: unset;
   width: auto;
   height: auto;
 }

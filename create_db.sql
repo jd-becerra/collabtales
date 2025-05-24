@@ -137,22 +137,29 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `EliminarAlumno`(IN id_alumno_param INT)
 BEGIN
-                DELETE FROM Alumno WHERE id_alumno = id_alumno_param;
-                SELECT 'Alumno eliminado correctamente' AS result;
+    DELETE FROM Alumno WHERE id_alumno = id_alumno_param;
+    SELECT 'Alumno eliminado correctamente' AS result;
 END$$
 DELIMITER ;
 
 -- Procedure: ListarCuentosAlumno
-DELIMITER $$
-CREATE PROCEDURE `ListarCuentosAlumno`(IN id_alumno INT)
-BEGIN
-                SELECT cuento.id_cuento, cuento.nombre, cuento.descripcion
-                FROM `Cuento` cuento
-                JOIN `Relacion_Alumno_Cuento` relacion ON cuento.id_cuento = relacion.fk_cuento
-                WHERE relacion.fk_alumno = id_alumno
-                ORDER BY cuento.nombre ASC;
-END$$
-DELIMITER ;
+    DELIMITER $$
+    CREATE PROCEDURE `ListarCuentosAlumno`(IN id_alumno INT)
+    BEGIN
+        SELECT 
+            cuento.id_cuento, 
+            cuento.nombre, 
+            cuento.descripcion,
+            (CASE WHEN id_alumno = cuento.fk_owner THEN 1 ELSE 0 END) AS es_dueño,
+            GROUP_CONCAT(DISTINCT a.nombre ORDER BY a.nombre SEPARATOR ', ') AS autores
+        FROM `Cuento` cuento
+        JOIN `Relacion_Alumno_Cuento` relacion ON cuento.id_cuento = relacion.fk_cuento
+        JOIN `Alumno` a ON relacion.fk_alumno = a.id_alumno
+        WHERE relacion.fk_alumno = id_alumno
+        GROUP BY cuento.id_cuento, cuento.nombre, cuento.descripcion
+        ORDER BY cuento.nombre ASC;
+    END$$
+    DELIMITER ;
 
 -- Procedure: UnirseCuento
 DELIMITER $$

@@ -22,7 +22,7 @@
           required
           @keyup.enter="crearCuento()"
         />
-        <TextInputSmWide
+        <TextInputSmWide class="mt-3"
           v-model="nuevo_cuento.descripcion"
           label="Descripción"
           type="text"

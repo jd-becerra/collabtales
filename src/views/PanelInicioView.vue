@@ -35,6 +35,7 @@
           class="mb-6"
           placeholder="Buscar cuento por título"
           v-model="searchQuery"
+          :searchFunction="filterCuentosServer"
           @input="filterCuentos"
         />
         <v-container class="home-options d-flex flex-column align-center justify-center">

@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import CrearCuento from '../components/CrearCuento.vue';
 import Inicio_Sesion from '@/views/InicioSesionView.vue';
-import Crear_Cuento from '../components/CrearCuento.vue';
 import Perfil_Usuario from '@/views/PerfilUsuarioView.vue';
 import Panel_Inicio from '@/views/PanelInicioView.vue';
 import VerCuento from '@/views/VerCuentoView.vue';
@@ -20,11 +18,6 @@ const router = createRouter({
       component: Inicio_Sesion
     },
     {
-      path: '/crear_cuento',
-      name: 'crear_cuento',
-      component: Crear_Cuento
-    },
-    {
       path: '/perfil_usuario',
       name: 'perfil_usuario',
       component: Perfil_Usuario
@@ -33,11 +26,6 @@ const router = createRouter({
       path: '/panel_inicio',
       name: 'panel_inicio',
       component: Panel_Inicio
-    },
-    {
-      path: '/crear_cuento',
-      name: 'crear_cuento',
-      component: CrearCuento
     },
     {
       path: '/ver_cuento',

@@ -68,7 +68,7 @@ const buttonStyle = computed(() => {
   width: var(--input-width-md);
   height: auto;
   text-transform: none;
-  font-family: 'Inter', sans-serif;  
+  font-family: 'Inter', sans-serif;
 
   display: flex;
   justify-content: start;
@@ -84,33 +84,5 @@ const buttonStyle = computed(() => {
   display: flex;
   justify-content: end;
   align-items: end;
-}
-
-@media (max-width: 1366px) {
-  .boton-md {
-    font-size: 1.2rem;
-    height: 46px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .boton-md {
-    font-size: 1rem;
-    width: var(--input-width-md);
-  }
-}
-
-@media (max-width: 768px) {
-  .boton-md {
-    font-size: 0.9rem;
-    width: var(--input-width-sm);
-  }
-}
-
-@media (max-width: 600px) {
-  .boton-md {
-    font-size: 0.8rem;
-    width: var(--input-width-md);
-  }
 }
 </style>

@@ -1,60 +1,90 @@
 <template>
-  <div class="text-input-md">
-    <label v-if="label" class="text-caption font-weight-medium mb-1" :for="id">{{ label }}</label>
-    <input
-      :id="id"
-      :type="type"
-      class="text-input"
-      :value="modelValue"
-      :placeholder="placeholder"
-      @input="$emit('update:modelValue', ($event.target as HTMLInputElement)?.value)"
-    />
-    <small v-if="small" class="text-caption font-weight-medium mb-1">
-      {{ small }}
-    </small>
+  <div class="search-wrapper">
+    <div class="text-input-md d-flex flex-row align-center" ref="input_wrapper">
+      <div class="menu-icon" @click="focusSearch(true)">
+        <v-img
+          src="/icons/menu.svg"
+          class="menu-icon-svg"
+          width="30"
+          height="30"
+          ref="menu_icon"
+        />
+      </div>
+      <input
+        :id="id"
+        :type="type"
+        class="text-input"
+        :value="modelValue"
+        :placeholder="placeholder"
+        @input="$emit('update:modelValue', ($event.target as HTMLInputElement)?.value)"
+        @focus="focusSearch(true)"
+        @focusout="focusSearch(false)"
+        ref="text_input"
+      />
+      <btn class="search-btn"
+        @click="focusSearch(true)"
+        ref="search_icon"
+        >
+        <v-img
+          src="/icons/search.svg"
+          class="search-icon-svg"
+          width="24"
+          height="24"
+        />
+      </btn>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import '../assets/base.css'
+import { ref } from 'vue'
 
-import { defineProps, defineEmits } from 'vue'
+const text_input = ref<HTMLElement | null>(null)
+const input_wrapper = ref<HTMLElement | null>(null)
+
+defineEmits(['update:modelValue'])
+
+const focusSearch = (shouldFocus: boolean) => {
+  if (shouldFocus) {
+    text_input.value?.focus()
+    input_wrapper.value?.style.setProperty('border', '1px solid var(--vt-c-blue-dark)')
+    input_wrapper.value?.style.setProperty('border-radius', 'var(--border-radius-default)')
+  } else {
+    text_input.value?.blur()
+    input_wrapper.value?.style.setProperty('border', '1px solid var(--color-border-default)')
+  }
+}
 
 defineProps<{
-  label?: string
   modelValue: string
   id?: string
   type?: string
   placeholder?: string
-  small?: string
+  // We give an axios search function as a prop
+  searchFunction?: (query: string) => void
 }>()
-
-defineEmits(['update:modelValue'])
 </script>
 
 <style scoped>
 .text-input-md {
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  margin: 0;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--border-radius-default);
+  overflow: hidden;
+  width: 330px;
+  align-items: center;
 }
 
 .text-input {
-  padding: 0.5rem;
-  border: 1px solid var(--color-border-default);
-  border-radius: var(--border-radius-default);
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.2rem;
+  border: none;
   font-size: var(--font-size-md);
-  color: var(--color-text-black);
-  border-color: var(--color-border-default);
-  width: var(--input-width-md);
-  height: var(--input-height-md);
 
-  &::placeholder {
-  color: var(--color-text-input-fg-default);
-  }
+  width: auto;
+
   &:focus {
-    border-color: var(--vt-c-blue-dark);
     outline: none;
   }
 }
@@ -65,31 +95,16 @@ defineEmits(['update:modelValue'])
   font-size: var(--font-size-sm);
 }
 
-@media (max-width: 1366px) {
-  .text-input {
-    font-size: var(--font-size-sm);
-  }
-  .text-caption {
-    font-size: var(--font-size-xs);
-  }
+.menu-icon,
+.search-btn {
+  padding: 0.5rem;
+  cursor: pointer;
 }
 
-@media (max-width: 1024px) {
-  .text-input {
-    width: var(--input-width-md);
-  }
-}
-
-@media (max-width: 768px) {
-  .text-input {
-    width: var(--input-width-sm);
-  }
-}
-
-@media (max-width: 600px) {
-  .text-input {
-    width: var(--input-width-md);
-  }
+.text-input-md:focus-within .menu-icon,
+.text-input-md:focus-within .text-input,
+.text-input-md:focus-within .search-btn {
+  border-color: 1px solid var(--vt-c-blue-dark); /* Or your desired color */
 }
 
 </style>
