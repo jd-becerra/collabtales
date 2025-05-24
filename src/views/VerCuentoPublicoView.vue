@@ -90,7 +90,6 @@ export default {
       const response = await axios.get('/php/verificacion.php', {
         params: {
           id_cuento: this.id_cuento,
-          id_alumno: this.id_alumno
         },
         headers: {
           'Content-Type': 'application/json',
@@ -106,8 +105,6 @@ export default {
           this.$router.push('/panel_inicio');
           return false;
         }
-
-        this.es_dueno = response.data.es_dueno;
         return true;
       } catch (error) {
         console.error("Error en la verificación:", error);

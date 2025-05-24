@@ -8,6 +8,7 @@ import RestaurarContraseña from '@/views/ValidarTokenRestauracionView.vue';
 import EditarAportacion from '@/components/EditarAportacion.vue';
 import Descarga from '@/views/VerPDF.vue'
 import VerCuentoPublicoView from '@/views/VerCuentoPublicoView.vue';
+import MisCuentosView from '@/views/MisCuentosView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,11 @@ const router = createRouter({
       path: '/panel_inicio',
       name: 'panel_inicio',
       component: Panel_Inicio
+    },
+    {
+      path: '/mis_cuentos',
+      name: 'mis_cuentos',
+      component: MisCuentosView
     },
     {
       path: '/ver_cuento',

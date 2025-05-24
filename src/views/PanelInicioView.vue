@@ -41,7 +41,7 @@
         <v-container class="home-options d-flex flex-column align-center justify-center">
           <BotonSm icon_path="/icons/edit_text.svg" @click="showCrearCuentoDialog()">Crear un cuento</BotonSm>
           <BotonSm icon_path="/icons/group_add.svg" @click="showUnirseDialog()">Unirse a un cuento</BotonSm>
-          <BotonSm icon_path="/icons/description.svg">Ver mis cuentos</BotonSm>
+          <BotonSm icon_path="/icons/description.svg" @click="redirectMisCuentos()">Ver mis cuentos</BotonSm>
         </v-container>
       </div>
     </v-container>
@@ -68,7 +68,7 @@ import axios from 'axios';
 import AppNavbar from '@/components/AppNavbar.vue';
 import TextInputSearch from '@/components/TextInputSearch.vue';
 import BotonSm from '@/components/BotonSm.vue';
-import CuentoListItem from '@/components/CuentoListItem.vue';
+import CuentoListItem from '@/components/CuentoListItemPublico.vue';
 import FormularioUnirseCuento from '@/components/FormularioUnirseCuento.vue';
 import FormularioCrearCuento from '@/components/FormularioCrearCuento.vue';
 
@@ -94,6 +94,10 @@ const showCrearCuentoDialog = () => {
 const showUnirseDialog = () => {
   dialog.value = true;
   dialog_section.value = "unirse";
+};
+
+const redirectMisCuentos = () => {
+  router.push('/mis_cuentos');
 };
 
 const getCuentosGlobal = async () => {
@@ -126,22 +130,6 @@ const getCuentosGlobal = async () => {
   }
 };
 
-// Opción preferible: filtrar los cuentos que ya existen (aqui podemos usar @input )
-/* const filterCuentos = () => {
-  if (!searchQuery.value) {
-    getCuentosGlobal();
-    return;
-  }
-
-  const filteredCuentos = cuentosGlobales.value.filter(cuento =>
-    cuento.nombre.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
-
-  cuentosGlobales.value = filteredCuentos;
-};
-
- */
-
 const filterCuentos = () => {
   if (!searchQuery.value) {
     getCuentosGlobal();
@@ -152,7 +140,6 @@ const filterCuentos = () => {
   filterCuentosServer();
 };
 
-// Opción para escuela: obtener resultados de busqueda del servidor (usar @input resulta en muchas llamadas, por lo que usamos enter con @keyup.enter) )
 const filterCuentosServer = async () => {
   try {
     const id_alumno = localStorage.getItem('id_alumno');

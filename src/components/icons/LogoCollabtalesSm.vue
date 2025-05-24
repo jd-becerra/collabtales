@@ -38,6 +38,7 @@ function goToInicio() {
   padding: 0;
   margin: 0;
   pointer-events: all;
+  cursor: pointer;
   margin-left: var(--gutter);
 }
 

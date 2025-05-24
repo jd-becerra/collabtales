@@ -21,7 +21,7 @@
         @focusout="focusSearch(false)"
         ref="text_input"
       />
-      <btn class="search-btn"
+      <button class="search-btn"
         @click="focusSearch(true)"
         ref="search_icon"
         >
@@ -31,7 +31,7 @@
           width="24"
           height="24"
         />
-      </btn>
+      </button>
     </div>
   </div>
 </template>

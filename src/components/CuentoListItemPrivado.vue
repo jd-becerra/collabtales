@@ -1,6 +1,6 @@
 <template>
   <v-list-item class="cuento-item">
-    <a @click="verCuentoPublico(id_cuento)" class="cuento-item-header text-h5">
+    <a @click="verCuentoPrivado(id_cuento)" class="cuento-item-header text-h5">
       <v-img
         class="icon"
         src="/icons/book.svg"
@@ -9,6 +9,9 @@
       />
       {{ nombre }}
     </a>
+    <div v-if="es_dueño">
+      CREADO POR MÍ
+    </div>
     <p v-if="autores && autores.length > 0" class="autores-header">
       <span>
         Autores:
@@ -33,9 +36,9 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-const verCuentoPublico = (id_cuento: number) => {
-  localStorage.setItem('id_cuento', id_cuento.toString());
-  router.push('/ver_cuento_publico');
+const verCuentoPrivado = (id_cuento: number) => {
+  localStorage.setItem("id_cuento", id_cuento.toString());
+  router.push('/ver_cuento');
 };
 
 defineProps<{
@@ -44,6 +47,7 @@ defineProps<{
   descripcion: string;
   autores?: string[];
   ultimo: boolean;
+  es_dueño?: boolean;
 }>();
 </script>
 
