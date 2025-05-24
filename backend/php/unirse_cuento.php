@@ -8,42 +8,75 @@ $user = authenticate();
 include('config.php');
 
 $data = json_decode(file_get_contents("php://input"), true);
-$id_cuento = $data['id_cuento'];
-$id_alumno = $data['id_alumno'];
+if (count($data) !== 1) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos."]);
+    exit();
+}
 
-if (empty($id_cuento) || empty($id_alumno)) {
+$codigo = $data['codigo'];
+$id_alumno = $user['id_alumno'];
+
+if (empty($codigo) || empty($id_alumno)) {
     echo json_encode(["error" => "Faltan parámetros obligatorios."]);
     exit();
 }
 
-// Verificar si el cuento existe
-$verificar_sql = "SELECT id_cuento FROM cuento WHERE id_cuento = ?";
+// Si el código no es una string
+if (!is_string($codigo)) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos."]);
+    exit();
+}
+
+// Verificar si el cuento existe y obtener su ID
+$verificar_sql = "SELECT id_cuento FROM Cuento WHERE codigo_compartir = ? LIMIT 1";
 $stmt_verificar = $conn->prepare($verificar_sql);
-$stmt_verificar->bind_param("i", $id_cuento);
+$stmt_verificar->bind_param("s", $codigo);
 $stmt_verificar->execute();
 $result_verificar = $stmt_verificar->get_result();
 
 if ($result_verificar->num_rows === 0) {
-    echo json_encode(["error" => "El cuento no existe."]);
+    http_response_code(404);
+    echo json_encode(["error" => "Recurso no encontrado."]);
     $stmt_verificar->close();
     $conn->close();
     exit();
 }
+$row = $result_verificar->fetch_assoc();
+$id_cuento = $row['id_cuento'];
 $stmt_verificar->close();
 
-$check_sql = "SELECT fk_alumno FROM relacion_alumno_cuento WHERE fk_cuento = ? AND fk_alumno = ?";
-$stmt_check = $conn->prepare($check_sql);
-$stmt_check->bind_param("ii", $id_cuento, $id_alumno);
-$stmt_check->execute();
-$result_check = $stmt_check->get_result();
+// Verificar que el alumno no esté bloqueado
+$bloqueado_sql = "SELECT 1 FROM ListaNegra WHERE fk_cuento = ? AND fk_alumno = ?";
+$stmt_bloqueado = $conn->prepare($bloqueado_sql);
+$stmt_bloqueado->bind_param("ii", $id_cuento, $id_alumno);
+$stmt_bloqueado->execute();
+$result_bloqueado = $stmt_bloqueado->get_result();
 
-if ($result_check->num_rows > 0) {
-    echo json_encode(["error" => "Ya estás unido a este cuento."]);
-    $stmt_check->close();
+if ($result_bloqueado->num_rows > 0) {
+    http_response_code(403);
+    echo json_encode(["error" => "No tienes permiso para acceder a este recurso."]);
+    $stmt_bloqueado->close();
     $conn->close();
     exit();
 }
-$stmt_check->close();
+$stmt_bloqueado->close();
+
+// Verificar si el alumno ya está unido al cuento
+$union_sql = "SELECT 1 FROM Relacion_Alumno_Cuento WHERE fk_cuento = ? AND fk_alumno = ?";
+$stmt_union = $conn->prepare($union_sql);
+$stmt_union->bind_param("ii", $id_cuento, $id_alumno);
+$stmt_union->execute();
+$result_union = $stmt_union->get_result();
+if ($result_union->num_rows > 0) {
+    http_response_code(409);
+    echo json_encode(["error" => "Recurso ya existente."]);
+    $stmt_union->close();
+    $conn->close();
+    exit();
+}
+$stmt_union->close();
 
 // Si no está unido, proceder con la unión
 $sql = "CALL UnirseCuento(?, ?)";
@@ -51,6 +84,7 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("ii", $id_cuento, $id_alumno);
 
 if ($stmt->execute()) {
+    http_response_code(200);
     echo json_encode(["success" => "Te has unido al cuento con éxito."]);
 } else {
     echo json_encode(["error" => "Error al unirse al cuento."]);

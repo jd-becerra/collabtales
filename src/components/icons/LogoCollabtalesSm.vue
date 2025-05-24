@@ -43,10 +43,11 @@ function goToInicio() {
 
 .logo-collabtales {
   font-family: 'Lucida Handwriting', 'cursive';
-  font-size: 1rem;
+  font-size: 1.5rem;
 }
 .slogan-collabtales {
   font-family: 'Kameron', sans-serif;
+  margin-top: -0.5rem;
   font-size: 0.5rem;
 }
 .copyright {
@@ -60,6 +61,8 @@ function goToInicio() {
   padding-left: 0;
   width: 100%;
   height: 100%;
+  flex-shrink: 0;
+
 }
 .logo-sm-txt-container {
   width: 100%;
@@ -68,6 +71,11 @@ function goToInicio() {
 
   margin-left: 0;
   padding-left: 0.1rem;
+  margin-top: -0.2rem;
+
+  display: flex;
+  align-items: first baseline;
+  justify-content: start;
 }
 </style>
 

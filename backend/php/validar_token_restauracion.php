@@ -16,6 +16,13 @@ if (is_rate_limited($conn, $endpoint_name, $ip, $limit, $interval_seconds)) {
     exit;
 }
 
+// Si hay más de 2 parámetros
+if (count($_GET) !== 2) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos"]);
+    exit;
+}
+
 $token = $_GET['token'] ?? null;
 $correo = $_GET['correo'] ?? null;
 

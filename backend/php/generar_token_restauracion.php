@@ -16,8 +16,15 @@ if (is_rate_limited($conn, $endpoint_name, $ip, $limit, $interval_seconds)) {
     exit;
 }
 
-
 $data = json_decode(file_get_contents("php://input"), true);
+
+// Si hay más de 1 parámetro
+if (count($data) !== 1) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos"]);
+    exit;
+}
+
 $email = $data['correo'] ?? null;
 
 if (empty($email)) {

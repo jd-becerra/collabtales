@@ -8,52 +8,78 @@ $user = authenticate();
 include('config.php');
 
 $data = json_decode(file_get_contents("php://input"), true);
+// Si hay más de 2 parámetros
+if (!is_array($data) || count($data) !== 2) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos."]);
+    exit();
+}
+
+if (!isset($data['id_cuento']) || !isset($data['id_alumno_bloquear'])) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos."]);
+    exit();
+}
+
 $id_cuento = $data['id_cuento'];
-$id_alumno = $data['id_alumno'];
+$id_alumno_bloquear = $data['id_alumno_bloquear'];
 
-if (empty($id_cuento) || empty($id_alumno)) {
-    echo json_encode(["error" => "Faltan parámetros obligatorios."]);
+if (!is_numeric($id_cuento) || !is_numeric($id_alumno_bloquear)) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos."]);
     exit();
 }
 
-// Verificar si el cuento existe
-$verificar_sql = "SELECT id_cuento FROM cuento WHERE id_cuento = ?";
-$stmt_verificar = $conn->prepare($verificar_sql);
-$stmt_verificar->bind_param("i", $id_cuento);
-$stmt_verificar->execute();
-$result_verificar = $stmt_verificar->get_result();
+$id_owner = $user['id_alumno'];
 
-if ($result_verificar->num_rows === 0) {
+// Verificar que el cuento existe y pertenece al usuario autenticado
+$stmt = $conn->prepare("SELECT fk_owner FROM Cuento WHERE id_cuento = ?");
+$stmt->bind_param("i", $id_cuento);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    http_response_code(404);
     echo json_encode(["error" => "El cuento no existe."]);
-    $stmt_verificar->close();
+    $stmt->close();
     $conn->close();
     exit();
 }
-$stmt_verificar->close();
-
-$check_sql = "SELECT fk_alumno FROM ListaNegra WHERE fk_cuento = ? AND fk_alumno = ?";
-$stmt_check = $conn->prepare($check_sql);
-$stmt_check->bind_param("ii", $id_cuento, $id_alumno);
-$stmt_check->execute();
-$result_check = $stmt_check->get_result();
-
-if ($result_check->num_rows > 0) {
-    echo json_encode(["error" => "Ya esta bloqueado este alumno"]);
-    $stmt_check->close();
+$row = $result->fetch_assoc();
+if ($row['fk_owner'] !== $id_owner) {
+    http_response_code(403);
+    echo json_encode(["error" => "No tienes permisos para realizar esta acción."]);
+    $stmt->close();
     $conn->close();
     exit();
 }
-$stmt_check->close();
+$stmt->close();
 
-// Si no está unido, proceder con la unión
-$sql = "CALL BloquearAlumno(?, ?)";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("ii", $id_cuento, $id_alumno);
+
+// Verificar si el alumno ya está bloqueado
+$stmt = $conn->prepare("SELECT 1 FROM ListaNegra WHERE fk_cuento = ? AND fk_alumno = ?");
+$stmt->bind_param("ii", $id_cuento, $id_alumno_bloquear);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    http_response_code(409);
+    echo json_encode(["error" => "El recurso ya existe."]);
+    $stmt->close();
+    $conn->close();
+    exit();
+}
+$stmt->close();
+
+// Si se pasan las validaciones, proceder a insertar el bloqueo
+$stmt = $conn->prepare("INSERT INTO ListaNegra (fk_cuento, fk_alumno) VALUES (?, ?)");
+$stmt->bind_param("ii", $id_cuento, $id_alumno_bloquear);
 
 if ($stmt->execute()) {
-    echo json_encode(["success" => "Alumno bloqueado."]);
+    echo json_encode(["success" => "Alumno bloqueado correctamente."]);
 } else {
-    echo json_encode(["error" => "Error al bloquear al alumno."]);
+    http_response_code(500);
+    echo json_encode(["error" => "Error de servidor."]);
 }
 
 $stmt->close();

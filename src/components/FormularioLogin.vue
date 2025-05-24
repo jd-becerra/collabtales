@@ -9,6 +9,7 @@
           outlined
           required
           class="custom-input"
+          @keyup.enter="login"
         />
         <TextInputMd
           label="Contraseña"
@@ -18,6 +19,7 @@
           outlined
           required
           class="custom-input"
+          @keyup.enter="login"
         />
         <small class="result-msg" :style="{ color: popupValues.color }" v-if="popupValues.mensaje">
           {{ popupValues.mensaje }}
@@ -90,8 +92,10 @@ async function login() {
     if (datos.id_alumno) {
       localStorage.setItem('id_alumno', datos.id_alumno);
       localStorage.setItem('token', datos.token);
-      showPopup("Éxito:", `Bienvenido, ${loginData.value.nombre}`);
-      router.push('/panel_inicio');
+      showPopup("Éxito", `Bienvenido, ${loginData.value.nombre}`);
+      setTimeout(() => {
+        router.push('/panel_inicio');
+      }, 1000);
     }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
@@ -122,7 +126,6 @@ async function login() {
   padding-left: 0;
   margin-top: 1.5rem;
 }
-
 .result-msg {
   font-size: 0.9rem;
   padding: 0;

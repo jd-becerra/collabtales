@@ -54,9 +54,10 @@ function editarAlumno() {
       }
     })
     .then((response) => {
+      console.log(response);
 
-      if (response.data.message) {  // Si hay un mensaje de éxito
-        alert(response.data.message);
+      if (response.data.success) {  // Si hay un mensaje de éxito
+        alert('Datos actualizados correctamente.');
         router.push('/panel_inicio');
       } else if (response.data.error) {  // Si hay un mensaje de error
         alert(response.data.error);
@@ -72,9 +73,7 @@ function editarAlumno() {
 
 function eliminarAlumno() {
   axios
-    .post(`${PHP_URL}/php/eliminar_alumno.php`, {
-      id_alumno: localStorage.getItem('id_alumno')
-     },
+    .post(`${PHP_URL}/php/eliminar_alumno.php`,
     {
       headers: {
         'Content-Type': 'application/json',

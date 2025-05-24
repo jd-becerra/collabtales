@@ -2,7 +2,7 @@
   <v-container>
     <AppNavbar />
 
-    <v-container class="d-flex flex-column align-start justify-star">
+    <v-container class="d-flex flex-column align-start justify-start">
       <div class="home-header-container d-flex align-start justify-start">
         <v-img
           class="icon"
@@ -15,46 +15,43 @@
       <p class="home-subheader text-h6">Explora e interactúa con las historias que han escrito otros usuarios.</p>
     </v-container>
 
-    <v-divider class="my-3"></v-divider>
+    <v-container class="home-main-container d-flex flex-row justify-space-between">
+      <v-card class="lista-cuentos-container">
+        <v-list>
+          <CuentoListItem
+            v-for="(cuento, index) in cuentosGlobales"
+            :id_cuento="Number(cuento.id_cuento)"
+            :key="cuento.id_cuento"
+            :nombre="cuento.nombre"
+            :descripcion="cuento.descripcion"
+            :autores="cuento.autores"
+            :ultimo="index === cuentosGlobales.length - 1"
+          />
+        </v-list>
+      </v-card>
 
-  <v-container class="home-main-container d-flex flex-row justify-space-between">
-    <v-card class="lista-cuentos-container">
-      <v-list>
-        <v-list-item v-for="cuento in cuentosGlobales" :key="cuento.id_cuento" class="cuento-item">
-            <v-list-item-title class="text-subtitle-1 font-weight-bold">
-              <a @click="verCuentoPublico(cuento.id_cuento)" class="text-decoration-none">
-              {{ cuento.nombre }}
-              </a>
-            </v-list-item-title>
-            <v-list-item-subtitle class="text-body-2 text--secondary">
-              Descripción: {{ cuento.descripcion || 'Sin descripción disponible' }}
-            </v-list-item-subtitle>
-        </v-list-item>
-      </v-list>
-    </v-card>
+      <div  class="d-flex flex-column align-center ">
+        <TextInputSearch
+          class="mb-6"
+          placeholder="Buscar cuento por título"
+          v-model="searchQuery"
+          @input="filterCuentos"
+        />
+        <v-container class="home-options d-flex flex-column align-center justify-center">
+          <BotonSm icon_path="/icons/edit_text.svg" @click="showCrearCuentoDialog()">Crear un cuento</BotonSm>
+          <BotonSm icon_path="/icons/group_add.svg" @click="showUnirseDialog()">Unirse a un cuento</BotonSm>
+          <BotonSm icon_path="/icons/description.svg">Ver mis cuentos</BotonSm>
+        </v-container>
+      </div>
+    </v-container>
 
-    <div  class="d-flex flex-column">
-      <TextInputSearch
-        class="mb-4"
-        placeholder="Buscar cuento por título"
-        v-model="searchQuery"
-        @keyup.enter="filterCuentos"
+    <v-dialog v-model="dialog" max-width="400" class="options-dialog">
+      <FormularioUnirseCuento v-if="dialog_section === 'unirse'"
+        @close-popup="dialog = false"
       />
-      <BotonSm @click="dialog = true">Unirse a un cuento</BotonSm>
-    </div>
-  </v-container>
-
-  <v-dialog v-model="dialog" max-width="400">
-    <v-card>
-      <v-card-title class="text-h5">Unirse a un cuento</v-card-title>
-      <v-card-text>
-        <v-text-field v-model="idCuentoUnirse" label="ID del cuento" required></v-text-field>
-      </v-card-text>
-      <v-card-actions>
-        <v-btn color="primary" @click="confirmarUnirse">Unirse</v-btn>
-        <v-btn color="error" @click="dialog = false">Cancelar</v-btn>
-      </v-card-actions>
-    </v-card>
+      <FormularioCrearCuento v-else-if="dialog_section === 'crear'"
+        @close-popup="dialog = false"
+      />
     </v-dialog>
   </v-container>
 </template>
@@ -70,6 +67,9 @@ import axios from 'axios';
 import AppNavbar from '@/components/AppNavbar.vue';
 import TextInputSearch from '@/components/TextInputSearch.vue';
 import BotonSm from '@/components/BotonSm.vue';
+import CuentoListItem from '@/components/CuentoListItem.vue';
+import FormularioUnirseCuento from '@/components/FormularioUnirseCuento.vue';
+import FormularioCrearCuento from '@/components/FormularioCrearCuento.vue';
 
 interface Cuento {
   id_cuento: number;
@@ -82,8 +82,18 @@ const cuentosGlobales = ref<Cuento[]>([]);
 
 const router = useRouter();
 const dialog = ref(false);
-const idCuentoUnirse = ref('');
+const dialog_section = ref('');
 const searchQuery = ref('');
+
+const showCrearCuentoDialog = () => {
+  dialog.value = true;
+  dialog_section.value = "crear";
+};
+
+const showUnirseDialog = () => {
+  dialog.value = true;
+  dialog_section.value = "unirse";
+};
 
 const getCuentosGlobal = async () => {
   try {
@@ -102,8 +112,6 @@ const getCuentosGlobal = async () => {
       params: { id_alumno }
     });
 
-    console.log(response.data);
-
     if (!response.data || !response.data.length) {
       cuentosGlobales.value = [];
       return;
@@ -114,35 +122,6 @@ const getCuentosGlobal = async () => {
     }));
   } catch (error) {
     console.error('Error fetching global cuentos:', error);
-  }
-};
-
-const unirseCuento = async (id_cuento: number) => {
-  try {
-    const id_alumno = localStorage.getItem('id_alumno');
-    if (!id_alumno) {
-      console.error('No id_alumno found in localStorage');
-      return;
-    }
-    const response = await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/unirse_cuento.php`,
-    {
-      id_cuento,
-      id_alumno
-    });
-
-    console.log('Response:', response.data);
-
-    if (response.data.error) {
-      alert(response.data.error);
-      return;
-    }
-
-    alert(response.data.success);
-    getCuentosAlumno();
-    getCuentosGlobal();
-  } catch (error) {
-    console.error('Error al unirse al cuento:', error);
-    alert('Hubo un error al unirse al cuento. Inténtalo nuevamente.');
   }
 };
 
@@ -160,10 +139,6 @@ const unirseCuento = async (id_cuento: number) => {
   cuentosGlobales.value = filteredCuentos;
 };
 
-const verCuentoPublico = (id_cuento: number) => {
-  localStorage.setItem('id_cuento', id_cuento.toString());
-  router.push('/ver_cuento_publico');
-};
  */
 
 const filterCuentos = () => {
@@ -207,15 +182,6 @@ const filterCuentosServer = async () => {
   }
 };
 
-const confirmarUnirse = () => {
-  if (!idCuentoUnirse.value.trim()) {
-    alert('Por favor, ingresa un ID de cuento válido.');
-    return;
-  }
-  unirseCuento(Number(idCuentoUnirse.value));
-  dialog.value = false;
-};
-
 onMounted(() => {
   getCuentosGlobal();
 });
@@ -229,10 +195,27 @@ onMounted(() => {
 
 .home-main-container {
   width: 100%;
+  gap: 2rem;
 }
 
 .lista-cuentos-container {
   width: 100%;
+  height: 60vh;
+  border: 1px solid var(--color-text-input-border);
+  background-color: var(--color-text-input-bg-default);
+
+  overflow-y: scroll;
 }
 
+.home-header {
+  font-weight: bold;
+}
+
+.home-options {
+  gap: 1rem;
+}
+
+.dialog-card {
+  border-radius: var(--border-radius-default);
+}
 </style>

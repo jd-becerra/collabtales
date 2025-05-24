@@ -4,9 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run dev:vue\" \"npm run dev:php\"",
-    "dev:vue": "vite --port 5173",
-    "dev:php": "cd backend/ && C:\\php\\php.exe -S localhost:8000",
+    "dev": "vite --port 5173",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",

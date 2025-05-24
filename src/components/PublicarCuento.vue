@@ -28,7 +28,7 @@
     methods: {
       async publicarCuento() {
         try {
-          const response = await axios.post('/php/publicar_cuento.php',
+          const response = await axios.put('/php/publicar_cuento.php',
           {
             id_cuento: this.id_cuento
           },

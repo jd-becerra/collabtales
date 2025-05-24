@@ -19,18 +19,32 @@ if (is_rate_limited($conn, $endpoint_name, $ip, $limit, $interval_seconds)) {
 include("jwt_auth.php");
 $user = authenticate();
 
-// Recibimos simplemente el parametro de búsqueda
-if (empty($_GET['busqueda'])) {
+if (!isset($_GET['busqueda']) || count($_GET) !== 1) {
     http_response_code(400);
-    echo json_encode(["error" => "Faltan parámetros"]);
+    echo json_encode(["error" => "Parámetros inválidos"]);
     exit;
 }
 
-// Sanitizamos la búsqueda
-$busqueda = trim(htmlspecialchars($_GET['busqueda']));
+$busqueda = trim($_GET['busqueda']);
+if (empty($busqueda)) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos"]);
+    exit;
+}
+
 if (strlen($busqueda) > 100) {
     http_response_code(400);
-    echo json_encode(["error" => "Parametro excede el tamaño permitido"]);
+    echo json_encode(["error" => "Parámetros inválidos"]);
+    exit;
+}
+
+// Sanitizar para evitar HTML inyectado, pero no romper el LIKE con símbolos especiales
+$busqueda_safe = htmlspecialchars($busqueda, ENT_QUOTES, 'UTF-8');
+
+$id_alumno = filter_var($user['id_alumno'], FILTER_VALIDATE_INT);
+if ($id_alumno === false) {
+    http_response_code(400);
+    echo json_encode(["error" => "Sesion inválida"]);
     exit;
 }
 
@@ -46,17 +60,23 @@ $stmt = $conn->prepare("
     JOIN Alumno a ON rac.fk_alumno = a.id_alumno
     WHERE c.publicado = 1 
       AND (c.nombre LIKE ? OR c.descripcion LIKE ?)
+      AND NOT EXISTS (
+          SELECT 1 FROM ListaNegra ln 
+          WHERE ln.fk_cuento = c.id_cuento AND ln.fk_alumno = ?
+      )
     GROUP BY c.id_cuento, c.nombre, c.descripcion
 ");
-$busqueda = "%$busqueda%"; // Agregamos los comodines para LIKE
-$stmt->bind_param("ss", $busqueda, $busqueda);
+$like_param = "%$busqueda_safe%";
+$stmt->bind_param("ssi", $like_param, $like_param, $id_alumno);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $rows = array();
     while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    // Convertir autores a array
+    $row['autores'] = $row['autores'] ? explode(', ', $row['autores']) : [];
+    $rows[] = $row;
     }
 
     echo json_encode($rows);

@@ -6,6 +6,13 @@ include('jwt_auth.php');
 $user = authenticate();
 include('config.php');
 
+// Si hay más de 1 parámetro
+if (count($_GET) !== 1) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos."]);
+    exit();
+}
+
 $id_cuento = $_GET['id_cuento'] ?? null;
 $id_alumno = $user['id_alumno'] ?? null;
 

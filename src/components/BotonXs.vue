@@ -1,15 +1,9 @@
 <template>
   <v-btn
-    class="boton-sm"
+    class="boton-xd"
     :style="buttonStyle"
   >
-   <v-img
-      v-if="icon_path"
-      :src="icon_path"
-      class="icon"
-      contain
-   />
-    <slot class="boton-name"></slot>
+    <slot></slot>
   </v-btn>
 </template>
 
@@ -19,8 +13,7 @@ import { computed } from 'vue'
 
 // Receive type of button to get colors
 const props = defineProps<{
-  color_type?: string,
-  icon_path?: string,
+  color_type?: string
 }>()
 
 function getCSSVar(variable: string): string {
@@ -61,56 +54,13 @@ const buttonStyle = computed(() => {
 </script>
 
 <style scoped>
-.boton-sm {
-  font-size: var(--font-size-md);
+.boton-xd {
+  font-size: var(--font-size-sm);
   font-weight: 500;
   border-radius: var(--border-radius-default);
-  width: var(--input-width-md);
-  height: auto;
+  width: auto;
+  height: var(--input-height-sm);
   text-transform: none;
-  font-family: 'Inter', sans-serif;  
-
-  display: flex;
-  justify-content: start;
-  align-items: start;
-}
-
-.icon {
-  width: var(--icon-size-default);
-  height: var(--icon-size-default);
-}
-
-.boton-name {
-  display: flex;
-  justify-content: end;
-  align-items: end;
-}
-
-@media (max-width: 1366px) {
-  .boton-md {
-    font-size: 1.2rem;
-    height: 46px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .boton-md {
-    font-size: 1rem;
-    width: var(--input-width-md);
-  }
-}
-
-@media (max-width: 768px) {
-  .boton-md {
-    font-size: 0.9rem;
-    width: var(--input-width-sm);
-  }
-}
-
-@media (max-width: 600px) {
-  .boton-md {
-    font-size: 0.8rem;
-    width: var(--input-width-md);
-  }
+  font-family: 'Inter', sans-serif;
 }
 </style>

@@ -114,8 +114,7 @@ export default {
       try {
         const response = await axios.get('/php/verificacion.php', {
           params: {
-            id_cuento: this.id_cuento,
-            id_alumno: this.id_alumno
+            id_cuento: this.id_cuento
           },
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
@@ -164,7 +163,6 @@ export default {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
           params: {
             id_cuento: this.id_cuento,
-            id_alumno: localStorage.getItem("id_alumno")
           }
         });
         console.log(response.data);

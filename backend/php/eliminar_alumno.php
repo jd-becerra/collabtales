@@ -6,6 +6,13 @@ include('jwt_auth.php');
 $user = authenticate();
 include('config.php');
 
+// Si hay parámetros
+if (count($_GET) > 0) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos."]);
+    exit();
+}
+
 $id_alumno = isset($user['id_alumno']) ? filter_var($user['id_alumno'], FILTER_VALIDATE_INT) : null;
 
 if (empty($id_alumno)) {

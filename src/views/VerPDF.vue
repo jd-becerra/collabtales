@@ -135,7 +135,6 @@ export default {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
           params: {
             id_cuento: this.id_cuento,
-            id_alumno: localStorage.getItem("id_alumno")
           }
         });
 

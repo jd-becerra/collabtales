@@ -8,8 +8,9 @@ include('config.php');
 include("rate_limit.php");
 $ip = $_SERVER['REMOTE_ADDR'];
 $endpoint_name = "buscar_cuentos_globales";
-$limit = 100; // 100 peticiones
-$interval_seconds = 60; // 1 minuto
+$limit = 100;
+$interval_seconds = 60;
+
 if (is_rate_limited($conn, $endpoint_name, $ip, $limit, $interval_seconds)) {
     http_response_code(429);
     echo json_encode(["error" => "Demasiadas peticiones. Intenta de nuevo más tarde."]);
@@ -19,28 +20,36 @@ if (is_rate_limited($conn, $endpoint_name, $ip, $limit, $interval_seconds)) {
 include("jwt_auth.php");
 $user = authenticate();
 
-$id_alumno = $user['id_alumno'];
-if (empty($_GET['busqueda']) || empty($id_alumno)) {
+if (!isset($_GET['busqueda']) || count($_GET) !== 1) {
     http_response_code(400);
-    echo json_encode(["error" => "Faltan parámetros"]);
+    echo json_encode(["error" => "Parámetros inválidos"]);
     exit;
 }
 
-// Sanitizamos la búsqueda
-$busqueda = trim(htmlspecialchars($_GET['busqueda']));
+$busqueda = trim($_GET['busqueda']);
+if (empty($busqueda)) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos"]);
+    exit;
+}
+
 if (strlen($busqueda) > 100) {
     http_response_code(400);
-    echo json_encode(["error" => "Parametro excede el tamaño permitido"]);
-    exit;
-}
-$id_alumno = filter_var($id_alumno, FILTER_VALIDATE_INT);
-if ($id_alumno === false) {
-    http_response_code(400);
-    echo json_encode(["error" => "Alumno inválido"]);
+    echo json_encode(["error" => "Parámetros inválidos"]);
     exit;
 }
 
-// Preparamos la consulta (regresar los cuentos públicos que contengan la búsqueda en el nombre o descripción, además de los autores)
+// Sanitizar para evitar HTML inyectado, pero no romper el LIKE con símbolos especiales
+$busqueda_safe = htmlspecialchars($busqueda, ENT_QUOTES, 'UTF-8');
+
+$id_alumno = filter_var($user['id_alumno'], FILTER_VALIDATE_INT);
+if ($id_alumno === false) {
+    http_response_code(400);
+    echo json_encode(["error" => "Sesión inválida"]);
+    exit;
+}
+
+// Preparamos la consulta
 $stmt = $conn->prepare("
     SELECT 
         c.id_cuento, 
@@ -55,21 +64,19 @@ $stmt = $conn->prepare("
         AND rac.fk_alumno = ?
     GROUP BY c.id_cuento, c.nombre, c.descripcion
 ");
-$busqueda = "%$busqueda%"; // Agregamos los comodines para LIKE
-$stmt->bind_param("ssi", $busqueda, $busqueda, $id_alumno);
+$like_param = "%$busqueda_safe%";
+$stmt->bind_param("ssi", $like_param, $like_param, $id_alumno);
 $stmt->execute();
 $result = $stmt->get_result();
 
-if ($result->num_rows > 0) {
-    $rows = array();
-    while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
-    }
-
-    echo json_encode($rows);
-} else {
-    echo json_encode([]);
+$rows = [];
+while ($row = $result->fetch_assoc()) {
+    $row['autores'] = $row['autores'] ? explode(', ', $row['autores']) : [];
+    $rows[] = $row;
 }
+
+echo json_encode($rows);
+
 $stmt->close();
 $conn->close();
 ?>

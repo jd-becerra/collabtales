@@ -40,7 +40,6 @@ const crearCuento = () => {
 
   axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/crear_cuento.php`,
   JSON.stringify({
-    id_alumno: localStorage.getItem('id_alumno'),
     nombre: nombre_cuento.value,
     descripcion: descripcion_cuento.value,
   }),

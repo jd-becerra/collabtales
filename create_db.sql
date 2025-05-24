@@ -48,6 +48,7 @@ CREATE TABLE `Cuento` (
         `id_cuento` INT(11) NOT NULL AUTO_INCREMENT,
         `nombre` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
         `descripcion` VARCHAR(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+        `codigo_compartir` VARCHAR(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
         `publicado` TINYINT(1) DEFAULT 0,
         `fk_owner` INT(11) NULL DEFAULT NULL,
         PRIMARY KEY (`id_cuento`),
@@ -171,27 +172,52 @@ DELIMITER ;
 
 -- Procedure: EditarAlumno
 DELIMITER $$
+
 CREATE PROCEDURE `EditarAlumno`(
-        IN id_alumno_param INT,
-        IN nuevo_nombre VARCHAR(255)
+    IN id_alumno_param INT,
+    IN nuevo_nombre VARCHAR(255),
+    IN nuevo_correo VARCHAR(255)
 )
 BEGIN
-        DECLARE nombre_existente INT;
-        
-        -- Verificar si el nuevo nombre ya existe en otro usuario
-        SELECT COUNT(*) INTO nombre_existente FROM Alumno 
-        WHERE nombre = nuevo_nombre AND id_alumno <> id_alumno_param;
-        
-        IF nombre_existente = 0 THEN
-                UPDATE Alumno 
-                SET nombre = nuevo_nombre
-                WHERE id_alumno = id_alumno_param;
-                
-                SELECT 'Alumno actualizado correctamente' AS result;
-        ELSE
-                SELECT 'El nombre de usuario ya existe' AS result;
-        END IF;
+    DECLARE nombre_existente INT DEFAULT 0;
+    DECLARE correo_existente INT DEFAULT 0;
+
+    -- Obtener valores actuales si no se enviaron
+    SELECT nombre, correo INTO @actual_nombre, @actual_correo
+    FROM Alumno WHERE id_alumno = id_alumno_param;
+
+    SET @nombre_final = IF(TRIM(nuevo_nombre) <> '', nuevo_nombre, @actual_nombre);
+    SET @correo_final = IF(TRIM(nuevo_correo) <> '', nuevo_correo, @actual_correo);
+
+    -- Validar que al menos uno cambió
+    IF @nombre_final = @actual_nombre AND @correo_final = @actual_correo THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se detectaron cambios.';
+    END IF;
+
+    -- Verificar unicidad del nombre
+    SELECT COUNT(*) INTO nombre_existente
+    FROM Alumno WHERE nombre = @nombre_final AND id_alumno <> id_alumno_param;
+
+    -- Verificar unicidad del correo
+    SELECT COUNT(*) INTO correo_existente
+    FROM Alumno WHERE correo = @correo_final AND id_alumno <> id_alumno_param;
+
+    -- Validar conflictos
+    IF nombre_existente > 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El nombre de usuario ya está en uso.';
+    ELSEIF correo_existente > 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El correo electrónico ya está en uso.';
+    END IF;
+
+    -- Actualizar
+    UPDATE Alumno SET
+        nombre = @nombre_final,
+        correo = @correo_final
+    WHERE id_alumno = id_alumno_param;
+
+    SELECT 'Alumno actualizado correctamente' AS result;
 END$$
+
 DELIMITER ;
 
 -- Procedure: CrearCuento
@@ -204,9 +230,16 @@ CREATE PROCEDURE `CrearCuento`(
 BEGIN
                 DECLARE cuento_id INT;
 
+                -- Crear un código único para compartir el cuento
+                DECLARE codigo_compartir_nuevo VARCHAR(8);
+                SET codigo_compartir_nuevo = CONCAT(SUBSTRING(MD5(RAND()), 1, 8));
+                WHILE EXISTS (SELECT 1 FROM Cuento WHERE codigo_compartir = codigo_compartir_nuevo) DO
+                SET codigo_compartir_nuevo = CONCAT(SUBSTRING(MD5(RAND()), 1, 8));
+                END WHILE;
+
                 -- Insertar el cuento en la tabla Cuento
-                INSERT INTO Cuento (nombre, descripcion, fk_owner) 
-                VALUES (nombre_cuento, descripcion_cuento, id_owner);
+                INSERT INTO Cuento (nombre, descripcion, codigo_compartir, fk_owner)
+                VALUES (nombre_cuento, descripcion_cuento, codigo_compartir_nuevo, id_owner);
                 
                 -- Obtener el ID del cuento recién creado
                 SET cuento_id = LAST_INSERT_ID();

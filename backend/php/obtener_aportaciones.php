@@ -7,6 +7,13 @@ $user = authenticate();
 
 include('config.php');
 
+// Si hay más de 1 parámetro
+if (count($_GET) !== 1) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos"]);
+    exit;
+}
+
 $id_cuento = $_GET['id_cuento'];
 $id_alumno = $user['id_alumno'];
 
@@ -16,7 +23,17 @@ if (empty($id_cuento) || empty($id_alumno)) {
     exit;
 }
 
-// Ejecutar la primera consulta almacenada (procedimiento almacenado)
+// Verificar si el alumno está bloqueado
+$sql = $conn->prepare("SELECT fk_alumno FROM ListaNegra WHERE fk_cuento = ? AND fk_alumno = ?");
+$sql->bind_param("ii", $id_cuento, $id_alumno);
+$sql->execute();
+$sql->store_result();
+if ($sql->num_rows > 0) {
+    http_response_code(403);
+    echo json_encode(["error" => "No tienes permiso para acceder a este recurso."]);
+    exit;
+}
+
 $sql = $conn->prepare("CALL ListarCuentoAportacionesConAlumnos(?)");
 $sql->bind_param("i", $id_cuento);
 $sql->execute();

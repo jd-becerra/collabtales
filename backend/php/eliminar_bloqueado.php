@@ -7,10 +7,49 @@ $user = authenticate();
 
 include('config.php');
 
-$id_cuento = $_GET['id_cuento'];
+// Si hay más de 2 parámetros
+if (!is_array($_GET) || count($_GET) !== 2) {
+    http_response_code(400);
+    echo "Parámetros inválidos";
+    exit();
+}
+
 $id_alumno = $user['id_alumno'];
-$stmt = $conn->prepare("DELETE FROM ListaNegra WHERE id_cuento = ? AND id_alumno = ?");
-$stmt->bind_param("ii", $id_cuento, $id_alumno);
+
+$id_cuento = $_GET['id_cuento'];
+$id_alumno_bloqueado = $_GET['id_alumno_bloqueado'];
+
+if (empty($id_cuento) || empty($id_alumno_bloqueado)) {
+    http_response_code(400);
+    echo "Faltan parámetros obligatorios";
+    exit();
+}
+if (!is_numeric($id_cuento) || !is_numeric($id_alumno_bloqueado)) {
+    http_response_code(400);
+    echo "Parámetros inválidos";
+    exit();
+}
+
+// Validar que el usuario autenticado sea el dueño del cuento
+$stmt = $conn->prepare("SELECT fk_owner FROM Cuento WHERE id_cuento = ?");
+$stmt->bind_param("i", $id_cuento);
+$stmt->execute();
+$result = $stmt->get_result();
+if ($result->num_rows === 0) {
+    http_response_code(404);
+    echo "Recurso encontrado";
+    exit();
+}
+$row = $result->fetch_assoc();
+if ($row['fk_owner'] !== $id_alumno) {
+    http_response_code(403);
+    echo "No tienes permiso para esta acción";
+    exit();
+}
+$stmt->close();
+
+$stmt = $conn->prepare("DELETE FROM ListaNegra WHERE fk_cuento = ? AND fk_alumno = ?");
+$stmt->bind_param("ii", $id_cuento, $id_alumno_bloqueado);
 
 if ($stmt->execute()) {
     echo "Alumno desbloqueado correctamente";

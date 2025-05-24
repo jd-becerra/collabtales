@@ -8,9 +8,23 @@ $user = authenticate();
 include('config.php');
 
 $data = json_decode(file_get_contents("php://input"), true);
+// Si hay más de 2 parámetros
+if (!is_array($data) || count($data) !== 2) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos."]);
+    exit();
+}
 
 if (!isset($data['nombre'], $data['descripcion'], $user['id_alumno'])) {
-    echo json_encode(["error" => "Error: nombre, descripcion y id_alumno son obligatorios"]);
+    http_response_code(400);
+    echo json_encode(["error" => "Faltan parámetros obligatorios."]);
+    exit();
+}
+
+// Si la id_alumno no es un número
+if (!is_numeric($user['id_alumno'])) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos."]);
     exit();
 }
 
@@ -26,18 +40,21 @@ if ($stmt = $conn->prepare($sql)) {
         $stmt->store_result();
         $stmt->bind_result($cuento_id);
         $stmt->fetch();
-
+        
+        http_response_code(201);
         echo json_encode([
             "success" => true, 
             "id_cuento_creado" => $cuento_id
         ]);
     } else {
-        echo json_encode(["error" => "Error al ejecutar la consulta"]);
+        http_response_code(500);
+        echo json_encode(["error" => "Error en el servidor."]);
     }
 
     $stmt->close();
 } else {
-    echo json_encode(["error" => "Error al preparar la consulta"]);
+    http_response_code(500);
+    echo json_encode(["error" => "Error en el servidor."]);
 }
 
 $conn->close();

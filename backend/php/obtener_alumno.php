@@ -6,21 +6,23 @@ include('jwt_auth.php');
 $user = authenticate();
 
 if ($user['id_alumno'] <= 0) {
-    echo json_encode(["error" => "Unauthorized"]);
     http_response_code(401);
+    echo json_encode(["error" => "Sesión inválida"]);
     exit;
 }
 
 include('config.php');
 $id_alumno = $user['id_alumno'];
 if (!isset($id_alumno)) {
-    echo json_encode(["error" => "Invalid request: id_alumno is missing"]);
+    http_response_code(400);
+    echo json_encode(["error" => "Sesión inválida"]);
     exit;
 }
 $id_alumno = intval($id_alumno);
 
 if ($id_alumno <= 0) {
-    echo json_encode(["error" => "Invalid id_alumno"]);
+    http_response_code(400);
+    echo json_encode(["error" => "Sesión inválida"]);
     exit;
 }
 
@@ -32,9 +34,11 @@ $stmt->bind_result($id_alumno, $nombre, $correo);
 $stmt->fetch();
 
 if ($stmt->num_rows > 0) {
+    http_response_code(200);
     echo json_encode(["id_alumno" => $id_alumno, "nombre" => $nombre, "correo" => $correo]);
 } else {
-    echo json_encode(["error" => "Alumno not found"]);
+    http_response_code(404);
+    echo json_encode(["error" => "Recurso no encontrado"]);
 }
 
 $stmt->close();

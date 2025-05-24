@@ -9,6 +9,7 @@
         outlined
         required
         class="custom-input"
+        @keyup.enter="register"
       />
       <TextInputMd
         label="Correo"
@@ -18,6 +19,7 @@
         outlined
         required
         class="custom-input"
+        @keyup.enter="register"
       />
       <TextInputMd
         label="Contraseña (al menos 8 caracteres y un carácter especial)"
@@ -27,6 +29,7 @@
         outlined
         required
         class="custom-input"
+        @keyup.enter="register"
       />
       <TextInputMd
         label="Repite tu contraseña"
@@ -36,6 +39,7 @@
         outlined
         required
         class="custom-input"
+        @keyup.enter="register"
       />
       <small class="result-msg" :style="{ color: popupValues.color }" v-if="popupValues.mensaje">
         {{ popupValues.mensaje }}
@@ -116,8 +120,10 @@ async function register() {
     if (response.data.id_alumno) {
       localStorage.setItem('id_alumno', response.data.id_alumno);
       localStorage.setItem('token', response.data.token);
-      showPopup("Éxito", `Cuenta ${registerData.value.nombre} creada correctamente.`);
-      router.push('/panel_inicio');
+      showPopup("Éxito", `Usuario '${registerData.value.nombre}' creado correctamente.`);
+      setTimeout(() => {
+        router.push('/panel_inicio');
+      }, 1000);
     }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

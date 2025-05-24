@@ -133,8 +133,7 @@ export default {
       try {
         const response = await axios.get('/php/obtener_aportaciones.php', {
           params: {
-            id_cuento: this.id_cuento,
-            id_alumno: localStorage.getItem("id_alumno")
+            id_cuento: this.id_cuento
           }
         });
 

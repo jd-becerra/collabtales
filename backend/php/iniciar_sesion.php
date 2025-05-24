@@ -19,6 +19,13 @@ if (is_rate_limited($conn, $endpoint_name, $ip, $limit, $interval_seconds)) {
 
 $data = json_decode(file_get_contents("php://input"), true);
 
+// Si hay más de 2 parámetros
+if (!is_array($data) || count($data) > 2) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos."]);
+    exit;
+}
+
 if (empty($data['nombre']) || empty($data['contrasena'])) {
     http_response_code(400);
     echo json_encode(["error" => "Faltan parámetros obligatorios."]);

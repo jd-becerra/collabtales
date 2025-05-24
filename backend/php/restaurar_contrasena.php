@@ -17,6 +17,14 @@ if (is_rate_limited($conn, $endpoint_name, $ip, $limit, $interval_seconds)) {
 }
 
 $data = json_decode(file_get_contents("php://input"), true);
+
+// Si hay más de 3 parámetros
+if (count($data) !== 3) {
+    http_response_code(400);
+    echo json_encode(["error" => "Parámetros inválidos"]);
+    exit;
+}
+
 $token = $data['token'] ?? null;
 $id_usuario = $data['id_usuario'] ?? null;
 $new_password = $data['nueva_contrasena'] ?? null;

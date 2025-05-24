@@ -24,7 +24,9 @@ if ($result->num_rows > 0) {
     // Fetch all rows and store in an array
     $rows = array();
     while ($row = $result->fetch_assoc()) {
-        $rows[] = $row;
+    // Convertir autores a array
+    $row['autores'] = $row['autores'] ? explode(', ', $row['autores']) : [];
+    $rows[] = $row;
     }
 
     // Return the array as JSON
