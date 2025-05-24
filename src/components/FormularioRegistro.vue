@@ -60,7 +60,6 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import axios from 'axios';
 import TextInputMd from '@/components/TextInputMd.vue';
 import BotonMd from './BotonMd.vue';
@@ -68,10 +67,9 @@ import BotonMd from './BotonMd.vue';
 const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 
 const registerData = ref({ nombre: '', correo: '', contrasena: '', repetir_contrasena: '' });
-const router = useRouter();
 const loading = ref(false);
 
-defineEmits(['show-login']);
+const emit = defineEmits(['show-login']);
 
 const popupValues = ref({ mensaje: '', color: '' });
 function getCSSVar(variable: string): string {
@@ -109,7 +107,11 @@ async function register() {
 
   loading.value = true;
   try {
-    const response = await axios.post(`${PHP_URL}/php/crear_alumno.php`, registerData.value, {
+    const response = await axios.post(`${PHP_URL}/php/crear_alumno.php`, {
+      nombre: registerData.value.nombre,
+      correo: registerData.value.correo,
+      contrasena: registerData.value.contrasena
+    }, {
       headers: { 'Content-Type': 'application/json' }
     });
     if (response.data.error) {
@@ -118,12 +120,10 @@ async function register() {
     }
 
     if (response.data.id_alumno) {
-      localStorage.setItem('id_alumno', response.data.id_alumno);
-      localStorage.setItem('token', response.data.token);
-      showPopup("Éxito", `Usuario '${registerData.value.nombre}' creado correctamente.`);
+      showPopup("Éxito", `Usuario '${registerData.value.nombre}' creado correctamente. Inicia sesión para continuar.`);
       setTimeout(() => {
-        router.push('/panel_inicio');
-      }, 1000);
+        emit('show-login');
+      }, 2000);
     }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
