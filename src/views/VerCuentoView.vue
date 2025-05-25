@@ -85,7 +85,7 @@ export default {
       cuento: {} as { id: number; nombre: string; descripcion: string } | null,
       aportaciones: [] as Array<{ id_aportacion: number; contenido: string; nombre_alumno: string; id_alumno: number }>,
       showDeleteAportacionPopup: false,
-      id_cuento: localStorage.getItem("id_cuento") || null,
+      id_cuento: this.$route.params.id_cuento as string,
       loading: false, // New loading state
       id_alumno: localStorage.getItem("id_alumno") || null, // Add id_alumno
       es_dueno: false

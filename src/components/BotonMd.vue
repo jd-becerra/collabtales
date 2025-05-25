@@ -58,37 +58,9 @@ const buttonStyle = computed(() => {
   font-size: var(--font-size-md);
   font-weight: 500;
   border-radius: var(--border-radius-default);
-  width: var(--input-width-lg);
-  height: var(--input-height-lg);
+  width: var(--input-width-md);
+  height: var(--input-height-md);
   text-transform: none;
   font-family: 'Inter', sans-serif;
-}
-
-@media (max-width: 1366px) {
-  .boton-md {
-    font-size: 1.2rem;
-    height: 46px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .boton-md {
-    font-size: 1rem;
-    width: var(--input-width-md);
-  }
-}
-
-@media (max-width: 768px) {
-  .boton-md {
-    font-size: 0.9rem;
-    width: var(--input-width-sm);
-  }
-}
-
-@media (max-width: 600px) {
-  .boton-md {
-    font-size: 0.8rem;
-    width: var(--input-width-md);
-  }
 }
 </style>

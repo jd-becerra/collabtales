@@ -47,7 +47,7 @@ defineEmits(['update:modelValue'])
   font-size: var(--font-size-md);
   color: var(--color-text-black);
   border-color: var(--color-border-default);
-  width: var(--input-width-lg);
+  width: var(--input-width-md);
   height: var(--input-height-md);
 
   &::placeholder {
@@ -63,33 +63,6 @@ defineEmits(['update:modelValue'])
   margin-left: 0.5rem;
   color: var(--color-text-input-fg-label);
   font-size: var(--font-size-sm);
-}
-
-@media (max-width: 1366px) {
-  .text-input {
-    font-size: var(--font-size-sm);
-  }
-  .text-caption {
-    font-size: var(--font-size-xs);
-  }
-}
-
-@media (max-width: 1024px) {
-  .text-input {
-    width: var(--input-width-md);
-  }
-}
-
-@media (max-width: 768px) {
-  .text-input {
-    width: var(--input-width-sm);
-  }
-}
-
-@media (max-width: 600px) {
-  .text-input {
-    width: var(--input-width-md);
-  }
 }
 
 </style>

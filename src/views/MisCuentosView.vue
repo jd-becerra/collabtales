@@ -1,8 +1,7 @@
 <template>
-  <v-container>
     <AppNavbar />
-
-    <v-container class="d-flex flex-column align-start justify-start">
+  <div class="main-container">
+    <v-container class="d-flex flex-column align-start justify-start mb-0 py-0 mt-2">
       <div class="home-header-container d-flex align-start justify-start">
         <v-img
           class="icon"
@@ -12,32 +11,39 @@
         />
         <h1 class="home-header">MIS CUENTOS</h1>
       </div>
-      <p class="home-subheader text-h6">Estos son los cuentos que has creado o en los que estás participando.</p>
+      <p class="home-subheader text-h6 mb-0 pb-0">Estos son los cuentos que has creado o en los que estás participando.</p>
     </v-container>
 
     <v-container class="home-main-container d-flex flex-row justify-space-between">
-      <v-card class="lista-cuentos-container">
-        <v-list>
-          <CuentoListItemPrivado
-            v-for="(cuento, index) in cuentosListados"
-            :id_cuento="Number(cuento.id_cuento)"
-            :key="cuento.id_cuento"
-            :nombre="cuento.nombre"
-            :descripcion="cuento.descripcion"
-            :autores="cuento.autores"
-            :es_dueño="cuento.es_dueño === 1"
-            :ultimo="index === cuentosListados.length - 1"
-          />
-        </v-list>
-      </v-card>
+      <div class="list-cuentos-main-container d-flex flex-column mt-0 py-0">
+        <div class="d-flex justify-end align-center pa-0 ma-0 ">
+          <v-switch class="filter-owner-switch"
+            label="Filtrar cuentos creados por mí"
+            color="info"
+            v-model="toggleFilterByOwner"
+          ></v-switch>
+        </div>
+        <v-card class="lista-cuentos-container">
+          <v-list>
+            <CuentoListItemPrivado
+              v-for="(cuento, index) in cuentosListados"
+              :id_cuento="Number(cuento.id_cuento)"
+              :key="cuento.id_cuento"
+              :nombre="cuento.nombre"
+              :descripcion="cuento.descripcion"
+              :autores="cuento.autores"
+              :es_dueño="cuento.es_dueño === 1"
+              :ultimo="index === cuentosListados.length - 1"
+            />
+          </v-list>
+        </v-card>
+      </div>
 
       <div  class="d-flex flex-column align-center ">
         <TextInputSearch
           class="mb-6"
           placeholder="Buscar cuento por título"
           v-model="searchQuery"
-          :searchFunction="filterCuentos"
-          @input="filterCuentos"
         />
         <v-container class="home-options d-flex flex-column align-center justify-center">
           <BotonSm icon_path="/icons/edit_text.svg" @click="showCrearCuentoDialog()">Crear un cuento</BotonSm>
@@ -55,13 +61,13 @@
         @close-popup="dialog = false"
       />
     </v-dialog>
-  </v-container>
+  </div>
 </template>
 
 <script setup lang="ts">
 import '../assets/base.css';
 
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
@@ -86,6 +92,7 @@ const cuentosCompletos = ref<Cuento[]>([]);
 
 const router = useRouter();
 const dialog = ref(false);
+const toggleFilterByOwner = ref(false);
 const dialog_section = ref('');
 const searchQuery = ref('');
 
@@ -125,28 +132,39 @@ const getCuentosUsuario = async () => {
       return;
     }
 
-    cuentosListados.value = response.data.map((cuento: Cuento) => ({
+    cuentosCompletos.value = response.data.map((cuento: Cuento) => ({
       ...cuento,
     }));
-    // Para evitar más llamadas al servidor, guardamos los cuentos completos para reutilizar en el filtro
-    cuentosCompletos.value = [...cuentosListados.value];
+
+    // Filtrar los cuentos según sea necesario
+    applyFilters();
   } catch (error) {
     console.error('Error fetching global cuentos:', error);
   }
 };
 
-const filterCuentos = () => {
-  if (!searchQuery.value) {
-    cuentosListados.value = [...cuentosCompletos.value];
-    return;
+const applyFilters = () => {
+  let filtered = [...cuentosCompletos.value];
+
+  // Si se necesita filtrar por cuentos que pertenezcan al usuario
+  if (toggleFilterByOwner.value) {
+    filtered = filtered.filter(cuento => cuento.es_dueño === 1);
   }
 
-  const filteredCuentos = cuentosListados.value.filter(cuento =>
-    cuento.nombre.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
+  // Si se necesita filtrar por el nombre del cuento según la búsqueda
+  if (searchQuery.value.trim() !== '') {
+    filtered = filtered.filter(cuento =>
+      cuento.nombre.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+  }
 
-  cuentosListados.value = filteredCuentos;
+  cuentosListados.value = filtered;
 };
+
+// Si estos valores cambian, filtrar cuentos según sea necesario
+watch([toggleFilterByOwner, searchQuery], () => {
+  applyFilters();
+});
 
 onMounted(() => {
   getCuentosUsuario();
@@ -159,18 +177,35 @@ onMounted(() => {
   height: var(--icon-size-default);
 }
 
+.main-container {
+  height: 100%;
+  width: 100vw;
+}
+
 .home-main-container {
-  width: 100%;
   gap: 2rem;
+}
+
+.list-cuentos-main-container {
+  gap: 0;
+  width: 70%;
+}
+
+.filter-owner-switch {
+  padding: 0;
+  margin: 0;
+
+  display: flex;
 }
 
 .lista-cuentos-container {
   width: 100%;
-  height: 60vh;
+  height: 55vh;
   border: 1px solid var(--color-text-input-border);
   background-color: var(--color-text-input-bg-default);
 
   overflow-y: scroll;
+  border-radius: var(--border-radius-default);
 }
 
 .home-header {

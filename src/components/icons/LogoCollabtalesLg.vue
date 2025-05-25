@@ -48,6 +48,16 @@ import '../../assets/base.css'
   user-select: none;
 }
 
+@media (min-width: 1920px) {
+  .logo-collabtales {
+    font-size: 11rem;
+  }
+  .slogan-collabtales {
+    font-size: 1.5rem;
+    margin-top: -1.5rem;
+  }
+}
+
 /* Estilos responsivos para pantallas más pequeñas */
 @media (max-width: 1366px) {
   .logo-collabtales {

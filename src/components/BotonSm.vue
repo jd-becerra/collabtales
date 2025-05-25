@@ -65,7 +65,7 @@ const buttonStyle = computed(() => {
   font-size: var(--font-size-md);
   font-weight: 500;
   border-radius: var(--border-radius-default);
-  width: var(--input-width-md);
+  width: var(--input-width-sm);
   height: auto;
   text-transform: none;
   font-family: 'Inter', sans-serif;

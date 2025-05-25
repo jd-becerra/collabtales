@@ -9,16 +9,14 @@
       />
       {{ nombre }}
     </a>
-    <div v-if="es_dueño">
+    <div v-if="es_dueño" class="es_dueno-header">
       CREADO POR MÍ
     </div>
     <p v-if="autores && autores.length > 0" class="autores-header">
       <span>
         Autores:
       </span>
-      <span v-for="(autor, index) in autores" :key="index">
-        {{ autor }}<span v-if="index < autores.length - 1">|</span>
-      </span>
+      <span> {{ autores.join('     |     ') }} </span>
     </p>
     <p v-else>
       Autores: Información no disponible
@@ -37,10 +35,8 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 const verCuentoPrivado = (id_cuento: number) => {
-  localStorage.setItem("id_cuento", id_cuento.toString());
-  router.push('/ver_cuento');
+  router.push('/ver_cuento/' + id_cuento);
 };
-
 defineProps<{
   id_cuento: number;
   nombre: string;
@@ -96,5 +92,14 @@ defineProps<{
 .descripcion-header {
   color: var(--color-text-input-fg-default);
   font-weight: 600;;
+}
+
+.es_dueno-header {
+  color: var(--color-text-input-fg-default);
+  font-weight: bold;
+
+  position: absolute;
+  top: 0;
+  right: 1rem;
 }
 </style>

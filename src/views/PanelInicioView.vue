@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <div>
     <AppNavbar />
 
     <v-container class="d-flex flex-column align-start justify-start">
@@ -15,7 +15,7 @@
       <p class="home-subheader text-h6">Explora e interactúa con las historias que han escrito otros usuarios.</p>
     </v-container>
 
-    <v-container class="home-main-container d-flex flex-row justify-space-between">
+    <v-container class="home-main-container d-flex flex-row">
       <v-card class="lista-cuentos-container">
         <v-list>
           <CuentoListItem
@@ -28,6 +28,9 @@
             :ultimo="index === cuentosGlobales.length - 1"
           />
         </v-list>
+        <v-card-text v-if="errorMsg" class="text-center">
+          {{ errorMsg }}
+        </v-card-text>
       </v-card>
 
       <div  class="d-flex flex-column align-center ">
@@ -54,7 +57,7 @@
         @close-popup="dialog = false"
       />
     </v-dialog>
-  </v-container>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -85,6 +88,7 @@ const router = useRouter();
 const dialog = ref(false);
 const dialog_section = ref('');
 const searchQuery = ref('');
+const errorMsg = ref('');
 
 const showCrearCuentoDialog = () => {
   dialog.value = true;
@@ -119,14 +123,17 @@ const getCuentosGlobal = async () => {
 
     if (!response.data || !response.data.length) {
       cuentosGlobales.value = [];
+      errorMsg.value = 'No se encontraron cuentos publicados.';
       return;
     }
 
     cuentosGlobales.value = response.data.map((cuento: Cuento) => ({
       ...cuento,
     }));
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error('Error fetching global cuentos:', error);
+    errorMsg.value = 'Error al obtener los cuentos. Por favor, inténtalo de nuevo más tarde.';
+    return;
   }
 };
 
@@ -144,7 +151,6 @@ const filterCuentosServer = async () => {
   try {
     const id_alumno = localStorage.getItem('id_alumno');
     if (!id_alumno) {
-      console.error('No id_alumno found in localStorage');
       return;
     }
 
@@ -155,8 +161,6 @@ const filterCuentosServer = async () => {
       params: { busqueda: searchQuery.value}
     });
 
-    console.log(response.data);
-
     if (!response.data || !response.data.length) {
       cuentosGlobales.value = [];
       return;
@@ -165,8 +169,10 @@ const filterCuentosServer = async () => {
     cuentosGlobales.value = response.data.map((cuento: Cuento) => ({
       ...cuento,
     }));
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error('Error fetching global cuentos:', error);
+    errorMsg.value = 'Error al filtrar los cuentos. Por favor, inténtalo de nuevo más tarde.';
+    return;
   }
 };
 
@@ -191,6 +197,7 @@ onMounted(() => {
   height: 60vh;
   border: 1px solid var(--color-text-input-border);
   background-color: var(--color-text-input-bg-default);
+  border-radius: var(--border-radius-default);
 
   overflow-y: scroll;
 }

@@ -3,7 +3,6 @@ import Inicio_Sesion from '@/views/InicioSesionView.vue';
 import Perfil_Usuario from '@/views/PerfilUsuarioView.vue';
 import Panel_Inicio from '@/views/PanelInicioView.vue';
 import VerCuento from '@/views/VerCuentoView.vue';
-import EditarCuento from '@/components/EditarCuento.vue';
 import RestaurarContraseña from '@/views/ValidarTokenRestauracionView.vue';
 import EditarAportacion from '@/components/EditarAportacion.vue';
 import Descarga from '@/views/VerPDF.vue'
@@ -39,14 +38,16 @@ const router = createRouter({
       component: VerCuento
     },
     {
-      path: '/ver_cuento_publico',
-      name: 'ver_cuento_publico',
-      component: VerCuentoPublicoView,
+      path: '/ver_cuento/:id_cuento',
+      name: 'ver_cuento_id',
+      component: VerCuento,
+      props: true
     },
     {
-      path: '/editar_cuento',
-      name: 'editar_cuento',
-      component: EditarCuento
+      path: '/ver_cuento_publico/:id_cuento',
+      name: 'ver_cuento_publico_id',
+      component: VerCuentoPublicoView,
+      props: true
     },
     {
       path: '/editar_aportacion',

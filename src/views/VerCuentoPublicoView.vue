@@ -1,48 +1,67 @@
 <!-- eslint-disable vue/no-v-text-v-html-on-component -->
 <template>
-  <v-overlay :value="loading" absolute>
-    <p>Loading</p>
-    <v-progress-circular indeterminate color="primary"></v-progress-circular>
-  </v-overlay>
+  <div class="ver-cuento-publico-view">
+    <AppNavbarWhite />
+    <v-overlay :value="loading" absolute>
+      <p>Loading</p>
+      <v-progress-circular indeterminate color="primary"></v-progress-circular>
+    </v-overlay>
 
-  <v-container class="vista-cuento" v-if="!loading">
-    <div class="d-flex justify-end">
-      <v-btn color="primary" class="mb-4 mr-4" :to="'/panel_inicio'">
-        Volver a Mis Cuentos
-      </v-btn>
-        <v-btn class="justify-end" color="danger" @click="descargar">
+    <div class="vista-cuento d-flex" v-if="!loading">
+      <v-card class="cuento-card pa-4 aportaciones-card" elevation="6" v-if="cuento">
+        <h4 class="text-h5 font-weight-bold"> {{ cuento.nombre }}</h4>
+        <p class="autores-header" v-if="cuento.autores">
+          Autores:
+          <span v-for="(autor, index) in cuento.autores" :key="index">
+            {{ autor }}{{ index < cuento.autores.length - 1 ? '  |  ' : '' }}
+          </span>
+        </p>
+        <v-divider></v-divider>
+        <v-card-text >
+          <v-list v-if="aportaciones.length > 0">
+            <v-list-item v-for="(aportacion, idx) in aportaciones" :key="idx" class="aportacion-item">
+                <v-list-item-title v-html="aportacion.contenido" class="contenido text-wrap"></v-list-item-title>
+            </v-list-item>
+          </v-list>
+          <p v-else class="no-aportaciones">El cuento se encuentra vacío actualmente.</p>
+        </v-card-text>
+      </v-card>
+
+      <div class="d-flex flex-column">
+        <button class="mb-4 mr-4" @click="gotoPanelInicio()">
+          <v-img
+            src="/icons/chevron-left.svg"
+            width="50"
+            height="50"
+            contain
+          />
+          VOLVER A MIS CUENTOS
+        </button>
+
+        <p v-if="cuento">
+          <strong>Descripción:</strong> <i> {{ cuento.descripcion }} </i>
+        </p>
+
+        <v-btn class="justify-end" color="danger" @click="descargarPdf() " :disabled="aportaciones.length === 0">
+          <v-icon left>mdi-file-download</v-icon>
         Descargar
         </v-btn>
+      </div>
+
     </div>
-
-    <v-card class="my-4 pa-4" elevation="6" v-if="cuento">
-      <v-card-title class="text-h5 font-weight-bold">Título: {{ cuento.nombre }}</v-card-title>
-      <v-divider></v-divider>
-      <v-card-text class="mt-2">
-        <p class="text-body-1 text-wrap">Descripción: {{ cuento.descripcion }}</p>
-      </v-card-text>
-    </v-card>
-
-    <v-card class="pa-4 aportaciones-card" elevation="6">
-      <v-card-title class="text-h6 font-weight-bold" >Aportaciones</v-card-title>
-      <v-divider></v-divider>
-      <v-card-text class="mt-2">
-        <v-list v-if="aportaciones.length > 0">
-          <v-list-item v-for="aportacion in aportaciones" :key="aportacion.id_aportacion" class="aportacion-item">
-              <v-list-item-title v-html="aportacion.contenido" class="contenido text-wrap"></v-list-item-title>
-          </v-list-item>
-        </v-list>
-        <p v-else class="no-aportaciones">Actualmente no existen aportaciones en este cuento.</p>
-      </v-card-text>
-    </v-card>
-  </v-container>
+  </div>
 </template>
 
 <script lang="ts">
+import '../assets/base.css';
+
 import axios from 'axios';
 import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 // @ts-expect-error: TypeScript cannot find module definitions for html2pdf.js
 import html2pdf from "html2pdf.js/dist/html2pdf.bundle.min.js"
+import { ref, onMounted, defineComponent } from 'vue';
+import { useRouter } from 'vue-router';
+import AppNavbarWhite from '@/components/AppNavbarWhite.vue';
 
 function convertDeltaToHtml(contenido: string | object): string {
   const delta = typeof contenido === 'string' ? JSON.parse(contenido) : contenido;
@@ -51,122 +70,76 @@ function convertDeltaToHtml(contenido: string | object): string {
   return html;
 }
 
-export default {
-  name: 'CuentoView',
-  data() {
-    return {
-      cuento: {} as { id: number; nombre: string; descripcion: string } | null,
-      aportaciones: [] as Array<{ id_aportacion: number; contenido: string; nombre_alumno: string }>,
-      showDeleteAportacionPopup: false,
-      id_cuento: localStorage.getItem("id_cuento") || null,
-      loading: false, // New loading state
-      id_alumno: localStorage.getItem("id_alumno") || null, // Add id_alumno
-      es_dueno: false
-    };
+export default defineComponent({
+  name: 'VerCuentoPublicoView',
+  components: {
+    AppNavbarWhite
   },
-  async mounted() {
-    console.log("ID cuento:", this.id_cuento);
-    console.log("ID alumno:", this.id_alumno);
-    if (!this.id_cuento || !this.id_alumno) {
-      alert("No tienes permiso para ver este cuento.");
-      return;
-    }
-    this.loading = true;
-    try {
-      const verificar = await this.verificarCuento();
-      if (!verificar)
-      return;
-
-      await Promise.all([this.obtenerCuento(), this.obtenerAportaciones()]);
-    } catch (error) {
-      console.error("Error cargando la vista del cuento:", error);
-    } finally {
-      this.loading = false;
+  props: {
+    id_cuento: {
+      type: String,
+      required: true
     }
   },
-  methods: {
-    async verificarCuento() {
+  setup(props) {
+    const cuento = ref<{ id: number; nombre: string; descripcion: string, autores: string[] } | null>(null);
+    const aportaciones = ref<Array<{ contenido: string }>>([]);
+    const loading = ref(false);
+    const route = useRouter();
+
+    const obtenerCuentoPublico = async () => {
       try {
-      const response = await axios.get('/php/verificacion.php', {
-        params: {
-          id_cuento: this.id_cuento,
-        },
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+        const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_cuento_publico.php`, {
+          params: { id_cuento: props.id_cuento }
+        });
+        if (response.status === 200) {
+          cuento.value = response.data.cuento;
+          aportaciones.value = response.data.aportaciones
+            .map((aport: { contenido: string }) => ({
+              ...aport,
+              contenido: convertDeltaToHtml(aport.contenido)
+            }))
+            .filter((aport: { contenido: string }) => aport.contenido.trim() !== '');
+        } else {
+          alert("No se pudo obtener el cuento.");
+          return
         }
-      });
-
-        console.log(response.data);
-
-        if (response.data.error) {
-          console.log(response.data.error);
-          alert(response.data.error);
-          this.$router.push('/panel_inicio');
-          return false;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        if (error.status === 404) {
+          alert("Cuento no encontrado.");
+        } else if (error.status === 403) {
+          alert("No tienes permiso para ver este cuento.");
+        } else {
+          alert("Error al obtener el cuento. Por favor, inténtalo de nuevo más tarde.");
         }
-        return true;
-      } catch (error) {
-        console.error("Error en la verificación:", error);
-        alert("No tienes permiso.");
-        this.$router.push('/panel_inicio');
-        return false;
+        // Redirigir al usuario al panel de inicio
+        route.push('/panel_inicio');
+        return;
       }
-    },
-    async obtenerCuento() {
-      try {
-        const response = await axios.get('/php/obtener_vista_cuento.php', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          params: { id_cuento: this.id_cuento }
-        });
-        this.cuento = response.data.length ? response.data[0] : [];
-      } catch (error) {
-        console.error("Error al obtener el cuento:", error);
-      }
-    },
-    async obtenerAportaciones() {
-      try {
-        const response = await axios.get('/php/obtener_aportaciones.php', {
-          params: {
-            id_cuento: this.id_cuento
-          }
-        });
+    }
 
-        const newAportaciones = response.data.aportaciones.map(({ id_aportacion, contenido, nombre_alumno }: { id_aportacion: number; contenido: string; nombre_alumno: string }) => ({
-          id_aportacion,
-          contenido: convertDeltaToHtml(contenido),
-          nombre_alumno
-        }));
-
-        this.aportaciones = [];
-        this.$nextTick(() => {
-          this.aportaciones = newAportaciones;
-        });
-
-        localStorage.setItem("id_aportacion", response.data.id_aportacion_alumno);
-      } catch (error) {
-        console.error("Error al obtener las aportaciones:", error);
-      }
-    },
-    async descargar() {
+    const descargarPdf = async () => {
       try {
-        if (this.aportaciones.length === 0) {
+        if (!cuento.value) {
+          alert("No hay cuento para descargar.");
+          return;
+        }
+
+        if (aportaciones.value.length === 0) {
           alert("No puedes descargar un cuento sin ninguna aportación!");
           return;
         }
 
-        this.loading = true;
-        await Promise.all([this.obtenerCuento(), this.obtenerAportaciones()]);
+        loading.value = true;
 
         const contenidoHTML = document.createElement('div');
           contenidoHTML.innerHTML = `
             <div style="font-family: Arial, sans-serif; color: #000; background: #fff; padding: 20px; max-width: 800px; margin: auto;">
-              <h1 style="color: #333;">${this.cuento?.nombre}</h1>
-              <p style="font-size: 14px; line-height: 1.6;">${this.cuento?.descripcion}</p>
+              <h1 style="color: #333;">${cuento.value?.nombre}</h1>
+              <p style="font-size: 14px; line-height: 1.6;">${cuento.value?.descripcion}</p>
               <hr style="border: 1px solid #ccc;">
-              ${this.aportaciones.map(aport => `
+              ${aportaciones.value.map(aport => `
                 <div style="margin-bottom: 15px; padding: 10px; solid #ddd">
                   <p style="font-size: 14px; color: #555;">${aport.contenido}</p>
                 </div>
@@ -174,21 +147,63 @@ export default {
             </div>
           `;
 
-        // 📥 Convertir a PDF y descargarlo
-        html2pdf().from(contenidoHTML).save(`${this.cuento?.nombre || 'cuento'}.pdf`);
+        html2pdf().from(contenidoHTML).save(`${cuento.value?.nombre || 'cuento'}.pdf`);
       } catch (error) {
         console.error("Error descargando", error);
       } finally {
-        alert("Cuento descargado")
+        alert("Cuento descargado");
       }
-      console.log("Navigate to panel_inicio");
-      this.$router.push('/panel_inicio');
+      loading.value = false;
     }
+
+    const  gotoPanelInicio = () => {
+      route.push('/panel_inicio');
+    }
+
+    onMounted(() => {
+      if (!props.id_cuento) {
+        alert("No tienes permiso para ver este cuento.");
+        return;
+      }
+
+      obtenerCuentoPublico();
+    });
+
+    return {
+      cuento,
+      aportaciones,
+      loading,
+      descargarPdf,
+      gotoPanelInicio
+    };
   }
-};
+});
 </script>
 
 <style scoped>
+.ver-cuento-publico-view {
+  background-color: var(--color-background-padding);
+  width: 100%;
+  height: 100%;
+}
+
+.vista-cuento {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  padding: 1rem;
+  padding-left: 5rem;
+  padding-right: 5rem;
+
+  gap: 2rem;
+}
+
+.cuento-card {
+  width: 100%;
+  height: 75vh;
+  overflow-y: auto;
+}
+
 .contenido {
   font-size: 1.2em;
   line-height: 1.5;

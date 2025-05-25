@@ -9,14 +9,12 @@
       />
       {{ nombre }}
     </a>
-    <p v-if="autores && autores.length > 0" class="autores-header">
-      <span>
-        Autores:
-      </span>
-      <span v-for="(autor, index) in autores" :key="index">
-        {{ autor }}<span v-if="index < autores.length - 1">|</span>
-      </span>
-    </p>
+      <p v-if="autores && autores.length > 0" class="autores-header">
+        <span>
+          Autores:
+        </span>
+        <span> {{ autores.join('     |     ') }} </span>
+      </p>
     <p v-else>
       Autores: Información no disponible
     </p>
@@ -34,8 +32,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 const verCuentoPublico = (id_cuento: number) => {
-  localStorage.setItem("id_cuento", id_cuento.toString());
-  router.push('/ver_cuento_publico');
+  router.push('/ver_cuento_publico/' + id_cuento);
 };
 
 defineProps<{
