@@ -2,9 +2,10 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import FormularioPerfil from '@/components/FormularioPerfil.vue';
 
 const router = useRouter();
-const datosAlumno = ref({ id_alumno: '', nombre: '' });
+const datosAlumno = ref({ id_alumno: '', nombre: '' , correo: ''});
 const showDeleteDialog = ref(false);
 const PHP_URL = import.meta.env.VITE_PHP_SERVER;
 
@@ -32,7 +33,8 @@ function getDatosAlumno() {
     .then((response) => {
       datosAlumno.value = {
         id_alumno: response.data.id_alumno,
-        nombre: response.data.nombre
+        nombre: response.data.nombre,
+        correo: response.data.correo
       };
     })
     .catch((error) => {
@@ -45,6 +47,7 @@ function editarAlumno() {
     .put(`${PHP_URL}/php/editar_alumno.php`, {
       id_alumno: datosAlumno.value.id_alumno,
       nombre: datosAlumno.value.nombre,
+      correo: datosAlumno.value.correo,
     },
     {
       headers: {
@@ -93,37 +96,66 @@ function eliminarAlumno() {
 </script>
 
 <template>
-  <v-container class="fill-height d-flex justify-center align-center">
-    <v-card class="pa-5" width="500" elevation="10">
-      <v-card-title class="text-h5 text-center">Editar Perfil</v-card-title>
-      <v-card-text>
-        <v-form @submit.prevent="editarAlumno">
-          <v-text-field v-model="datosAlumno.nombre" label="Nombre" outlined required />
-          <v-btn block color="green-darken-3" class="mt-3" type="submit">Guardar Cambios</v-btn>
-          <v-btn block variant="text" class="mt-2" @click="router.push('/panel_inicio')">Cancelar</v-btn>
-          <v-btn block color="red-darken-3" class="mt-2" @click="showDeleteDialog = true">Eliminar Cuenta </v-btn>
-        </v-form>
-      </v-card-text>
-    </v-card>
-
-    <v-dialog v-model="showDeleteDialog" max-width="400">
-      <v-card>
-        <v-card-title class="text-h6">Confirmar Eliminación</v-card-title>
+  <div class="main-container">
+    <v-container class="fill-height d-flex">
+      <v-card color="transparent" width="500" variant="flat">
+        <div class="d-flex justify-space-between align-center">
+          <v-card-title class="text-h5">Mi perfil</v-card-title>
+          <v-btn class="text-decoration-underline" variant="text" color="red-darken-3" @click="showDeleteDialog = true">Eliminar Mi Cuenta</v-btn>
+        </div>
         <v-card-text>
-          ¿Estás seguro de querer eliminar tu cuenta?<br />
-          Se eliminarán todos tus cuentos y cualquier modificación que hayan hecho tus compañeros.
+          <FormularioPerfil :datosAlumno="datosAlumno"/>
         </v-card-text>
-        <v-card-actions>
-          <v-btn color="red-darken-3" @click="eliminarAlumno">Eliminar</v-btn>
-          <v-btn variant="text" @click="showDeleteDialog = false">Cancelar</v-btn>
-        </v-card-actions>
+
+        <v-btn
+          prepend-icon="mdi-arrow-left" variant="text"
+          class="text-h7 justify-start" @click="router.push('/panel_inicio')"
+        >
+          Regresar a panel de inicio
+        </v-btn>
       </v-card>
-    </v-dialog>
-  </v-container>
+
+      <v-dialog v-model="showDeleteDialog" max-width="400">
+        <v-card>
+          <v-card-title class="text-h6">Confirmar Eliminación</v-card-title>
+          <v-card-text>
+            ¿Estás seguro de querer eliminar tu cuenta?<br />
+            Se eliminarán todos tus cuentos y cualquier modificación que hayan hecho tus compañeros.
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="red-darken-3" @click="eliminarAlumno">Eliminar</v-btn>
+            <v-btn variant="text" @click="showDeleteDialog = false">Cancelar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-container>
+
+    <v-container>
+        <v-img
+          width="420"
+          class="logo-image"
+          src="/img/perfil.png"
+          alt="Imagen decorativa de un dragon atacando un castillo"
+        />
+    </v-container>
+  </div>
 </template>
 
 <style scoped>
 .fill-height {
   height: 100vh;
+}
+
+.main-container {
+  width: 100vw;
+  padding: 2rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+
+  gap: 0;
+
 }
 </style>

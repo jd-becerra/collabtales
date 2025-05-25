@@ -78,6 +78,7 @@
   --input-height-md: 40px;
   --input-height-sm: 3em;
   --input-height-wide: 200px;
+  --input-height-wide-sm: 30px;
 
   --color-btn-white-bg: var(--vt-c-white);
 
