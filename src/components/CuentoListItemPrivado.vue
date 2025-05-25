@@ -1,6 +1,6 @@
 <template>
   <v-list-item class="cuento-item">
-    <a @click="verCuentoPrivado(id_cuento)" class="cuento-item-header text-h5">
+    <a @click="verCuentoPrivado(id_cuento, es_dueño ?? false)" class="cuento-item-header text-h5">
       <v-img
         class="icon"
         src="/icons/book.svg"
@@ -34,8 +34,12 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-const verCuentoPrivado = (id_cuento: number) => {
-  router.push('/ver_cuento/' + id_cuento);
+const verCuentoPrivado = (id_cuento: number, es_creador: boolean) => {
+  if (es_creador) {
+    router.push('/ver_cuento_creado/' + id_cuento);
+  } else {
+    router.push('/ver_cuento_colaborador/' + id_cuento);
+  }
 };
 defineProps<{
   id_cuento: number;

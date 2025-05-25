@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Inicio_Sesion from '@/views/InicioSesionView.vue';
 import Perfil_Usuario from '@/views/PerfilUsuarioView.vue';
 import Panel_Inicio from '@/views/PanelInicioView.vue';
-import VerCuento from '@/views/VerCuentoView.vue';
+import VerCuentoCreadoView from '@/views/VerCuentoCreadoView.vue';
 import RestaurarContraseña from '@/views/ValidarTokenRestauracionView.vue';
 import EditarAportacion from '@/components/EditarAportacion.vue';
 import Descarga from '@/views/VerPDF.vue'
@@ -33,14 +33,9 @@ const router = createRouter({
       component: MisCuentosView
     },
     {
-      path: '/ver_cuento',
-      name: 'ver_cuento',
-      component: VerCuento
-    },
-    {
-      path: '/ver_cuento/:id_cuento',
-      name: 'ver_cuento_id',
-      component: VerCuento,
+      path: '/ver_cuento_creado/:id_cuento',
+      name: 'ver_cuento_creado',
+      component: VerCuentoCreadoView,
       props: true
     },
     {

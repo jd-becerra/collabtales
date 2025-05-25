@@ -90,6 +90,8 @@ while ($row_aportacion = $result_aportaciones->fetch_assoc()) {
 }
 
 // Cerrar los statements
+$sql_publicado->close();
+$sql_bloqueado->close();
 $sql_cuento->close();
 $sql_aportaciones->close();
 

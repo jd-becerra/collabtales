@@ -9,45 +9,47 @@
 
     <div class="vista-cuento d-flex" v-if="!loading">
       <v-card class="cuento-card pa-4 aportaciones-card" elevation="6" v-if="cuento">
-        <h4 class="text-h5 font-weight-bold"> {{ cuento.nombre }}</h4>
-        <p class="autores-header" v-if="cuento.autores">
+        <h4 class="cuento-nombre text-h4 font-weight-bold"> {{ cuento.nombre }}</h4>
+        <p class="autores-header mb-3" v-if="cuento.autores">
           Autores:
           <span v-for="(autor, index) in cuento.autores" :key="index">
             {{ autor }}{{ index < cuento.autores.length - 1 ? '  |  ' : '' }}
           </span>
         </p>
-        <v-divider></v-divider>
-        <v-card-text >
-          <v-list v-if="aportaciones.length > 0">
-            <v-list-item v-for="(aportacion, idx) in aportaciones" :key="idx" class="aportacion-item">
-                <v-list-item-title v-html="aportacion.contenido" class="contenido text-wrap"></v-list-item-title>
-            </v-list-item>
-          </v-list>
-          <p v-else class="no-aportaciones">El cuento se encuentra vacío actualmente.</p>
-        </v-card-text>
+        <div class="divider"></div>
+        <v-list v-if="aportaciones.length > 0" class="contenido">
+          <v-list-item v-for="(aportacion, idx) in aportaciones" :key="idx" class="aportacion-item">
+              <v-list-item-title v-html="aportacion.contenido" class="text-wrap"></v-list-item-title>
+          </v-list-item>
+        </v-list>
+        <p v-else class="no-aportaciones">El cuento se encuentra vacío actualmente.</p>
       </v-card>
 
-      <div class="d-flex flex-column">
-        <button class="mb-4 mr-4" @click="gotoPanelInicio()">
-          <v-img
-            src="/icons/chevron-left.svg"
-            width="50"
-            height="50"
-            contain
-          />
-          VOLVER A MIS CUENTOS
-        </button>
-
-        <p v-if="cuento">
+      <div class="options-container d-flex flex-column">
+        <div class="return-container">
+          <button class="return-btn mb-4 mr-4" @click="gotoPanelInicio()">
+              <img
+                src="/icons/chevron_left_small.svg"
+                class="return-icon"
+                contain
+              />
+            VOLVER A MIS CUENTOS
+          </button>
+        </div>
+        <p class="cuento-descripcion" v-if="cuento">
           <strong>Descripción:</strong> <i> {{ cuento.descripcion }} </i>
         </p>
-
-        <v-btn class="justify-end" color="danger" @click="descargarPdf() " :disabled="aportaciones.length === 0">
-          <v-icon left>mdi-file-download</v-icon>
-        Descargar
-        </v-btn>
+        <div class="move-bottom">
+          <BotonSm
+            class="download-btn w-100"
+            @click="descargarPdf() "
+            icon_path="/icons/download.svg"
+            :disabled="aportaciones.length === 0"
+            >
+            Descargar en PDF
+          </BotonSm>
+        </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -62,6 +64,7 @@ import html2pdf from "html2pdf.js/dist/html2pdf.bundle.min.js"
 import { ref, onMounted, defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
 import AppNavbarWhite from '@/components/AppNavbarWhite.vue';
+import BotonSm from '@/components/BotonSm.vue';
 
 function convertDeltaToHtml(contenido: string | object): string {
   const delta = typeof contenido === 'string' ? JSON.parse(contenido) : contenido;
@@ -73,7 +76,8 @@ function convertDeltaToHtml(contenido: string | object): string {
 export default defineComponent({
   name: 'VerCuentoPublicoView',
   components: {
-    AppNavbarWhite
+    AppNavbarWhite,
+    BotonSm
   },
   props: {
     id_cuento: {
@@ -82,7 +86,7 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const cuento = ref<{ id: number; nombre: string; descripcion: string, autores: string[] } | null>(null);
+    const cuento = ref<{ nombre: string; descripcion: string, autores: string[] } | null>(null);
     const aportaciones = ref<Array<{ contenido: string }>>([]);
     const loading = ref(false);
     const route = useRouter();
@@ -190,8 +194,7 @@ export default defineComponent({
 .vista-cuento {
   display: flex;
   flex-direction: row;
-  align-items: baseline;
-  padding: 1rem;
+  padding: 1.5rem;
   padding-left: 5rem;
   padding-right: 5rem;
 
@@ -200,40 +203,82 @@ export default defineComponent({
 
 .cuento-card {
   width: 100%;
-  height: 75vh;
+  height: 70vh;
   overflow-y: auto;
+  border: 1px solid var(--color-text-input-fg-default);
+  background-color: var(--color-text-input-bg-default);
+  margin-top: 1rem;
 }
 
 .contenido {
-  font-size: 1.2em;
-  line-height: 1.5;
-  min-height: 100px;
-  padding: 10px;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+
+  background-color: transparent;
+}
+
+.cuento-nombre {
+  color: var(--color-text-blue);
 }
 
 .no-aportaciones {
   text-align: center;
   font-size: 1.2em;
-  color: #888;
+  color: var(--vt-c-gray-dark);
 }
 
-.v-btn {
-  margin-top: 20px;
+.options-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 70vh;
+
+  padding: 0;
+  margin: 0;
+
 }
 
-.v-dialog {
-  max-width: 400px;
+.return-container {
+  display: flex;
+  justify-content: right;
+
+  width: 100%;
+  padding: 0;
+  margin: 0;
 }
 
-.v-card-title {
+.return-btn {
+  display: flex;
+  justify-content: right;
+
   font-weight: bold;
+  font-size: 1.3em;
+  width: 70%;
+  border: none;
+
+  margin: 0;
+
+}
+.return-icon {
+  height: 32px;
+  width: 32px;
+  padding: 0;
+  margin: 0;
 }
 
-.v-list-item-title {
-  font-weight: normal;
+.move-bottom {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;       /* Stack children vertically */
+  justify-content: flex-end;
 }
 
-.v-divider {
-  margin: 10px 0;
+.divider {
+  border: 1px solid var(--vt-c-gray-soft);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 </style>

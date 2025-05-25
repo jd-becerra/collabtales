@@ -3,13 +3,15 @@
     class="boton-sm"
     :style="buttonStyle"
   >
-   <v-img
-      v-if="icon_path"
-      :src="icon_path"
-      class="icon"
-      contain
-   />
-    <slot class="boton-name"></slot>
+   <div class="center-div">
+     <v-img
+        v-if="icon_path"
+        :src="icon_path"
+        class="icon"
+        contain
+     />
+      <slot class="boton-name"></slot>
+   </div>
   </v-btn>
 </template>
 
@@ -66,13 +68,19 @@ const buttonStyle = computed(() => {
   font-weight: 500;
   border-radius: var(--border-radius-default);
   width: var(--input-width-sm);
-  height: auto;
+  height: var(--input-height-sm);
   text-transform: none;
   font-family: 'Inter', sans-serif;
 
   display: flex;
-  justify-content: start;
-  align-items: start;
+}
+
+.center-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 2rem;
 }
 
 .icon {
