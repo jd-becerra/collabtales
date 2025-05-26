@@ -59,6 +59,10 @@ const buttonStyle = computed(() => {
     const purple = getCSSVar('--color-edit')
     fg_color = purple
     border_color = purple
+  } else if (props.color_type === 'white_gray') {
+    const gray = getCSSVar('--vt-c-gray-dark')
+    fg_color = gray
+    border_color = gray
   }
 
   return {

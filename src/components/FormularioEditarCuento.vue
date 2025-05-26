@@ -10,25 +10,23 @@
         />
       </v-btn>
 
-      <h2 class="unirse-header text-h6 mt-3">CREAR UN CUENTO</h2>
-      <p class="text-caption">Escribe el nombre de tu cuento y cuéntanos brevemente de qué tratará en la descripción.</p>
+      <h2 class="unirse-header text-h6 mt-3">EDITAR CUENTO</h2>
+      <p class="text-caption">Escribe el nombre y la descripción de tu cuento. Asegúrate de no dejar campos vacíos</p>
 
       <div class="mt-4">
         <TextInputSm
-          v-model="nuevo_cuento.nombre"
+          v-model="editar_cuento.nombre"
           label="Nombre del cuento"
           type="text"
-          placeholder="Ejemplo: El Lago de los Sueños"
           required
-          @keyup.enter="crearCuento()"
+          @keyup.enter="editarCuento()"
         />
         <TextInputSmWide class="mt-3"
-          v-model="nuevo_cuento.descripcion"
+          v-model="editar_cuento.descripcion"
           label="Descripción"
           type="text"
-          placeholder="Escribe una breve descripción del cuento"
           required
-          @keyup.enter="crearCuento()"
+          @keyup.enter="editarCuento()"
         />
 
         <v-container class="d-flex justify-space-between align-start pa-0 mt-5">
@@ -38,7 +36,11 @@
           >
             {{ popupValues.mensaje }}
           </small>
-          <BotonXs @click="crearCuento()">Crear Cuento</BotonXs>
+          <BotonXs
+            color_type="white_green"
+            @click="editarCuento()"
+            :disabled="disableGuardar"
+            >Guardar cambios</BotonXs>
         </v-container>
       </div>
     </v-container>
@@ -48,7 +50,7 @@
 <script setup lang="ts">
 import '../assets/base.css';
 
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import TextInputSm from '@/components/TextInputSm.vue';
 import TextInputSmWide from './TextAreaSmWide.vue';
@@ -57,9 +59,15 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-const nuevo_cuento = ref({nombre: '', descripcion: ''});
+const emit = defineEmits(['close-popup']);
 
-defineEmits(['close-popup']);
+const props = defineProps<{
+  id_cuento: number | null;
+  nombre: string;
+  descripcion: string;
+}>();
+
+const editar_cuento = ref({nombre: props.nombre, descripcion: props.descripcion});
 
 function getCSSVar(variable: string): string {
   // Esta función obtiene el valor de una variable CSS definida en assets/base.css
@@ -77,18 +85,23 @@ function showPopup(title: string, msg: string) {
   };
 }
 
-const crearCuento = async () => {
-  if (!nuevo_cuento.value.nombre.trim() || !nuevo_cuento.value.descripcion.trim()) {
+const id_cuento = ref<number | null>(props.id_cuento);
+const disableGuardar = ref(false);
+
+const editarCuento = async () => {
+  if (!editar_cuento.value.nombre.trim() || !editar_cuento.value.descripcion.trim()) {
     showPopup('Error', 'Por favor, completa todos los campos.');
     return;
   }
+  disableGuardar.value = true;
 
   try {
-    const response = await axios.post(
-      `${import.meta.env.VITE_PHP_SERVER}/php/crear_cuento.php`,
+    const response = await axios.put(
+      `${import.meta.env.VITE_PHP_SERVER}/php/editar_cuento.php`,
       JSON.stringify({
-        nombre: nuevo_cuento.value.nombre,
-        descripcion: nuevo_cuento.value.descripcion,
+        id_cuento: id_cuento,
+        nombre_cuento: editar_cuento.value.nombre,
+        descripcion_cuento: editar_cuento.value.descripcion,
       }),
       {
         headers: {
@@ -98,17 +111,21 @@ const crearCuento = async () => {
       }
     );
 
-    if (response.status === 201) {
-      showPopup('Éxito', 'Cuento creado exitosamente. Redirigiendo...');
+    if (response.status === 200) {
+      showPopup('Éxito', 'Cuento editado correctamente. Redigiriendo a tu cuento...');
+      setTimeout(() => {
+        emit('close-popup');
+        router.push('/ver_cuento_creado/' + id_cuento.value);
+      }, 1000);
     }
-    setTimeout(() => {
-      localStorage.setItem('id_cuento', response.data.id_cuento_creado);
-      router.push('/ver_cuento_creado/' + response.data.id_cuento_creado);
-    }, 2000); // Redirige después de 2 segundos
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error?.response?.status === 400) {
       showPopup('Error', 'Comprueba que los campos sean válidos.');
+    } else if (error?.response?.status === 403) {
+      showPopup('Error', 'No tienes permiso para editar este cuento.');
+    } else if (error?.response?.status === 404) {
+      showPopup('Error', 'Cuento no encontrado.');
     } else if (error?.response?.status === 500) {
       showPopup('Error', 'Error en el servidor. Intenta más tarde.');
     } else {
@@ -116,6 +133,10 @@ const crearCuento = async () => {
     }
   }
 };
+
+onMounted(() => {
+  disableGuardar.value = false;
+});
 
 </script>
 

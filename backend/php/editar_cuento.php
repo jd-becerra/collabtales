@@ -6,16 +6,16 @@ include('jwt_auth.php');
 $user = authenticate();
 include('config.php');
 
-// Sólo deben haber 3 parametros (id_cuento, nombre_cuento, descripcion_cuento)
-if (!isset($_GET['id_cuento']) || !isset($_GET['nombre_cuento']) || !isset($_GET['descripcion_cuento'])) {
+$id_alumno = $user['id_alumno'] ?? null;
+
+$data = json_decode(file_get_contents("php://input"), true);
+
+if (count($data) !== 3 || !isset($data['id_cuento'], $data['nombre_cuento'], $data['descripcion_cuento'])) {
     http_response_code(400);
     echo json_encode(["error" => "Parámetros inválidos."]);
     exit();
 }
 
-$id_alumno = $user['id_alumno'] ?? null;
-
-$data = json_decode(file_get_contents("php://input"), true);
 $id_cuento = $data['id_cuento'] ?? null;
 $nombre_cuento = trim($data['nombre_cuento'] ?? '');
 $descripcion_cuento = trim($data['descripcion_cuento'] ?? '');
@@ -54,11 +54,11 @@ $stmt = $conn->prepare("
 $stmt->bind_param("ssii", $nombre_cuento, $descripcion_cuento, $id_cuento, $id_alumno);
 $success = $stmt->execute();
 
-if ($success && $stmt->affected_rows > 0) {
+if ($success) {
     echo json_encode(["success" => "Cuento actualizado correctamente."]);
 } else {
     http_response_code(403);
-    echo json_encode(["error" => "No se pudo actualizar el cuento. Asegúrate de tener permisos."]);
+    echo json_encode(["error" => "No tienes permiso para realizar esta acción."]);
 }
 
 $stmt->close();

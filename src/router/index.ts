@@ -3,11 +3,14 @@ import Inicio_Sesion from '@/views/InicioSesionView.vue';
 import Perfil_Usuario from '@/views/PerfilUsuarioView.vue';
 import Panel_Inicio from '@/views/PanelInicioView.vue';
 import VerCuentoCreadoView from '@/views/VerCuentoCreadoView.vue';
+import VerCuentoColaboradorView from '@/views/VerCuentoColaboradorView.vue';
 import RestaurarContraseña from '@/views/ValidarTokenRestauracionView.vue';
 import EditarAportacion from '@/components/EditarAportacion.vue';
 import Descarga from '@/views/VerPDF.vue'
 import VerCuentoPublicoView from '@/views/VerCuentoPublicoView.vue';
 import MisCuentosView from '@/views/MisCuentosView.vue';
+import PrevisualizarCuentoCreador from '@/views/PrevisualizarCuentoCreador.vue';
+import VisualizarCuentoCreador from '@/views/VisualizarCuentoCreador.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,9 +42,27 @@ const router = createRouter({
       props: true
     },
     {
+      path: '/ver_cuento_colaborador/:id_cuento',
+      name: 'ver_cuento_colaborador',
+      component: VerCuentoColaboradorView,
+      props: true
+    },
+    {
       path: '/ver_cuento_publico/:id_cuento',
       name: 'ver_cuento_publico_id',
       component: VerCuentoPublicoView,
+      props: true
+    },
+    {
+      path: '/previsualizar_cuento_creador/:id_cuento',
+      name: 'previsualizar_cuento_creador',
+      component: PrevisualizarCuentoCreador,
+      props: true
+    },
+    {
+      path: '/visualizar_cuento_creador/:id_cuento',
+      name: 'visualizar_cuento_creador',
+      component: VisualizarCuentoCreador,
       props: true
     },
     {

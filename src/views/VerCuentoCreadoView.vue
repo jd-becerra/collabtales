@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-v-text-v-html-on-component -->
 <template>
   <AppNavbar />
 
@@ -75,13 +74,29 @@
         </v-card>
 
         <div class="buttons-container">
-          <BotonSm class="cuento-btn" icon_path="/icons/visibility.svg" v-if="cuento?.publicado === 1">
+          <BotonSm
+            v-if="cuento?.publicado === 1"
+            class="cuento-btn"
+            icon_path="/icons/visibility.svg"
+            @click="goToVisualizarCuentoCreador"
+          >
             Visualizar cuento
           </BotonSm>
-          <BotonSm class="cuento-btn" color_type="white_purple" icon_path="/icons/share.svg" v-else>
+          <BotonSm
+            v-else
+            class="cuento-btn"
+            color_type="white_purple"
+            icon_path="/icons/share.svg"
+            @click="goToPrevisualizarCuento"
+          >
             Publicar cuento
           </BotonSm>
-          <BotonSm class="cuento-btn" icon_path="/icons/edit_note.svg" color_type="white_purple">
+          <BotonSm
+            class="cuento-btn"
+            icon_path="/icons/edit_note.svg"
+            color_type="white_purple"
+            @click="showEditarCuento = true"
+          >
             Modificar cuento
           </BotonSm>
           <BotonSm
@@ -93,15 +108,35 @@
           >
             Gestionar colaboradores
           </BotonSm>
-          <BotonSm class="cuento-btn" icon_path="/icons/delete_forever.svg" color_type="white_red" @click="showDeleteAportacionPopup = true">
+          <BotonSm
+            class="cuento-btn"
+            icon_path="/icons/delete_forever.svg"
+            color_type="white_red"
+            @click="showEliminarCuento = true">
             Eliminar cuento
           </BotonSm>
         </div>
       </div>
-    </div>
 
+    <v-dialog v-model="showEditarCuento" v-if="showEditarCuento" max-width="400" class="options-dialog">
+      <FormularioEditarCuento
+        v-if="showEditarCuento"
+        :id_cuento="Number(id_cuento)"
+        :nombre="cuento?.nombre ?? ''"
+        :descripcion="cuento?.descripcion ?? ''"
+        @close-popup="showEditarCuento = false"
+      />
+    </v-dialog>
 
-
+    <v-dialog v-model="showEliminarCuento" max-width="400" class="options-dialog">
+      <ConfirmacionEliminarCuento
+        v-if="showEliminarCuento"
+        :id_cuento="Number(id_cuento)"
+        :nombre_cuento="cuento?.nombre ?? ''"
+        @close-popup="showEliminarCuento = false"
+      />
+    </v-dialog>
+  </div>
 </template>
 
 <script lang="ts">
@@ -114,6 +149,8 @@ import ReturnBtn from '@/components/ReturnBtn.vue';
 import AportacionItem from '@/components/AportacionItem.vue';
 import AportacionAutorItem from '@/components/AportacionAutorItem.vue';
 import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
+import FormularioEditarCuento from '@/components/FormularioEditarCuento.vue';
+import ConfirmacionEliminarCuento from '@/components/ConfirmacionEliminarCuento.vue';
 
 function convertDeltaToHtml(contenido: string | object): string {
   const delta = typeof contenido === 'string' ? JSON.parse(contenido) : contenido;
@@ -131,6 +168,8 @@ export default defineComponent({
     ReturnBtn,
     AportacionItem,
     AportacionAutorItem,
+    FormularioEditarCuento,
+    ConfirmacionEliminarCuento,
   },
   props: {
     id_cuento: {
@@ -148,7 +187,8 @@ export default defineComponent({
       } | null>(null);
     const aportaciones = ref<Array<{ autor: string; contenido: string; es_autor: boolean }>>([]);
     const id_aportacion = ref<string | null>(null);
-    const showDeleteAportacionPopup = ref(false);
+    const showEliminarCuento = ref(false);
+    const showEditarCuento = ref(false);
     const loading = ref(false);
     const id_cuento = props.id_cuento;
 
@@ -183,22 +223,6 @@ export default defineComponent({
       }
     }
 
-    const eliminarAportacion = async () => {
-      loading.value = true;
-      try {
-        await axios.post('/php/eliminar_aportacion.php',
-          { id_cuento: props.id_cuento },
-          {
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-          }
-        );
-      } catch (error) {
-        console.error("Error al eliminar la aportación:", error);
-      } finally {
-        loading.value = false;
-      }
-    }
-
     const navegarAportacion = () => {
       try {
         if (aportaciones.value.length === 0) {
@@ -209,6 +233,14 @@ export default defineComponent({
       } catch (error) {
         console.error("Error al obtener el ID de la aportación:", error);
       }
+    }
+
+    const goToPrevisualizarCuento = () => {
+      router.push('/previsualizar_cuento_creador/' + props.id_cuento);
+    }
+
+    const goToVisualizarCuentoCreador = () => {
+      router.push('/visualizar_cuento_creador/' + props.id_cuento);
     }
 
     const goToMisCuentos = () => {
@@ -234,13 +266,15 @@ export default defineComponent({
       cuento,
       aportaciones,
       id_aportacion,
-      showDeleteAportacionPopup,
+      showEliminarCuento,
+      showEditarCuento,
       loading,
       obtenerCuentoPrivadoCreador,
-      eliminarAportacion,
       navegarAportacion,
       goToMisCuentos,
       getCSSVar,
+      goToPrevisualizarCuento,
+      goToVisualizarCuentoCreador
     };
   }
 });
