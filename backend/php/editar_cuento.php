@@ -6,26 +6,21 @@ include('jwt_auth.php');
 $user = authenticate();
 include('config.php');
 
-// Si hay más de 3 parámetros
-if (!is_array($_GET) || count($_GET) > 3) {
+// Sólo deben haber 3 parametros (id_cuento, nombre_cuento, descripcion_cuento)
+if (!isset($_GET['id_cuento']) || !isset($_GET['nombre_cuento']) || !isset($_GET['descripcion_cuento'])) {
     http_response_code(400);
     echo json_encode(["error" => "Parámetros inválidos."]);
     exit();
 }
-$id_alumno = $user['id_alumno'] ?? null; // We already have the user authenticated (don't trust client-side data)
+
+$id_alumno = $user['id_alumno'] ?? null;
 
 $data = json_decode(file_get_contents("php://input"), true);
 $id_cuento = $data['id_cuento'] ?? null;
 $nombre_cuento = trim($data['nombre_cuento'] ?? '');
 $descripcion_cuento = trim($data['descripcion_cuento'] ?? '');
 
-if (!$id_cuento || !$nombre_cuento || !$descripcion_cuento || !$id_alumno) {
-    http_response_code(400);
-    echo json_encode(["error" => "Parámetros inválidos."]);
-    exit();
-}
-
-// Optional: Validate max lengths
+// Validar que los parámetros excedan el límite de caracteres
 if (strlen($nombre_cuento) > 255 || strlen($descripcion_cuento) > 511) {
     http_response_code(400);
     echo json_encode(["error" => "Parámetros inválidos."]);

@@ -2,12 +2,14 @@
     <AppNavbar />
   <div class="main-container">
     <v-container class="d-flex flex-column align-start justify-start mb-0 py-0 mt-2">
-      <div class="home-header-container d-flex align-start justify-start">
+      <div class="home-header-container d-flex align-center">
         <v-img
-          class="icon"
+          class="icon mr-2"
           src="/icons/bookmark.svg"
           alt="Ícono para cuentos públicos"
           contain
+          width="24"
+          height="24"
         />
         <h1 class="home-header">MIS CUENTOS</h1>
       </div>
@@ -172,11 +174,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.icon {
-  width: var(--icon-size-default);
-  height: var(--icon-size-default);
-}
-
 .main-container {
   height: 100%;
   width: 100vw;
@@ -210,6 +207,7 @@ onMounted(() => {
 
 .home-header {
   font-weight: bold;
+  font-size: var(--font-main-header-size);
 }
 
 .home-options {

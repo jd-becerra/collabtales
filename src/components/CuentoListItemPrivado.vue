@@ -2,7 +2,7 @@
   <v-list-item class="cuento-item">
     <a @click="verCuentoPrivado(id_cuento, es_dueño ?? false)" class="cuento-item-header text-h5">
       <v-img
-        class="icon"
+        class="icon mr-2"
         src="/icons/book.svg"
         alt="Ícono para un cuento"
         contain
@@ -58,8 +58,8 @@ defineProps<{
 }
 
 .icon {
-  width: var(--icon-size-default);
-  height: var(--icon-size-default);
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
 }
 

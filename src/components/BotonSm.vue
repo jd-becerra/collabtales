@@ -3,12 +3,17 @@
     class="boton-sm"
     :style="buttonStyle"
   >
-   <div class="center-div">
+   <div
+    class="center-div"
+    :style="{ gap: props.gap || '2rem' }"
+   >
      <v-img
         v-if="icon_path"
         :src="icon_path"
         class="icon"
         contain
+        :width="icon_size || '28px'"
+        :height="icon_size || '28px'"
      />
       <slot class="boton-name"></slot>
    </div>
@@ -23,6 +28,8 @@ import { computed } from 'vue'
 const props = defineProps<{
   color_type?: string,
   icon_path?: string,
+  icon_size?: string,
+  gap?: string
 }>()
 
 function getCSSVar(variable: string): string {
@@ -80,17 +87,5 @@ const buttonStyle = computed(() => {
   justify-content: center;
   align-items: center;
   width: 100%;
-  gap: 2rem;
-}
-
-.icon {
-  width: var(--icon-size-default);
-  height: var(--icon-size-default);
-}
-
-.boton-name {
-  display: flex;
-  justify-content: end;
-  align-items: end;
 }
 </style>

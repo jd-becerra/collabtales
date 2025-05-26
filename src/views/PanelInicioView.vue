@@ -3,12 +3,14 @@
     <AppNavbar />
 
     <v-container class="d-flex flex-column align-start justify-start">
-      <div class="home-header-container d-flex align-start justify-start">
+      <div class="home-header-container d-flex align-center">
         <v-img
-          class="icon"
+          class="icon mr-2"
           src="/icons/public.svg"
           alt="Ícono para cuentos públicos"
           contain
+          width="24"
+          height="24"
         />
         <h1 class="home-header">BIBLIOTECA DE CUENTOS</h1>
       </div>
@@ -204,6 +206,7 @@ onMounted(() => {
 
 .home-header {
   font-weight: bold;
+  font-size: var(--font-main-header-size);
 }
 
 .home-options {

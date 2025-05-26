@@ -12,7 +12,6 @@
 
   --vt-c-gray-dark: #535353;
   --vt-c-gray-soft: #B5AFB2;
-  --vt-c-gray-soft: #B5AFB2;
 
   --vt-c-blue-dark: #005F70;
   --vt-c-blue-bright: #00A8C3;
@@ -52,6 +51,7 @@
 
   --color-heading: var(--vt-c-text-light-1);
   --color-text-black: var(--vt-c-black);
+  --color-text-off: var(--vt-c-gray-dark);
   --color-text-white: var(--vt-c-white);
 
   --color-error: var(--vt-c-red);
@@ -69,13 +69,14 @@
   --color-text-blue: var(--vt-c-blue-dark);
   --color-border-blue: var(--vt-c-blue-dark);
   --color-hover-blue: var(--vt-c-blue-bright);
+  
   --input-width-lg: 40rem;
   --input-width-md: 30rem;
   --input-width-sm: 20rem;
   --input-width-xs: 15rem;
 
   --input-height-lg: 40px;
-  --input-height-md: 40px;
+  --input-height-md: 2.5em;
   --input-height-sm: 3em;
   --input-height-wide: 200px;
   --input-height-wide-sm: 30px;
@@ -88,6 +89,8 @@
   --section-gap: 160px;
 
   --font-family-small-text: 'Inter', sans-serif;
+  --font-main-header-size: 1.5rem;
+  --font-state-size: 1rem;
   --font-size-md: 1.25rem;
   --font-size-sm: 1.1rem;
   --font-size-xs: 0.875rem;

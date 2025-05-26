@@ -7,59 +7,98 @@
     <v-progress-circular indeterminate color="primary"></v-progress-circular>
   </v-overlay>
 
-    <div>
-      <div v-if="cuento">
-        <h2 class="text-h5 font-weight-bold">Título: {{ cuento.nombre }}</h2>
-        <p class="text-body-1">Descripción: {{ cuento.descripcion }}</p>
-      </div>
-      <v-card class="pa-4 aportaciones-card" elevation="6">
-        <v-card-title class="text-h6 font-weight-bold">Aportaciones</v-card-title>
-        <v-divider></v-divider>
-        <v-card-text class="mt-2">
-          <v-list v-if="aportaciones.length > 0">
-            <v-list-item v-for="(aportacion, idx) in aportaciones" :key="idx" class="aportacion-item" :class="{ 'borde-rojo': aportacion.es_autor }">
-              <div class="d-flex justify-space-between align-center w-100">
-                <v-list-item-title class="text-body-1 font-weight-bold">{{ aportacion.autor}}</v-list-item-title>
-                <v-btn color="green" v-if="aportacion.es_autor" @click="navegarAportacion()">Editar Aportación</v-btn>
+    <div class="main-container">
+      <div>
+        <div v-if="cuento">
+          <h2 class="cuento-titulo text-h4 font-weight-bold">Cuento: {{ cuento.nombre }}</h2>
+          <p class="text-body-1 mb-6">Descripción: {{ cuento.descripcion }}</p>
+
+          <div class="d-flex justify-space-between align-center">
+            <h3 class="aportaciones-header text-h6">Aportaciones: </h3>
+            <h2
+              class="publicado-header d-flex align-center"
+              :style="{
+                color: cuento.publicado === 1 ? getCSSVar('--color-text-blue') : getCSSVar('--color-text-off'),
+              }"
+            >
+              <v-img
+                class="mr-2"
+                :src="cuento.publicado === 1 ? '/icons/public.svg' : '/icons/public_off.svg'"
+                contain
+                width="16"
+                height="16"
+              />
+              {{ cuento.publicado === 1 ? 'TU CUENTO ES PÚBLICO' : 'TU CUENTO ES PRIVADO' }}
+            </h2>
+          </div>
+        </div>
+          <v-card class="aportaciones-card" flat>
+            <div class="aportaicones-list" v-if="aportaciones.length > 0">
+              <div v-for="(aportacion, idx) in aportaciones" :key="idx">
+                <AportacionAutorItem
+                  v-if="aportacion.es_autor"
+                  :id_cuento="id_cuento !== null ? Number(id_cuento) : null"
+                  :id_aportacion="id_aportacion !== null ? Number(id_aportacion) : null"
+                  :contenido="aportacion.contenido"
+                  :first_in_list="idx === 0"
+                />
+                <AportacionItem
+                  v-else
+                  :id_cuento="id_cuento !== null ? Number(id_cuento) : null"
+                  :id_aportacion="id_aportacion !== null ? Number(id_aportacion) : null"
+                  :contenido="aportacion.contenido"
+                  :autor="aportacion.autor"
+                  :first_in_list="idx === 0"
+                />
               </div>
-              <v-divider></v-divider>
-                <v-list-item-title v-html="aportacion.contenido" class="contenido text-body-2"></v-list-item-title>
-            </v-list-item>
-          </v-list>
-          <p v-else class="no-aportaciones">Actualmente no existen aportaciones en este cuento.</p>
-        </v-card-text>
-      </v-card>
+            </div>
+            <p v-else class="no-aportaciones">Actualmente no existen aportaciones en este cuento.</p>
+          </v-card>
+        </div>
+      <div class="options-container">
+        <ReturnBtn @click="goToMisCuentos()">VOLVER A MIS CUENTOS</ReturnBtn>
+
+        <v-card class="info-card" >
+          <h3 class="codigo-header">CÓDIGO: {{ cuento?.codigo_compartir }}</h3>
+          <p class="codigo-subheader">Comparte este código para añadir colaboradores. Modifica esta opción en “Gestionar colaboradores".</p>
+          <div class="divider"></div>
+
+
+
+          <h3 class="colaboradores-header">Colaboradores:</h3>
+          <ol class="colaboradores-list">
+            <li class="colaboradores-item" v-for="(aportacion, idx) in aportaciones" :key="idx">
+              {{ aportacion.autor }}
+            </li>
+          </ol>
+
+        </v-card>
+
+        <div class="buttons-container">
+          <BotonSm class="cuento-btn" icon_path="/icons/visibility.svg" v-if="cuento?.publicado === 1">
+            Visualizar cuento
+          </BotonSm>
+          <BotonSm class="cuento-btn" color_type="white_purple" icon_path="/icons/share.svg" v-else>
+            Publicar cuento
+          </BotonSm>
+          <BotonSm class="cuento-btn" icon_path="/icons/edit_note.svg" color_type="white_purple">
+            Modificar cuento
+          </BotonSm>
+          <BotonSm
+            class="cuento-btn"
+            icon_path="/icons/groups.svg"
+            color_type="white_purple"
+            icon_size="24"
+            gap="0.5rem"
+          >
+            Gestionar colaboradores
+          </BotonSm>
+          <BotonSm class="cuento-btn" icon_path="/icons/delete_forever.svg" color_type="white_red" @click="showDeleteAportacionPopup = true">
+            Eliminar cuento
+          </BotonSm>
+        </div>
+      </div>
     </div>
-
-    <v-btn color="primary" class="mb-2" :to="'/mis_cuentos'">
-      <v-icon left>mdi-arrow-left</v-icon>
-      Volver a Mis Cuentos
-    </v-btn>
-    <v-card>
-      <v-card-title>CÓDIGO: {{ cuento?.codigo_compartir }}</v-card-title>
-      <p>Comparte este código para añadir colaboradores.</p>
-      <v-card-text>
-        <h6>COLABORADORES:</h6>
-        <v-list>
-          <v-list-item v-for="(aportacion, idx) in aportaciones" :key="idx">
-            <v-list-item-title>{{ aportacion.autor }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-card-text>
-    </v-card>
-
-    <BotonSm icon_path="/icons/visibility.svg">
-      Visualizar cuento
-    </BotonSm>
-    <BotonSm icon_path="/icons/edit_note.svg" color_type="white_purple">
-      Modificar datos del cuento
-    </BotonSm>
-    <BotonSm icon_path="/icons/groups.svg" color_type="white_purple">
-      Gestionar colaboradores
-    </BotonSm>
-    <BotonSm icon_path="/icons/delete_forever.svg" color_type="white_red" @click="showDeleteAportacionPopup = true">
-      Eliminar cuento
-    </BotonSm>
 
 
 
@@ -69,9 +108,12 @@
 import { ref, onMounted, defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 import AppNavbar from '@/components/AppNavbar.vue';
 import BotonSm from '@/components/BotonSm.vue';
+import ReturnBtn from '@/components/ReturnBtn.vue';
+import AportacionItem from '@/components/AportacionItem.vue';
+import AportacionAutorItem from '@/components/AportacionAutorItem.vue';
+import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 
 function convertDeltaToHtml(contenido: string | object): string {
   const delta = typeof contenido === 'string' ? JSON.parse(contenido) : contenido;
@@ -80,11 +122,15 @@ function convertDeltaToHtml(contenido: string | object): string {
   return html;
 }
 
+
 export default defineComponent({
   name: 'VerCuentoCreadoView',
   components: {
     AppNavbar,
-    BotonSm
+    BotonSm,
+    ReturnBtn,
+    AportacionItem,
+    AportacionAutorItem,
   },
   props: {
     id_cuento: {
@@ -104,39 +150,35 @@ export default defineComponent({
     const id_aportacion = ref<string | null>(null);
     const showDeleteAportacionPopup = ref(false);
     const loading = ref(false);
+    const id_cuento = props.id_cuento;
 
     const obtenerCuentoPrivadoCreador = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_cuento_privado_creador.php`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
           params: {
-            id_cuento: props.id_cuento,
+            id_cuento: id_cuento
           }
         });
 
         if (response.data) {
-          console.log("Datos obtenidos:", response.data);
           cuento.value = response.data.cuento;
           aportaciones.value = response.data.aportaciones.map((aportacion: { autor: string, contenido: string}) => ({
             ...aportacion,
             contenido: convertDeltaToHtml(aportacion.contenido)
           }));
           id_aportacion.value = response.data.id_aportacion || null;
-
-          console.log("Datos: ", cuento.value, aportaciones.value, id_aportacion.value);
         }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
+        router.push('/mis_cuentos');
         if (error.status === 404) {
           alert("Cuento no encontrado.");
         } else if (error.status === 403) {
           alert("No tienes permiso para ver este cuento.");
         } else {
-          console.error("Error al obtener el cuento:", error);
           alert("Error al obtener el cuento. Por favor, inténtalo de nuevo más tarde.");
         }
-        // Redirigir al usuario al panel de inicio
-        router.push('/mis_cuentos');
         return;
       }
     }
@@ -169,10 +211,18 @@ export default defineComponent({
       }
     }
 
+    const goToMisCuentos = () => {
+      router.push('/mis_cuentos');
+    }
+
+    const getCSSVar = (varName: string) => {
+      return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    }
+
     onMounted(() => {
       if (!props.id_cuento) {
-        alert("No tienes permiso para ver este cuento.");
         router.push('/mis_cuentos');
+        alert("No tienes permiso para ver este cuento.");
         return;
       }
       loading.value = true;
@@ -188,57 +238,99 @@ export default defineComponent({
       loading,
       obtenerCuentoPrivadoCreador,
       eliminarAportacion,
-      navegarAportacion
+      navegarAportacion,
+      goToMisCuentos,
+      getCSSVar,
     };
   }
 });
 </script>
 
 <style scoped>
-.aportacion-item {
-  border: 2px solid rgb(192, 192, 192);
-  padding: 10px;
-  border-radius: 5px;
-  margin: 20px;
+.main-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem;
+  gap: 3rem;
 }
 
-.contenido {
-  font-size: 1.2em;
-  line-height: 1.5;
-  min-height: 100px;
-  padding: 10px;
+.aportaciones-card {
+  border: 1px solid var(--color-text-input-fg-default);
+  background-color: var(--color-text-input-bg-default);
+  padding: 2rem;
 }
 
-.no-aportaciones {
-  text-align: center;
-  font-size: 1.2em;
-  color: #888;
+.cuento-titulo {
+  font-size: var(--font-main-header-size);
+  color: var(--color-text-blue);
 }
 
-.v-btn {
-  margin-top: 20px;
-}
-
-.v-dialog {
-  max-width: 400px;
-}
-
-.v-card-title {
+.publicado-header {
+  font-size: var(--font-state-size);
   font-weight: bold;
 }
 
-.v-list-item-title {
-  font-weight: normal;
+.aportaciones-header {
+  font-weight: bold;
 }
 
-.v-divider {
-  margin: 10px 0;
+.aportaciones-list {
+  display: flex;
+  flex-direction: column;
 }
 
-.borde-rojo {
-  border: 2px solid black;
-  padding: 10px;
-  border-radius: 5px;
-  margin:20px;
+.codigo-header {
+  font-weight: bold;
+  margin-bottom: 0.1rem;
 }
+
+.codigo-subheader {
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.info-card {
+  padding: 1rem;
+  background-color: var(--vt-c-white-soft);
+  border: 1px solid var(--vt-c-gray-soft);
+  border-radius: var(--border-radius-default);
+
+  display: flex;
+  flex-direction: column;
+}
+
+.divider {
+  border-top: 1px solid var(--vt-c-gray-soft);
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.colaboradores-list {
+  max-height: 120px;
+  overflow-y: scroll;
+  border: 1px solid var(--vt-c-gray-soft);
+  padding: 2rem;
+  padding-top: 0.5rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+}
+
+.colaboradores-item {
+  margin: 0;
+  padding: 0;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2.5rem;
+}
+
+.cuento-btn {
+  width: auto;
+}
+
 </style>

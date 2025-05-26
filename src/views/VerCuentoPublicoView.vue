@@ -26,16 +26,7 @@
       </v-card>
 
       <div class="options-container d-flex flex-column">
-        <div class="return-container">
-          <button class="return-btn mb-4 mr-4" @click="gotoPanelInicio()">
-              <img
-                src="/icons/chevron_left_small.svg"
-                class="return-icon"
-                contain
-              />
-            VOLVER A MIS CUENTOS
-          </button>
-        </div>
+        <ReturnBtn @click="gotoPanelInicio">VOLVER A PANEL DE INICIO</ReturnBtn>
         <p class="cuento-descripcion" v-if="cuento">
           <strong>Descripción:</strong> <i> {{ cuento.descripcion }} </i>
         </p>
@@ -65,6 +56,7 @@ import { ref, onMounted, defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
 import AppNavbarWhite from '@/components/AppNavbarWhite.vue';
 import BotonSm from '@/components/BotonSm.vue';
+import ReturnBtn from '@/components/ReturnBtn.vue';
 
 function convertDeltaToHtml(contenido: string | object): string {
   const delta = typeof contenido === 'string' ? JSON.parse(contenido) : contenido;
@@ -77,7 +69,8 @@ export default defineComponent({
   name: 'VerCuentoPublicoView',
   components: {
     AppNavbarWhite,
-    BotonSm
+    BotonSm,
+    ReturnBtn
   },
   props: {
     id_cuento: {
@@ -239,33 +232,7 @@ export default defineComponent({
 
 }
 
-.return-container {
-  display: flex;
-  justify-content: right;
 
-  width: 100%;
-  padding: 0;
-  margin: 0;
-}
-
-.return-btn {
-  display: flex;
-  justify-content: right;
-
-  font-weight: bold;
-  font-size: 1.3em;
-  width: 70%;
-  border: none;
-
-  margin: 0;
-
-}
-.return-icon {
-  height: 32px;
-  width: 32px;
-  padding: 0;
-  margin: 0;
-}
 
 .move-bottom {
   width: 100%;
