@@ -4,7 +4,7 @@
     :style="first_in_list ? 'margin-top: 0;' : 'margin-top: 1.5rem;'"
   >
     <p class="aportacion-header">Tu aportación (Haz click para editarla)</p>
-    <v-card flat class="aportacion-card">
+    <v-card flat class="aportacion-card" @click="goToAportacion">
       <v-card-text class="mt-2">
         <div v-html="contenido" v-if="contenido != ''"></div>
         <div v-else class="empty-contenido text-center">Tu aportación está vacía. Haz click para editarla.</div>
@@ -28,12 +28,29 @@
 <script lang="ts" setup>
 import '../assets/base.css'
 
-defineProps<{
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const props = defineProps<{
   id_cuento: number | null;
   id_aportacion: number | null;
   contenido: string;
   first_in_list?: boolean;
 }>();
+
+const goToAportacion = () => {
+  const id_cuento = props.id_cuento;
+  const id_aportacion = props.id_aportacion;
+
+  if (id_cuento && id_aportacion) {
+    router.push(`/editar_aportacion/${id_cuento}/${id_aportacion}`);
+  } else {
+    alert("No hay aportación seleccionada.");
+  }
+}
+
+
 </script>
 
 <style scoped>

@@ -5,7 +5,7 @@ import Panel_Inicio from '@/views/PanelInicioView.vue';
 import VerCuentoCreadoView from '@/views/VerCuentoCreadoView.vue';
 import VerCuentoColaboradorView from '@/views/VerCuentoColaboradorView.vue';
 import RestaurarContraseña from '@/views/ValidarTokenRestauracionView.vue';
-import EditarAportacion from '@/components/EditarAportacion.vue';
+import EditarAportacionView from '@/views/EditarAportacionView.vue';
 import Descarga from '@/views/VerPDF.vue'
 import VerCuentoPublicoView from '@/views/VerCuentoPublicoView.vue';
 import MisCuentosView from '@/views/MisCuentosView.vue';
@@ -66,9 +66,9 @@ const router = createRouter({
       props: true
     },
     {
-      path: '/editar_aportacion',
+      path: '/editar_aportacion/:id_cuento/:id_aportacion',
       name: 'editar_aportacion',
-      component: EditarAportacion
+      component: EditarAportacionView
     },
     {
       path: '/descarga',

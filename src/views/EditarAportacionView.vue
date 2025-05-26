@@ -1,53 +1,49 @@
 <template>
-  <v-container class="mt-5">
-    <!-- Loading overlay -->
+  <AppNavbarWhite />
+
+  <div class="editar-aportacion-view">
     <v-overlay :value="loading">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
     </v-overlay>
 
-    <!-- Sección con la aportación en su estado actual -->
-    <v-row>
-      <v-col cols="12">
-        <v-card>
-          <v-card-title>
-            <h2>Tu Aportación hasta el momento:</h2>
-          </v-card-title>
-          <v-card-text id="lectura">
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+    <!-- Sección con el cuento en su estado actual -->
+    <div class="vista-cuento">
+      <v-card class="cuento-card">
+        <v-card-title>
+          <h2>Tu Aportación hasta el momento:</h2>
+        </v-card-title>
+        <v-card-text id="lectura">
+        </v-card-text>
+      </v-card>
+    </div>
 
     <!-- Sección con el texto a editar usando Quill.js -->
-    <v-row>
-      <v-col cols="12">
-        <v-card>
-          <v-card-title>
-            <h2>Editar Aportación:</h2>
-          </v-card-title>
-          <v-card-text>
-            <!-- Toolbar for Quill.js -->
-            <div id="toolbar">
-              <button class="ql-bold"></button>
-              <button class="ql-italic"></button>
-              <button class="ql-underline"></button>
-              <button class="ql-strike"></button>
-              <select class="ql-color"></select>
-              <select class="ql-background"></select>
-              <button class="ql-list" value="ordered"></button>
-              <button class="ql-list" value="bullet"></button>
-              <select class="ql-align"></select>
-              <button class="ql-link"></button>
-            </div>
-            <div id="editor"></div>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <!-- Botón para guardar cambios -->
-    <v-btn color="green" class="mt-4" @click="guardarCambios">Guardar Cambios</v-btn>
-  </v-container>
+    <div class="vista-editar-aportacion">
+      <v-card class="editor-card">
+        <v-card-title>
+          <h2>Editar Aportación:</h2>
+        </v-card-title>
+        <v-card-text>
+          <!-- Toolbar for Quill.js -->
+          <div id="toolbar">
+            <button class="ql-bold"></button>
+            <button class="ql-italic"></button>
+            <button class="ql-underline"></button>
+            <button class="ql-strike"></button>
+            <select class="ql-color"></select>
+            <select class="ql-background"></select>
+            <button class="ql-list" value="ordered"></button>
+            <button class="ql-list" value="bullet"></button>
+            <select class="ql-align"></select>
+            <button class="ql-link"></button>
+          </div>
+          <div id="editor"></div>
+        </v-card-text>
+      </v-card>
+      <!-- Botón para guardar cambios -->
+      <v-btn color="green" class="mt-4" @click="guardarCambios">Guardar Cambios</v-btn>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -59,8 +55,15 @@ import 'quill/dist/quill.snow.css';
 import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.bubble.css';
 
+// Componentes
+import AppNavbarWhite from '@/components/AppNavbarWhite.vue';
+
 export default {
-  name: 'EditarAportacion',
+  name: 'EditarAportacionView',
+  components: {
+    AppNavbarWhite,
+  },
+
   data() {
     return {
       contenido: new Delta(), // Initialize contenido as Delta
@@ -172,22 +175,18 @@ export default {
 
 <style scoped>
 #editor {
-  height: 300px;
-  max-height: 500px;
-  min-height: 200px;
   border: 1px solid #ccc;
+  width: 100%;
 }
 
 #lectura {
-  height: 300px;
-  max-height: 500px;
-  min-height: 200px;
+  height: 100%;
   border: 1px solid #ccc;
 }
 
-.ql-container {
+/* .ql-container {
   height: 100%;
-}
+} */
 .ql-toolbar {
   font-family: initial !important;
   width: 18px;
@@ -220,6 +219,38 @@ export default {
 .ql-toolbar .ql-picker {
   min-width: 30px;
   height: 30px;
+}
+
+.editar-aportacion-view {
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-background-padding);
+
+  padding: 2rem;
+
+  display: inline-flex;
+  justify-content: space-between;
+
+  gap: 2rem;
+}
+
+.vista-cuento {
+  width: 50%;
+  height: 100%;
+}
+
+.cuento-card {
+  height: 80vh;
+  overflow-y: scroll;
+}
+
+.vista-editar-aportacion {
+  width: 50%;
+  height: 100%;
+}
+
+.editor-card {
+  height: 70vh;
 }
 
 </style>
