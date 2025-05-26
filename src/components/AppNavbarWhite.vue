@@ -45,6 +45,8 @@ onMounted(() => {
 });
 
 function logout() {
+  localStorage.removeItem('token'); // Elimina el token de sesión
+
   router.push('/'); // Redirect to login page
   alert('Has cerrado sesión.');
 }

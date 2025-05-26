@@ -4,7 +4,7 @@
 
     <v-spacer></v-spacer>
 
-    <v-menu>
+    <v-menu class="profile-menu">
       <template v-slot:activator="{ props }">
         <v-btn
           icon
@@ -43,9 +43,18 @@ function getCSSBackgroundColor() {
 }
 
 function logout() {
-  router.push('/'); // Redirect to login page
+  localStorage.removeItem('token'); // Elimina el token de sesión
+
+  router.push('/');
   alert('Has cerrado sesión.');
 }
 </script>
+
+<style scoped>
+.profile-menu {
+  padding-right: 10px;
+}
+
+</style>
 
 
