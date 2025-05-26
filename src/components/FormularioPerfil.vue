@@ -1,6 +1,4 @@
 <template>
-  <AppNavbar/>
-  <div class="main-container">
     <v-form>
       <v-container class="login-fields d-flex flex-column">
         <TextInputSm
@@ -10,6 +8,7 @@
           outlined
           required
           class="custom-input"
+          readonly
         />
         <TextInputSm
           label="Correo electronico"
@@ -18,26 +17,24 @@
           outlined
           required
           class="custom-input"
+          readonly
         />
       </v-container>
 
       <v-container class="login-buttons text-right">
-        <BotonWideXs @click="$emit('show-perfil-edit')" class="mt-3">
+        <BotonWideXs @click="$emit('show-perfil-edicion')" class="mt-3">
           Editar perfil
         </BotonWideXs>
       </v-container>
     </v-form>
-
-
-  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps } from 'vue';
+import { ref, defineProps, watch } from 'vue';
 // Componentes
 import TextInputSm from './TextInputSm.vue';
 import BotonWideXs from './BotonWideXs.vue';
-import AppNavbar from './AppNavbar.vue';
+const emit = defineEmits(['show-perfil-edicion']);
 
 const props = defineProps<{
   datosAlumno: {
@@ -49,6 +46,13 @@ const props = defineProps<{
 
 const localDatosAlumno = ref({ ...props.datosAlumno });
 
+watch(
+  () => props.datosAlumno,
+  (newVal) => {
+    localDatosAlumno.value = { ...newVal };
+  },
+  { deep: true, immediate: true } // 'deep' for nested objects, 'immediate' to run on initial mount
+);
 </script>
 
 <style scoped>
