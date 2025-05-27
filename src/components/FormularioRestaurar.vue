@@ -40,7 +40,7 @@ import axios from 'axios';
 import TextInputMd from '@/components/TextInputMd.vue';
 import BotonMd from './BotonMd.vue';
 
-const PHP_URL = import.meta.env.VITE_PHP_SERVER;
+const PHP_URL = import.meta.env.VUE_APP_SERVER;
 const restoreData = ref({ correo: '' });
 const loading = ref(false);
 

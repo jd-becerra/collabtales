@@ -199,7 +199,7 @@ export default defineComponent({
 
     const obtenerCuentoPrivadoCreador = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_cuento_privado_creador.php`, {
+        const response = await axios.get(`${import.meta.env.VUE_APP_SERVER}/php/obtener_cuento_privado_creador.php`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
           params: {
             id_cuento: id_cuento

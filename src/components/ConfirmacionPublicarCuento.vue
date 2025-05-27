@@ -83,7 +83,7 @@ const publicarCuento = async () => {
 
   try {
     const response = await axios.put(
-      `${import.meta.env.VITE_PHP_SERVER}/php/publicar_cuento.php`,
+      `${import.meta.env.VUE_APP_SERVER}/php/publicar_cuento.php`,
       {
         id_cuento: id_cuento.value
       },

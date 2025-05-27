@@ -77,7 +77,7 @@ const datosAlumno = ref({ id_alumno: '', nombre: '' , correo: ''});
 const showDeleteDialog = ref(false);
 const showPerfil = ref(true);
 const showPerfilEdicion = ref(false);
-const PHP_URL = import.meta.env.VITE_PHP_SERVER;
+const PHP_URL = import.meta.env.VUE_APP_SERVER;
 
 onMounted(() => {
   getDatosAlumno();

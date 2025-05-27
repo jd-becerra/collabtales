@@ -74,7 +74,7 @@ const unirseCuento = async () => {
   }
 
   try {
-    const response = await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/unirse_cuento.php`,
+    const response = await axios.post(`${import.meta.env.VUE_APP_SERVER}/php/unirse_cuento.php`,
     {
       codigo: idCuentoUnirse.value,
     });

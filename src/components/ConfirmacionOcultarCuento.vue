@@ -83,7 +83,7 @@ const ocultarCuento = async () => {
 
   try {
     const response = await axios.put(
-      `${import.meta.env.VITE_PHP_SERVER}/php/ocultar_cuento.php`,
+      `${import.meta.env.VUE_APP_SERVER}/php/ocultar_cuento.php`,
       {
         id_cuento: id_cuento.value
       },

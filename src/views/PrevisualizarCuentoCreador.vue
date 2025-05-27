@@ -110,7 +110,7 @@ export default defineComponent({
 
     const obtenerCuentoPrevisualizar = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_cuento_previsualizar.php`, {
+        const response = await axios.get(`${import.meta.env.VUE_APP_SERVER}/php/obtener_cuento_previsualizar.php`, {
           params: { id_cuento: props.id_cuento }
         });
         if (response.status === 200) {

@@ -53,7 +53,7 @@ const props = defineProps<{
 
 const router = useRouter();
 const localDatosAlumno = ref({ ...props.datosAlumno });
-const PHP_URL = import.meta.env.VITE_PHP_SERVER;
+const PHP_URL = import.meta.env.VUE_APP_SERVER;
 const popupValues = ref({ mensaje: '', color: '' });
 
 watch(

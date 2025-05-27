@@ -89,7 +89,7 @@ const abandonarCuento = async () => {
 
   try {
     const response = await axios.delete(
-      `${import.meta.env.VITE_PHP_SERVER}/php/abandonar_cuento.php`,
+      `${import.meta.env.VUE_APP_SERVER}/php/abandonar_cuento.php`,
       {
         data: {
           id_cuento: id_cuento.value,

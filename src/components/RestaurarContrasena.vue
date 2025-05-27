@@ -36,7 +36,7 @@ import { defineComponent, ref } from 'vue';
 import router from '@/router';
 import axios from 'axios';
 
-const PHP_URL = import.meta.env.VITE_PHP_SERVER;
+const PHP_URL = import.meta.env.VUE_APP_SERVER;
 
 const RestaurarContrasena = defineComponent({
   props: ['token', 'id_usuario'],

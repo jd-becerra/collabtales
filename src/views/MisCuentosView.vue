@@ -122,7 +122,7 @@ const getCuentosUsuario = async () => {
       return;
     }
 
-    const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_cuentos.php`, {
+    const response = await axios.get(`${import.meta.env.VUE_APP_SERVER}/php/obtener_cuentos.php`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },

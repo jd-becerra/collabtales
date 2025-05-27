@@ -85,7 +85,7 @@ const crearCuento = async () => {
 
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_PHP_SERVER}/php/crear_cuento.php`,
+      `${import.meta.env.VUE_APP_SERVER}/php/crear_cuento.php`,
       JSON.stringify({
         nombre: nuevo_cuento.value.nombre,
         descripcion: nuevo_cuento.value.descripcion,

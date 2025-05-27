@@ -223,7 +223,7 @@ export default defineComponent({
 
     const obtenerColaboradores = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_PHP_SERVER}/php/obtener_colaboradores.php`, {
+        const response = await axios.get(`${import.meta.env.VUE_APP_SERVER}/php/obtener_colaboradores.php`, {
           params: {
             id_cuento: props.id_cuento
           },

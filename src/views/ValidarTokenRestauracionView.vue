@@ -26,7 +26,7 @@ import { defineComponent, ref } from 'vue';
 import RestaurarContrasena from '@/components/RestaurarContrasena.vue';
 import axios from 'axios';
 
-const PHP_URL = import.meta.env.VITE_PHP_SERVER;
+const PHP_URL = import.meta.env.VUE_APP_SERVER;
 
 export default defineComponent({
   props: ['token', 'correo'],

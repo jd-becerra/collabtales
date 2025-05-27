@@ -11,7 +11,7 @@ const vuetify = createVuetify()
 
 // Configuración de Axios
 import axios from 'axios';
-axios.defaults.baseURL = import.meta.env.VITE_PHP_SERVER + "/";
+axios.defaults.baseURL = import.meta.env.VUE_APP_SERVER + "/";
 axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 // Añadir el token de autorización a las peticiones (si el token existe)
