@@ -124,7 +124,7 @@ function getDatosAlumno() {
 
 function eliminarAlumno() {
   axios
-    .post(`${PHP_URL}/php/eliminar_alumno.php`,
+    .delete(`${PHP_URL}/php/eliminar_alumno.php`,
     {
       headers: {
         'Content-Type': 'application/json',
