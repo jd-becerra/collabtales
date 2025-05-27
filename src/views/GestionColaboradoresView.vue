@@ -133,7 +133,7 @@
         />
       </v-dialog>
 
-      <v-dialog v-model="showConfirmarPermitirColaboradores" max-width="400">
+      <v-dialog v-model="showConfirmarPermitirColaboradores" max-width="400" @after-leave="switchValue = cuento.admite_colaboradores">
         <ConfirmacionPermitirColaboradores
           :id_cuento="Number(id_cuento)"
           @close-popup="showConfirmarPermitirColaboradores = false"
@@ -141,7 +141,7 @@
         />
       </v-dialog>
 
-      <v-dialog v-model="showConfirmarRestringirColaboradores" max-width="400">
+      <v-dialog v-model="showConfirmarRestringirColaboradores" max-width="400" @after-leave="switchValue = cuento.admite_colaboradores">
         <ConfirmacionRestringirColaboradores
           :id_cuento="Number(id_cuento)"
           @close-popup="showConfirmarRestringirColaboradores = false"
@@ -258,8 +258,6 @@ export default defineComponent({
       get: () => cuento.value.admite_colaboradores,
       set: (val) => {
         cuento.value.admite_colaboradores = val;
-        // Aquí podrías guardar el cambio al backend si es necesario
-        console.log('Nuevo valor de admite_colaboradores:', val);
       }
     });
 
