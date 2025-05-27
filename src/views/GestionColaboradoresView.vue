@@ -60,7 +60,7 @@
         <p v-if="colaboradores.length === 0" class="pa-4 text-center">No hay colaboradores activos. Comparte tu código y asegúrate de activar la opción para añadir colaboradores.</p>
         <v-list-item
           v-for="colaborador in colaboradores"
-          :key="colaborador.id"
+          :key="colaborador.id_alumno"
           class="list-item"
         >
           <v-row class="list-row w-100 justify-center align-center">
@@ -92,7 +92,7 @@
         <p v-if="bloqueados.length === 0" class="pa-4 text-center">No hay colaboradores bloqueados.</p>
         <v-list-item
           v-for="bloqueado in bloqueados"
-          :key="bloqueado.id"
+          :key="bloqueado.id_alumno"
           class="list-item"
         >
           <v-row class="list-row w-100 justify-center align-center">
@@ -115,7 +115,7 @@
       <v-dialog v-model="showConfirmarBloquearUsuario" max-width="400">
         <ConfirmacionBloquearUsuario
           :id_cuento="Number(id_cuento)"
-          :id_usuario_bloquear="selectedUser.id"
+          :id_usuario_bloquear="Number(selectedUser.id)"
           :nombre_usuario_bloquear="selectedUser.nombre"
           @close-popup="(selectedUser = { id: '', nombre: '' }, showConfirmarBloquearUsuario = false)"
           @confirmar-bloqueo="obtenerColaboradores"
@@ -126,7 +126,7 @@
       <v-dialog v-model="showConfirmarDesbloquearUsuario" max-width="400">
         <ConfirmacionDesbloquearUsuario
           :id_cuento="Number(id_cuento)"
-          :id_usuario_desbloquear="selectedUser.id"
+          :id_usuario_desbloquear="Number(selectedUser.id)"
           :nombre_usuario_desbloquear="selectedUser.nombre"
           @close-popup="(selectedUser = { id: '', nombre: '' }, showConfirmarDesbloquearUsuario = false)"
           @confirmar-desbloqueo="obtenerColaboradores"

@@ -245,7 +245,6 @@ export default defineComponent({
             ...aport,
             contenido: convertDeltaToHtml(aport.contenido),
           }));
-          console.log('Aportaciones obtenidas:', aportaciones.value);
           es_creador.value = response.data.es_creador;
 
           // Parse contenido_autor safely
@@ -320,10 +319,6 @@ export default defineComponent({
 
       try {
         const delta = quill.value.getContents();
-        DOMPurify.sanitize(delta, {
-          ALLOWED_TAGS: ['b', 'i', 'u', 'strike', 'span', 'ul', 'ol', 'li', 'a'],
-          ALLOWED_ATTR: ['href', 'style'],
-        });
         const deltaString = JSON.stringify(delta);
 
         await axios.put('/php/editar_aportacion.php',

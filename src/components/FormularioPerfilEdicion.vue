@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps, watch, onMounted } from 'vue';
+import { ref, defineProps, watch } from 'vue';
 // Componentes
 import TextInputSm from './TextInputSm.vue';
 import BotonWideXs from './BotonWideXs.vue';
@@ -94,8 +94,6 @@ function editarAlumno() {
       }
     })
     .then((response) => {
-      console.log(response);
-
       if (response.data.success) {  // Si hay un mensaje de éxito
         alert('Datos actualizados correctamente.');
         router.push('/panel_inicio');
