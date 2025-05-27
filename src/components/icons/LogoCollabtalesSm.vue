@@ -26,7 +26,7 @@ import { useRouter } from 'vue-router';
 // Si hacemos click en el logo, nos lleva a la página de inicio
 const router = useRouter();
 function goToInicio() {
-  router.push('/panel_inicio');
+  router.push('/mis_cuentos');
 }
 
 </script>

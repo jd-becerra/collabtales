@@ -9,8 +9,8 @@
         />
       </v-btn>
 
-      <h2 class="ocultar-cuento-header text-h6 my-3">OCULTAR CUENTO: "{{ nombre_cuento }}"</h2>
-      <p class="ocultar-cuento-subheader text-caption mb-6">¿Estás seguro de querer ocultar este cuento? El cuento ya no estará disponible de manera pública y sólo los usuarios que son colaboradores en el cuento podrán verlo.</p>
+      <h2 class="ocultar-cuento-header text-h6 my-3">PERMIRTIR NUEVOS COLABORADORES</h2>
+      <p class="ocultar-cuento-subheader text-caption mb-6">Esta acción permitirá que cualquier usuario que ingrese con el código de tu cuento pueda participar con una aportación.</p>
 
       <small
         class="result-msg"
@@ -25,10 +25,10 @@
           <BotonXs
             class="ocultar-btn"
             color_type="white_green"
-            @click="ocultarCuento()"
+            @click="permitirColaboradores()"
             :disabled="disableEliminar"
           >
-            Confirmar
+            Continuar
           </BotonXs>
         </v-container>
 
@@ -49,7 +49,6 @@ const emit = defineEmits(['close-popup']);
 
 const props = defineProps<{
   id_cuento: number | null;
-  nombre_cuento: string;
 }>();
 
 function getCSSVar(variable: string): string {
@@ -71,7 +70,7 @@ function showPopup(title: string, msg: string) {
 const id_cuento = ref<number | null>(props.id_cuento);
 const disableEliminar = ref(false);
 
-const ocultarCuento = async () => {
+const permitirColaboradores = async () => {
   if (!id_cuento.value) {
     // Regresamos a la página de cuentos si el ID no es válido (ya que hubo un error)
     showPopup('Error', 'ID del cuento no válido.');
@@ -83,7 +82,7 @@ const ocultarCuento = async () => {
 
   try {
     const response = await axios.put(
-      `${import.meta.env.VITE_PHP_SERVER}/php/ocultar_cuento.php`,
+      `${import.meta.env.VITE_PHP_SERVER}/php/permitir_colaboradores.php`,
       {
         id_cuento: id_cuento.value
       },
@@ -96,11 +95,11 @@ const ocultarCuento = async () => {
     );
 
     if (response.status === 200) {
-      showPopup('Éxito', 'Cuento ocultado correctamente. Redirigiendo a tu cuento...');
+      showPopup('Éxito', 'Los usuarios ahora pueden colaborar en el cuento si se unen con el código.');
 
       setTimeout(() => {
         emit('close-popup');
-        router.push('/ver_cuento_creado/' + id_cuento.value);
+        router.go(0);
       }, 1000);
     }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -108,13 +107,13 @@ const ocultarCuento = async () => {
     if (error?.response?.status === 400) {
       showPopup('Error', 'Acción inválida. Intente recargar la página.');
     } else if (error?.response?.status === 403) {
-      showPopup('Error', 'No tienes permiso para ocultar este cuento.');
+      showPopup('Error', 'No tienes permiso para realizar esta acción.');
     } else if (error?.response?.status === 404) {
       showPopup('Error', 'Cuento no encontrado.');
     } else if (error?.response?.status === 500) {
       showPopup('Error', 'Error en el servidor. Intenta más tarde.');
     } else {
-      showPopup('Error', 'Error inesperado al crear cuento.');
+      showPopup('Error', 'Error inesperado al realizar la acción.');
     }
     disableEliminar.value = false;
   }

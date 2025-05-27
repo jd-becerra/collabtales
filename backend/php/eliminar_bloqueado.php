@@ -8,16 +8,17 @@ $user = authenticate();
 include('config.php');
 
 // Si hay más de 2 parámetros
-if (!is_array($_GET) || count($_GET) !== 2) {
+$data = json_decode(file_get_contents("php://input"), true);
+if (!is_array($data) || count($data) !== 2 || !isset($data['id_cuento']) || !isset($data['id_alumno_desbloquear'])) {
     http_response_code(400);
-    echo "Parámetros inválidos";
+    echo json_encode(["error" => "Parámetros inválidos."]);
     exit();
 }
 
 $id_alumno = $user['id_alumno'];
 
-$id_cuento = $_GET['id_cuento'];
-$id_alumno_bloqueado = $_GET['id_alumno_bloqueado'];
+$id_cuento = $data['id_cuento'];
+$id_alumno_bloqueado = $data['id_alumno_desbloquear'];
 
 if (empty($id_cuento) || empty($id_alumno_bloqueado)) {
     http_response_code(400);
@@ -29,6 +30,18 @@ if (!is_numeric($id_cuento) || !is_numeric($id_alumno_bloqueado)) {
     echo "Parámetros inválidos";
     exit();
 }
+
+// Verificar que el usuario autenticado no esté bloquado
+$stmt = $conn->prepare("SELECT 1 FROM ListaNegra WHERE fk_cuento = ? AND fk_alumno = ?");
+$stmt->bind_param("ii", $id_cuento, $id_alumno);
+$stmt->execute();
+$result = $stmt->get_result();
+if ($result->num_rows > 0) {
+    http_response_code(403);
+    echo "No tienes permiso para esta acción";
+    exit();
+}
+$stmt->close();
 
 // Validar que el usuario autenticado sea el dueño del cuento
 $stmt = $conn->prepare("SELECT fk_owner FROM Cuento WHERE id_cuento = ?");

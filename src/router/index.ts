@@ -11,6 +11,7 @@ import VerCuentoPublicoView from '@/views/VerCuentoPublicoView.vue';
 import MisCuentosView from '@/views/MisCuentosView.vue';
 import PrevisualizarCuentoCreador from '@/views/PrevisualizarCuentoCreador.vue';
 import VisualizarCuentoCreador from '@/views/VisualizarCuentoCreador.vue';
+import GestionColaboradoresView from '@/views/GestionColaboradoresView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,7 +69,14 @@ const router = createRouter({
     {
       path: '/editar_aportacion/:id_cuento/:id_aportacion',
       name: 'editar_aportacion',
-      component: EditarAportacionView
+      component: EditarAportacionView,
+      props: true
+    },
+    {
+      path: '/gestion_colaboradores/:id_cuento',
+      name: 'gestion_colaboradores',
+      component: GestionColaboradoresView,
+      props: true
     },
     {
       path: '/descarga',

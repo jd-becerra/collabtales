@@ -9,10 +9,11 @@
         />
       </v-btn>
 
-      <h2 class="ocultar-cuento-header text-h6 my-3">OCULTAR CUENTO: "{{ nombre_cuento }}"</h2>
-      <p class="ocultar-cuento-subheader text-caption mb-6">¿Estás seguro de querer ocultar este cuento? El cuento ya no estará disponible de manera pública y sólo los usuarios que son colaboradores en el cuento podrán verlo.</p>
+      <h2 class="eliminar-cuento-header text-h6 my-3">DESBLOQUEAR USUARIO</h2>
+      <p class="eliminar-cuento-subheader text-caption mb-6">¿Estás seguro de querer desbloquear al usuario "{{ nombre_usuario_desbloquear }}”?  El usuario ya no podrá participar en este cuento ni visualizarlo.</p>
 
       <small
+        v-if="popupValues.mensaje"
         class="result-msg"
         :style="{
           color: popupValues.color,
@@ -20,17 +21,22 @@
       >
         {{ popupValues.mensaje }}
       </small>
-      <v-container class="d-flex justify-space-between align-start pa-0 mt-5">
-          <div></div>
+      <div class="options-container">
           <BotonXs
-            class="ocultar-btn"
+            class="return-btn"
+            @click="emit('close-popup')"
+          >
+            Regresar
+          </BotonXs>
+          <BotonXs
+            class="eliminar-btn"
             color_type="white_green"
-            @click="ocultarCuento()"
-            :disabled="disableEliminar"
+            @click="bloquarUsuario()"
+            :disabled="disableDesbloquear"
           >
             Confirmar
           </BotonXs>
-        </v-container>
+        </div>
 
   </v-card>
 </template>
@@ -49,7 +55,8 @@ const emit = defineEmits(['close-popup']);
 
 const props = defineProps<{
   id_cuento: number | null;
-  nombre_cuento: string;
+  id_usuario_desbloquear: number;
+  nombre_usuario_desbloquear: string;
 }>();
 
 function getCSSVar(variable: string): string {
@@ -67,11 +74,11 @@ function showPopup(title: string, msg: string) {
     color
   };
 }
-
 const id_cuento = ref<number | null>(props.id_cuento);
-const disableEliminar = ref(false);
+const id_usuario_desbloquear = ref<number | undefined>(props.id_usuario_desbloquear);
+const disableDesbloquear = ref(false);
 
-const ocultarCuento = async () => {
+const bloquarUsuario = async () => {
   if (!id_cuento.value) {
     // Regresamos a la página de cuentos si el ID no es válido (ya que hubo un error)
     showPopup('Error', 'ID del cuento no válido.');
@@ -79,28 +86,29 @@ const ocultarCuento = async () => {
     return;
   }
 
-  disableEliminar.value = true;
+  disableDesbloquear.value = true;
 
   try {
-    const response = await axios.put(
-      `${import.meta.env.VITE_PHP_SERVER}/php/ocultar_cuento.php`,
-      {
-        id_cuento: id_cuento.value
-      },
+    const response = await axios.delete(
+      `${import.meta.env.VITE_PHP_SERVER}/php/eliminar_bloqueado.php`,
       {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        data: {
+          id_cuento: id_cuento.value,
+          id_alumno_desbloquear: id_usuario_desbloquear.value
         }
       }
     );
 
     if (response.status === 200) {
-      showPopup('Éxito', 'Cuento ocultado correctamente. Redirigiendo a tu cuento...');
+      showPopup('Éxito', 'Usuario desbloqueado correctamente. Recargando página...');
 
       setTimeout(() => {
         emit('close-popup');
-        router.push('/ver_cuento_creado/' + id_cuento.value);
+        router.go(0);
       }, 1000);
     }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -108,20 +116,20 @@ const ocultarCuento = async () => {
     if (error?.response?.status === 400) {
       showPopup('Error', 'Acción inválida. Intente recargar la página.');
     } else if (error?.response?.status === 403) {
-      showPopup('Error', 'No tienes permiso para ocultar este cuento.');
+      showPopup('Error', 'No tienes permiso para desbloquear usuarios en este cuento.');
     } else if (error?.response?.status === 404) {
       showPopup('Error', 'Cuento no encontrado.');
     } else if (error?.response?.status === 500) {
       showPopup('Error', 'Error en el servidor. Intenta más tarde.');
     } else {
-      showPopup('Error', 'Error inesperado al crear cuento.');
+      showPopup('Error', 'Error inesperado al desbloquear usuario.');
     }
-    disableEliminar.value = false;
+    disableDesbloquear.value = false;
   }
 };
 
 onMounted(() => {
-  disableEliminar.value = false;
+  disableDesbloquear.value = false;
 });
 
 </script>
@@ -153,12 +161,12 @@ onMounted(() => {
   color: var(--color-text-black);
 }
 
-.ocultar-cuento-header {
+.eliminar-cuento-header {
   font-weight: bold;
 }
 
-.ocultar-cuento-header {
-  color: var(--vt-c-black);
+.eliminar-cuento-header {
+  color: var(--color-text-black);
 }
 
 .result-msg {
@@ -173,12 +181,11 @@ onMounted(() => {
 .options-container {
   display: flex;
   justify-content: space-between;
-  align-items: end;
   width: 100%;
   padding: 0;
 }
 
-.ocultar-btn {
+.eliminar-btn {
   width: 9em;
 }
 </style>

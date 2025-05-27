@@ -54,9 +54,9 @@
         </v-card>
 
         <div class="buttons-container">
-          <BotonSm class="cuento-btn" icon_path="/icons/visibility.svg">
+          <!-- <BotonSm class="cuento-btn" icon_path="/icons/visibility.svg">
             Previsualizar cuento
-          </BotonSm>
+          </BotonSm> -->
           <BotonSm
             class="cuento-btn"
             icon_path="/icons/delete_forever.svg"
@@ -90,14 +90,17 @@ import AportacionItem from '@/components/AportacionItem.vue';
 import AportacionAutorItem from '@/components/AportacionAutorItem.vue';
 import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 import ConfirmacionAbandonarCuento from '@/components/ConfirmacionAbandonarCuento.vue';
+import DOMPurify from 'dompurify';
 
 function convertDeltaToHtml(contenido: string | object): string {
   const delta = typeof contenido === 'string' ? JSON.parse(contenido) : contenido;
   const converter = new QuillDeltaToHtmlConverter(delta.ops, {});
   const html = converter.convert();
-  return html;
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['b', 'i', 'u', 'strike', 'span', 'ul', 'ol', 'li', 'a'],
+    ALLOWED_ATTR: ['href', 'style'],
+  });
 }
-
 
 export default defineComponent({
   name: 'VerCuentoCreadoView',
@@ -153,6 +156,7 @@ export default defineComponent({
           alert("No tienes permiso para ver este cuento.");
         } else {
           alert("Error al obtener el cuento. Por favor, inténtalo de nuevo más tarde.");
+          console.error("Error al obtener el cuento:", error);
         }
         return;
       }

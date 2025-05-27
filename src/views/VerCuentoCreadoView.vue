@@ -105,6 +105,7 @@
             color_type="white_purple"
             icon_size="24"
             gap="0.5rem"
+            @click="goToColaboradores"
           >
             Gestionar colaboradores
           </BotonSm>
@@ -151,12 +152,16 @@ import AportacionAutorItem from '@/components/AportacionAutorItem.vue';
 import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 import FormularioEditarCuento from '@/components/FormularioEditarCuento.vue';
 import ConfirmacionEliminarCuento from '@/components/ConfirmacionEliminarCuento.vue';
+import DOMPurify from 'dompurify';
 
 function convertDeltaToHtml(contenido: string | object): string {
   const delta = typeof contenido === 'string' ? JSON.parse(contenido) : contenido;
   const converter = new QuillDeltaToHtmlConverter(delta.ops, {});
   const html = converter.convert();
-  return html;
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['b', 'i', 'u', 'strike', 'span', 'ul', 'ol', 'li', 'a'],
+    ALLOWED_ATTR: ['href', 'style'],
+  });
 }
 
 
@@ -247,6 +252,10 @@ export default defineComponent({
       router.push('/mis_cuentos');
     }
 
+    const goToColaboradores = () => {
+      router.push('/gestion_colaboradores/' + props.id_cuento);
+    }
+
     const getCSSVar = (varName: string) => {
       return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
     }
@@ -274,7 +283,8 @@ export default defineComponent({
       goToMisCuentos,
       getCSSVar,
       goToPrevisualizarCuento,
-      goToVisualizarCuentoCreador
+      goToVisualizarCuentoCreador,
+      goToColaboradores,
     };
   }
 });

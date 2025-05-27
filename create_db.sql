@@ -50,6 +50,7 @@ CREATE TABLE `Cuento` (
         `descripcion` VARCHAR(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
         `codigo_compartir` VARCHAR(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
         `publicado` TINYINT(1) DEFAULT 0,
+        `admite_colaboradores` TINYINT(1) DEFAULT 0,
         `fk_owner` INT(11) NULL DEFAULT NULL,
         PRIMARY KEY (`id_cuento`),
         CONSTRAINT `fk_cuento_owner` FOREIGN KEY (`fk_owner`) REFERENCES `Alumno` (`id_alumno`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -70,6 +71,7 @@ CREATE TABLE `TokenRestauracion` (
 CREATE TABLE `Relacion_Alumno_Cuento` (
                 `fk_alumno` INT(11) NOT NULL,
                 `fk_cuento` INT(11) NOT NULL,
+                `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (`fk_alumno`, `fk_cuento`),
                 FOREIGN KEY (`fk_alumno`) REFERENCES `Alumno`(`id_alumno`) ON DELETE CASCADE ON UPDATE CASCADE,
                 FOREIGN KEY (`fk_cuento`) REFERENCES `Cuento`(`id_cuento`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -78,10 +80,10 @@ CREATE TABLE `Relacion_Alumno_Cuento` (
 -- Table: Aportacion
 CREATE TABLE `Aportacion` (
         `id_aportacion` INT(11) NOT NULL AUTO_INCREMENT,
-        `contenido` VARCHAR(2047) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-        `fk_cuento` INT(11) NULL DEFAULT NULL,
-        `fk_alumno` INT(11) NULL DEFAULT NULL,
-        `fecha_creacion` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        `contenido` VARCHAR(8000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+        `fk_cuento` INT(11) NOT NULL,
+        `fk_alumno` INT(11) NOT NULL,
+        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (`id_aportacion`),
         CONSTRAINT `fk_cuento_aportacion` FOREIGN KEY (`fk_cuento`) REFERENCES `Cuento` (`id_cuento`) ON DELETE CASCADE ON UPDATE CASCADE,
         CONSTRAINT `fk_alumno_aportacion` FOREIGN KEY (`fk_alumno`) REFERENCES `Alumno` (`id_alumno`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -93,7 +95,7 @@ CREATE TABLE `Historial` (
                 `fk_alumno` INT(11) NOT NULL,
                 `fk_cuento` INT(11) NOT NULL,
                 `accion` VARCHAR(255) NOT NULL,
-                `fecha` TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+                `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
                 PRIMARY KEY (`id_historial`),
                 FOREIGN KEY (`fk_alumno`) REFERENCES `Alumno`(`id_alumno`) ON DELETE CASCADE ON UPDATE CASCADE,
                 FOREIGN KEY (`fk_cuento`) REFERENCES `Cuento`(`id_cuento`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -102,6 +104,7 @@ CREATE TABLE `Historial` (
 -- Tabla que impide a algunos usuarios acceder a cuentos donde el creador los ha bloqueado
 CREATE TABLE `ListaNegra` (
         `id_listanegra` INT(11) NOT NULL AUTO_INCREMENT,
+        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         `fk_alumno` INT(11) NOT NULL,
         `fk_cuento` INT(11) NOT NULL,
         PRIMARY KEY (`id_listanegra`),
@@ -165,15 +168,26 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE `UnirseCuento`(IN cuento_id INT, IN alumno_id INT)
 BEGIN
-                DECLARE relacion_count INT;
-                SELECT COUNT(*) INTO relacion_count FROM Relacion_Alumno_Cuento WHERE fk_cuento = cuento_id AND fk_alumno = alumno_id;
-                IF relacion_count = 0 THEN
-                                INSERT INTO `Relacion_Alumno_Cuento` (fk_cuento, fk_alumno) VALUES (cuento_id, alumno_id);
-                                INSERT INTO `Aportacion` (contenido, fk_cuento, fk_alumno) VALUES ('[]', cuento_id, alumno_id);
-                                SELECT 'El alumno se ha unido al cuento correctamente' AS result;
-                ELSE
-                                SELECT 'Error al unirse al cuento.' AS result;
-                END IF;
+    DECLARE relacion_count INT;
+    DECLARE admite_colaboradores_val TINYINT;
+
+    -- Verificar si el cuento admite colaboradores
+    SELECT admite_colaboradores INTO admite_colaboradores_val FROM Cuento WHERE id_cuento = cuento_id;
+    IF admite_colaboradores_val IS NULL THEN
+        SELECT 'El cuento no existe.' AS result;
+    ELSEIF admite_colaboradores_val = 0 THEN
+        SELECT 'Este cuento no admite colaboradores.' AS result;
+    ELSE
+        -- Verificar si ya existe la relación
+        SELECT COUNT(*) INTO relacion_count FROM Relacion_Alumno_Cuento WHERE fk_cuento = cuento_id AND fk_alumno = alumno_id;
+        IF relacion_count = 0 THEN
+            INSERT INTO `Relacion_Alumno_Cuento` (fk_alumno, fk_cuento) VALUES (alumno_id, cuento_id);
+            INSERT INTO `Aportacion` (contenido, fk_cuento, fk_alumno) VALUES ('[]', cuento_id, alumno_id);
+            SELECT 'El alumno se ha unido al cuento correctamente' AS result;
+        ELSE
+            SELECT 'Error al unirse al cuento.' AS result;
+        END IF;
+    END IF;
 END$$
 DELIMITER ;
 

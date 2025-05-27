@@ -94,7 +94,7 @@ async function login() {
       localStorage.setItem('token', datos.token);
       showPopup("Éxito", `Bienvenido, ${loginData.value.nombre}`);
       setTimeout(() => {
-        router.push('/panel_inicio');
+        router.push('/mis_cuentos');
       }, 1000);
     }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -74,21 +74,14 @@ const unirseCuento = async () => {
   }
 
   try {
-    const id_alumno = localStorage.getItem('id_alumno');
-    if (!id_alumno) {
-      showPopup('Error', 'Tiempo inactivo excedido. Recarge la página y vuelva a iniciar sesión.');
-      return;
-    }
     const response = await axios.post(`${import.meta.env.VITE_PHP_SERVER}/php/unirse_cuento.php`,
     {
       codigo: idCuentoUnirse.value,
-      id_alumno
     });
 
     if (response.status === 200 && !response.data.error) {
       showPopup('Éxito', 'Te has unido al cuento correctamente. Redirigiendo...');
-      localStorage.setItem('id_cuento', idCuentoUnirse.value);
-      router.push('/ver_cuento' );
+      router.push('/ver_cuento_colaborador/' + response.data.id_cuento);
     } else {
       showPopup('Error', 'No se pudo unir al cuento. Por favor, intenta más tarde.');
     }

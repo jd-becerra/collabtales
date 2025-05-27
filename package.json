@@ -16,6 +16,7 @@
   "dependencies": {
     "@types/html-pdf": "^3.0.3",
     "axios": "^1.7.9",
+    "dompurify": "^3.2.6",
     "html2pdf.js": "^0.10.3",
     "quill": "^2.0.3",
     "quill-delta": "^5.1.0",

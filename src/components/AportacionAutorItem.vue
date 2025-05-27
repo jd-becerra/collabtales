@@ -47,6 +47,7 @@ const goToAportacion = () => {
     router.push(`/editar_aportacion/${id_cuento}/${id_aportacion}`);
   } else {
     alert("No hay aportación seleccionada.");
+    router.push('/mis_cuentos');
   }
 }
 

@@ -57,12 +57,16 @@ import { useRouter } from 'vue-router';
 import AppNavbarWhite from '@/components/AppNavbarWhite.vue';
 import BotonSm from '@/components/BotonSm.vue';
 import ReturnBtn from '@/components/ReturnBtn.vue';
+import DOMPurify from 'dompurify';
 
 function convertDeltaToHtml(contenido: string | object): string {
   const delta = typeof contenido === 'string' ? JSON.parse(contenido) : contenido;
   const converter = new QuillDeltaToHtmlConverter(delta.ops, {});
   const html = converter.convert();
-  return html;
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['b', 'i', 'u', 'strike', 'span', 'ul', 'ol', 'li', 'a'],
+    ALLOWED_ATTR: ['href', 'style'],
+  });
 }
 
 export default defineComponent({

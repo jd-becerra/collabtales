@@ -55,23 +55,35 @@ if ($row['fk_owner'] !== $id_owner) {
 }
 $stmt->close();
 
-
-// Verificar si el alumno ya está bloqueado
-$stmt = $conn->prepare("SELECT 1 FROM ListaNegra WHERE fk_cuento = ? AND fk_alumno = ?");
-$stmt->bind_param("ii", $id_cuento, $id_alumno_bloquear);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    http_response_code(409);
-    echo json_encode(["error" => "El recurso ya existe."]);
-    $stmt->close();
+// Verificar que el usuario autenticado no sea el mismo que el alumno a bloquear
+if ($id_owner === $id_alumno_bloquear) {
+    http_response_code(403);
+    echo json_encode(["error" => "No tienes permiso para realizar esta acción."]);
     $conn->close();
     exit();
 }
-$stmt->close();
 
-// Si se pasan las validaciones, proceder a insertar el bloqueo
+
+try {
+    $stmt = $conn->prepare("DELETE FROM Aportacion WHERE fk_cuento = ? AND fk_alumno = ?");
+    $stmt->bind_param("ii", $id_cuento, $id_alumno_bloquear);
+    $stmt->execute();
+    $stmt->close();
+
+    $stmt = $conn->prepare("DELETE FROM Relacion_Alumno_Cuento WHERE fk_cuento = ? AND fk_alumno = ?");
+    $stmt->bind_param("ii", $id_cuento, $id_alumno_bloquear);
+    $stmt->execute();
+    $stmt->close();
+
+    $conn->commit();
+} catch (Exception $e) {
+    $conn->rollback();
+    http_response_code(500);
+    echo json_encode(["error" => "Error with exception: " . $e->getMessage()]);
+    $conn->close();
+    exit();
+}
+// Insertar el bloqueo
 $stmt = $conn->prepare("INSERT INTO ListaNegra (fk_cuento, fk_alumno) VALUES (?, ?)");
 $stmt->bind_param("ii", $id_cuento, $id_alumno_bloquear);
 

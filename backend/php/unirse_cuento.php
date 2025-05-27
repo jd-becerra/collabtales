@@ -47,6 +47,29 @@ $row = $result_verificar->fetch_assoc();
 $id_cuento = $row['id_cuento'];
 $stmt_verificar->close();
 
+// Verificar que el cuento acepte colaboradores
+$cuentos_sql = "SELECT admite_colaboradores FROM Cuento WHERE id_cuento = ?";
+$stmt_cuentos = $conn->prepare($cuentos_sql);
+$stmt_cuentos->bind_param("i", $id_cuento);
+$stmt_cuentos->execute();
+$result_cuentos = $stmt_cuentos->get_result();
+if ($result_cuentos->num_rows === 0) {
+    http_response_code(404);
+    echo json_encode(["error" => "Recurso no encontrado."]);
+    $stmt_cuentos->close();
+    $conn->close();
+    exit();
+}
+$row_cuentos = $result_cuentos->fetch_assoc();
+if ($row_cuentos['admite_colaboradores'] !== 1) {
+    http_response_code(403);
+    echo json_encode(["error" => "No tienes permiso para realizar esta acción."]);
+    $stmt_cuentos->close();
+    $conn->close();
+    exit();
+}
+$stmt_cuentos->close();
+
 // Verificar que el alumno no esté bloqueado
 $bloqueado_sql = "SELECT 1 FROM ListaNegra WHERE fk_cuento = ? AND fk_alumno = ?";
 $stmt_bloqueado = $conn->prepare($bloqueado_sql);
@@ -85,7 +108,11 @@ $stmt->bind_param("ii", $id_cuento, $id_alumno);
 
 if ($stmt->execute()) {
     http_response_code(200);
-    echo json_encode(["success" => "Te has unido al cuento con éxito."]);
+    echo json_encode([
+        "success" => "Te has unido al cuento con éxito.",
+        "id_cuento" => $id_cuento,
+    ]);
+
 } else {
     echo json_encode(["error" => "Error al unirse al cuento."]);
 }
