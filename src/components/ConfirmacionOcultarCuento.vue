@@ -83,7 +83,7 @@ const ocultarCuento = async () => {
 
   try {
     const response = await axios.put(
-      `${import.meta.env.VUE_APP_SERVER}/php/ocultar_cuento.php`,
+      `https://collabtalesserver.avaldez0.com/php/ocultar_cuento.php`,
       {
         id_cuento: id_cuento.value
       },

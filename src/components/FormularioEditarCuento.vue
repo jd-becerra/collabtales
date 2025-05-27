@@ -97,7 +97,7 @@ const editarCuento = async () => {
 
   try {
     const response = await axios.put(
-      `${import.meta.env.VUE_APP_SERVER}/php/editar_cuento.php`,
+      `https://collabtalesserver.avaldez0.com/php/editar_cuento.php`,
       JSON.stringify({
         id_cuento: id_cuento,
         nombre_cuento: editar_cuento.value.nombre,

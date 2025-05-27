@@ -90,7 +90,7 @@ export default defineComponent({
 
     const obtenerCuentoPublico = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VUE_APP_SERVER}/php/obtener_cuento_publico.php`, {
+        const response = await axios.get(`https://collabtalesserver.avaldez0.com/php/obtener_cuento_publico.php`, {
           params: { id_cuento: props.id_cuento }
         });
         if (response.status === 200) {

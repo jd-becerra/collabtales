@@ -40,7 +40,7 @@ import axios from 'axios';
 import TextInputMd from '@/components/TextInputMd.vue';
 import BotonMd from './BotonMd.vue';
 
-const PHP_URL = import.meta.env.VUE_APP_SERVER;
+
 const restoreData = ref({ correo: '' });
 const loading = ref(false);
 
@@ -78,7 +78,7 @@ async function restorePassword() {
   loading.value = true;
 
   try {
-    const response = await axios.post(`${PHP_URL}/php/generar_token_restauracion.php`, restoreData.value, {
+    const response = await axios.post(`https://collabtalesserver.avaldez0.com/php/generar_token_restauracion.php`, restoreData.value, {
       headers: { 'Content-Type': 'application/json' }
     });
 

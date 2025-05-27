@@ -77,7 +77,7 @@ const datosAlumno = ref({ id_alumno: '', nombre: '' , correo: ''});
 const showDeleteDialog = ref(false);
 const showPerfil = ref(true);
 const showPerfilEdicion = ref(false);
-const PHP_URL = import.meta.env.VUE_APP_SERVER;
+
 
 onMounted(() => {
   getDatosAlumno();
@@ -102,7 +102,7 @@ function getDatosAlumno() {
   }
 
   axios
-    .get(`${PHP_URL}/php/obtener_alumno.php`, {
+    .get(`https://collabtalesserver.avaldez0.com/php/obtener_alumno.php`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
@@ -124,7 +124,7 @@ function getDatosAlumno() {
 
 function eliminarAlumno() {
   axios
-    .delete(`${PHP_URL}/php/eliminar_alumno.php`,
+    .delete(`https://collabtalesserver.avaldez0.com/php/eliminar_alumno.php`,
     {
       headers: {
         'Content-Type': 'application/json',

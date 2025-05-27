@@ -89,7 +89,7 @@ const eliminarCuento = async () => {
 
   try {
     const response = await axios.delete(
-      `${import.meta.env.VUE_APP_SERVER}/php/eliminar_cuento.php`,
+      `https://collabtalesserver.avaldez0.com/php/eliminar_cuento.php`,
       {
         data: {
           id_cuento: id_cuento.value,

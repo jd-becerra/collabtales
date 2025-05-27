@@ -82,7 +82,7 @@ const permitirColaboradores = async () => {
 
   try {
     const response = await axios.put(
-      `${import.meta.env.VUE_APP_SERVER}/php/permitir_colaboradores.php`,
+      `https://collabtalesserver.avaldez0.com/php/permitir_colaboradores.php`,
       {
         id_cuento: id_cuento.value
       },

@@ -90,7 +90,7 @@ const bloquarUsuario = async () => {
 
   try {
     const response = await axios.delete(
-      `${import.meta.env.VUE_APP_SERVER}/php/eliminar_bloqueado.php`,
+      `https://collabtalesserver.avaldez0.com/php/eliminar_bloqueado.php`,
       {
         headers: {
           'Content-Type': 'application/json',

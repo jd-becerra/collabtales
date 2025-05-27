@@ -90,7 +90,7 @@ const bloquarUsuario = async () => {
 
   try {
     const response = await axios.post(
-      `${import.meta.env.VUE_APP_SERVER}/php/bloquear_alumno.php`,
+      `https://collabtalesserver.avaldez0.com/php/bloquear_alumno.php`,
       {
         id_cuento: id_cuento.value,
         id_alumno_bloquear: id_usuario_bloquear.value

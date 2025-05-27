@@ -116,7 +116,7 @@ const getCuentosGlobal = async () => {
       return;
     }
 
-    const response = await axios.get(`${import.meta.env.VUE_APP_SERVER}/php/obtener_cuentos_globales.php`, {
+    const response = await axios.get(`https://collabtalesserver.avaldez0.com/php/obtener_cuentos_globales.php`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
@@ -156,7 +156,7 @@ const filterCuentosServer = async () => {
       return;
     }
 
-    const response = await axios.get(`${import.meta.env.VUE_APP_SERVER}/php/buscar_cuentos_globales.php`, {
+    const response = await axios.get(`https://collabtalesserver.avaldez0.com/php/buscar_cuentos_globales.php`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },

@@ -53,7 +53,7 @@ const props = defineProps<{
 
 const router = useRouter();
 const localDatosAlumno = ref({ ...props.datosAlumno });
-const PHP_URL = import.meta.env.VUE_APP_SERVER;
+
 const popupValues = ref({ mensaje: '', color: '' });
 
 watch(
@@ -82,7 +82,7 @@ function showPopup(title: string, msg: string) {
 
 function editarAlumno() {
   axios
-    .put(`${PHP_URL}/php/editar_alumno.php`, {
+    .put(`https://collabtalesserver.avaldez0.com/php/editar_alumno.php`, {
       nombre: localDatosAlumno.value.nombre,
       correo: localDatosAlumno.value.correo,
     },

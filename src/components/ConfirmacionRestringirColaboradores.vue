@@ -82,7 +82,7 @@ const restringirColaboradores = async () => {
 
   try {
     const response = await axios.put(
-      `${import.meta.env.VUE_APP_SERVER}/php/restringir_colaboradores.php`,
+      `https://collabtalesserver.avaldez0.com/php/restringir_colaboradores.php`,
       {
         id_cuento: id_cuento.value
       },

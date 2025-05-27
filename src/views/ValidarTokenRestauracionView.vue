@@ -26,7 +26,7 @@ import { defineComponent, ref } from 'vue';
 import RestaurarContrasena from '@/components/RestaurarContrasena.vue';
 import axios from 'axios';
 
-const PHP_URL = import.meta.env.VUE_APP_SERVER;
+
 
 export default defineComponent({
   props: ['token', 'correo'],
@@ -42,7 +42,7 @@ export default defineComponent({
     const validarToken = async () => {
       loading.value = true;
       try {
-        const response = await axios.get(`${PHP_URL}/php/validar_token_restauracion.php`,
+        const response = await axios.get(`https://collabtalesserver.avaldez0.com/php/validar_token_restauracion.php`,
         {
           params: {
             token: props.token,

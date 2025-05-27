@@ -64,7 +64,7 @@ import axios from 'axios';
 import TextInputMd from '@/components/TextInputMd.vue';
 import BotonMd from './BotonMd.vue';
 
-const PHP_URL = import.meta.env.VUE_APP_SERVER;
+
 
 const registerData = ref({ nombre: '', correo: '', contrasena: '', repetir_contrasena: '' });
 const loading = ref(false);
@@ -107,7 +107,7 @@ async function register() {
 
   loading.value = true;
   try {
-    const response = await axios.post(`${PHP_URL}/php/crear_alumno.php`, {
+    const response = await axios.post(`https://collabtalesserver.avaldez0.com/php/crear_alumno.php`, {
       nombre: registerData.value.nombre,
       correo: registerData.value.correo,
       contrasena: registerData.value.contrasena

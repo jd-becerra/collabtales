@@ -36,7 +36,7 @@ import { defineComponent, ref } from 'vue';
 import router from '@/router';
 import axios from 'axios';
 
-const PHP_URL = import.meta.env.VUE_APP_SERVER;
+
 
 const RestaurarContrasena = defineComponent({
   props: ['token', 'id_usuario'],
@@ -53,7 +53,7 @@ const RestaurarContrasena = defineComponent({
 
       loading.value = true;
       try {
-        const response = await axios.post(`${PHP_URL}/php/restaurar_contrasena.php`, {
+        const response = await axios.post(`https://collabtalesserver.avaldez0.com/php/restaurar_contrasena.php`, {
           token: props.token,
           id_usuario: props.id_usuario,
           nueva_contrasena: password.value,

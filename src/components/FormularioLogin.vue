@@ -50,7 +50,7 @@ import axios from 'axios';
 import TextInputMd from '@/components/TextInputMd.vue';
 import BotonMd from './BotonMd.vue';
 
-const PHP_URL = import.meta.env.VUE_APP_SERVER;
+
 
 const loginData = ref({ nombre: '', contrasena: '' });
 const router = useRouter();
@@ -83,7 +83,7 @@ async function login() {
   loading.value = true;
 
   try {
-    const response = await axios.post(`${PHP_URL}/php/iniciar_sesion.php`, loginData.value, {
+    const response = await axios.post(`https://collabtalesserver.avaldez0.com/php/iniciar_sesion.php`, loginData.value, {
       headers: { 'Content-Type': 'application/json' }
     });
 
