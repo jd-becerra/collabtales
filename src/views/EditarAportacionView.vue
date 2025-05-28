@@ -230,7 +230,7 @@ export default defineComponent({
       }
       loading.value = true;
       try {
-        const response = await axios.get('/php/obtener_aportacion_individual.php', {
+        const response = await axios.get('https://collabtalesserver.avaldez0.com/php/obtener_aportacion_individual.php', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
@@ -262,7 +262,6 @@ export default defineComponent({
           await nextTick();
           await initializeQuill();
         } else {
-          console.error('Error al obtener la aportación:', response.data);
           alert('No se pudo obtener la aportación. Por favor, inténtalo de nuevo.');
           router.push('/mis_cuentos');
         }
@@ -321,7 +320,7 @@ export default defineComponent({
         const delta = quill.value.getContents();
         const deltaString = JSON.stringify(delta);
 
-        await axios.put('/php/editar_aportacion.php',
+        await axios.put('https://collabtalesserver.avaldez0.com/php/editar_aportacion.php',
           {
             id_cuento: props.id_cuento,
             id_aportacion: props.id_aportacion,

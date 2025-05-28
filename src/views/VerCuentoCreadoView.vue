@@ -213,6 +213,7 @@ export default defineComponent({
             contenido: convertDeltaToHtml(aportacion.contenido)
           }));
           id_aportacion.value = response.data.id_aportacion || null;
+          console.log("id_aportacion:", id_aportacion.value);
         }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
