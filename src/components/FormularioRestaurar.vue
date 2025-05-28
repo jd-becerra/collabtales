@@ -1,5 +1,5 @@
 <template>
-   <v-form>
+   <v-form @submit.prevent="restorePassword">
       <v-container class="restore-fields d-flex flex-column">
       <TextInputMd
         label="Correo"
@@ -9,7 +9,6 @@
         outlined
         required
         class="custom-input"
-        @keyup.enter="restorePassword"
       />
       <small class="result-msg" :style="{ color: popupValues.color }" v-if="popupValues.mensaje">
         {{ popupValues.mensaje }}
@@ -21,7 +20,7 @@
         ¿Ya tienes una cuenta? <a class="goto-login" href="#" @click="$emit('show-login')">Inicia sesión aquí</a>
       </small>
       <v-container class="restore-buttons d-flex flex-column">
-        <BotonMd color_type="blue" @click="restorePassword">
+        <BotonMd color_type="blue" :disabled="loading" type="submit">
           <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
           Restaurar contraseña
         </BotonMd>
@@ -85,7 +84,10 @@ async function restorePassword() {
 
     if (response.data.success) {
       showPopup("Éxito", `Correo enviado, revisa tu bandeja de entrada`);
-      emit('show-login');
+      setTimeout(() => {
+        emit('show-login');
+        loading.value = false;
+      }, 1000);
     } else {
       showPopup("Error", `No se pudo restaurar la contraseña`);
     }

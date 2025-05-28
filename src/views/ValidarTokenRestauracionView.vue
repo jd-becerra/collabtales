@@ -22,9 +22,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import RestaurarContrasena from '@/components/RestaurarContrasena.vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
 
 
 
@@ -38,6 +39,7 @@ export default defineComponent({
     const validado = ref(false);
     const id_usuario = ref(null);
     const loading = ref(false);
+    const router = useRouter();
 
     const validarToken = async () => {
       loading.value = true;
@@ -59,13 +61,23 @@ export default defineComponent({
           validado.value = true;
         }
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.error(error);
-        mensaje_error.value = 'Error al validar token';
+        alert ('Error al validar token');
+        router.push('/');
       } finally {
         loading.value = false;
       }
     };
+
+    onMounted(() => {
+      // Check if the token and correo are provided
+      if (!props.token || !props.correo) {
+        alert('Datos no válidos.');
+        router.push('/');
+        return;
+      }
+    });
 
     // Call validarToken when the component is mounted
     validarToken();

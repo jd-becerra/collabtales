@@ -21,10 +21,10 @@
             required
             class="custom-input"
           />
-          <v-btn block color="green-darken-3" class="mt-3 rounded-lg" type="submit" :disabled="loading">
+          <BotonXs block color_type="white_green" class="mt-3 rounded-lg" type="submit" :disabled="loading">
               <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
               Cambiar Contraseña
-          </v-btn>
+          </BotonXs>
         </v-form>
     </v-card-text>
   </v-slide-y-transition>
@@ -32,14 +32,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import router from '@/router';
 import axios from 'axios';
-
+import BotonXs from '@/components/BotonXs.vue';
 
 
 const RestaurarContrasena = defineComponent({
   props: ['token', 'id_usuario'],
+  components: {
+    BotonXs,
+  },
   setup(props) {
     const password = ref('');
     const repeatPassword = ref('');
@@ -71,6 +74,12 @@ const RestaurarContrasena = defineComponent({
         loading.value = false;
       }
     };
+
+    onMounted(() => {
+      if (!props.token || !props.id_usuario) {
+        router.push('/');
+      }
+    });
 
     return {
       password,
