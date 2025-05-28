@@ -98,11 +98,11 @@ const editarCuento = async () => {
   try {
     const response = await axios.put(
       `https://collabtalesserver.avaldez0.com/php/editar_cuento.php`,
-      JSON.stringify({
-        id_cuento: id_cuento,
+      {
+        id_cuento: id_cuento.value,
         nombre_cuento: editar_cuento.value.nombre,
         descripcion_cuento: editar_cuento.value.descripcion,
-      }),
+      },
       {
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ const editarCuento = async () => {
       showPopup('Éxito', 'Cuento editado correctamente. Redigiriendo a tu cuento...');
       setTimeout(() => {
         emit('close-popup');
-        router.push('/ver_cuento_creado/' + id_cuento.value);
+        router.go(0);
       }, 1000);
     }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

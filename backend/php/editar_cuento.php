@@ -10,7 +10,7 @@ $id_alumno = $user['id_alumno'] ?? null;
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-if (count($data) !== 3 || !isset($data['id_cuento'], $data['nombre_cuento'], $data['descripcion_cuento'])) {
+if (!isset($data['id_cuento'], $data['nombre_cuento'], $data['descripcion_cuento'])) {
     http_response_code(400);
     echo json_encode(["error" => "Parámetros inválidos."]);
     exit();
