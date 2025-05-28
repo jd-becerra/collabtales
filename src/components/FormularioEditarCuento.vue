@@ -13,20 +13,20 @@
       <h2 class="unirse-header text-h6 mt-3">EDITAR CUENTO</h2>
       <p class="text-caption">Escribe el nombre y la descripción de tu cuento. Asegúrate de no dejar campos vacíos</p>
 
-      <div class="mt-4">
+      <v-form class="mt-4" @submit.prevent="editarCuento">
         <TextInputSm
           v-model="editar_cuento.nombre"
           label="Nombre del cuento"
           type="text"
           required
-          @keyup.enter="editarCuento()"
+          @keydown.enter="handleEnter"
         />
         <TextInputSmWide class="mt-3"
           v-model="editar_cuento.descripcion"
           label="Descripción"
           type="text"
           required
-          @keyup.enter="editarCuento()"
+          @keydown.enter="handleEnter"
         />
 
         <v-container class="d-flex justify-space-between align-start pa-0 mt-5">
@@ -38,11 +38,11 @@
           </small>
           <BotonXs
             color_type="white_green"
-            @click="editarCuento()"
             :disabled="disableGuardar"
-            >Guardar cambios</BotonXs>
+            >Guardar cambios
+          </BotonXs>
         </v-container>
-      </div>
+      </v-form>
     </v-container>
   </v-card>
 </template>
@@ -132,6 +132,17 @@ const editarCuento = async () => {
       showPopup('Error', 'Error inesperado al crear cuento.');
     }
   }
+};
+
+const handleEnter = (event: KeyboardEvent) => {
+  if (event.shiftKey) {
+    // Shift+Enter → Permitir salto de línea (no hacer nada)
+    return;
+  }
+
+  // Solo Enter → Evita el salto de línea, y ejecuta submit
+  event.preventDefault(); // Prevenir el comportamiento por defecto
+  editarCuento(); // Llamar la función de envío
 };
 
 onMounted(() => {
