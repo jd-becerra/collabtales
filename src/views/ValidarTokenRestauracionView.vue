@@ -1,7 +1,7 @@
 <template>
  <v-container class="fill-height d-flex justify-center align-center">
   <v-card class="pa-6 rounded-lg elevation-10 login-card">
-    <v-card-title class="text-center text-h5 font-weight-bold">🔐 Restaurar contraseña</v-card-title>
+    <v-card-title class="text-center text-h5 font-weight-bold">Restaurar contraseña</v-card-title>
     <div v-if="loading" class="d-flex justify-center">
       <v-progress-circular indeterminate color="white" size="20" class="mr-2" />
       <v-card-subtitle class="text-center text-body-2">Validando token</v-card-subtitle>

@@ -23,7 +23,7 @@
           />
           <v-btn block color="green-darken-3" class="mt-3 rounded-lg" type="submit" :disabled="loading">
               <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
-              Restaurar Contraseña
+              Cambiar Contraseña
           </v-btn>
         </v-form>
     </v-card-text>
@@ -53,7 +53,7 @@ const RestaurarContrasena = defineComponent({
 
       loading.value = true;
       try {
-        const response = await axios.post(`https://collabtalesserver.avaldez0.com/php/restaurar_contrasena.php`, {
+        const response = await axios.put(`https://collabtalesserver.avaldez0.com/php/restaurar_contrasena.php`, {
           token: props.token,
           id_usuario: props.id_usuario,
           nueva_contrasena: password.value,
