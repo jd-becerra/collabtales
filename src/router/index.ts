@@ -96,9 +96,13 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const publicPages = ['/'];
+  const publicPages = ['/', '/restaurar_contrasena'];
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = localStorage.getItem('id_alumno');
+
+  if (to.path === '/restaurar_contrasena' && loggedIn) {
+    return next('/mis_cuentos');
+  }
 
   if (authRequired && !loggedIn) {
     return next('/');

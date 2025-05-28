@@ -69,8 +69,8 @@ $cooldown = 60; // 1 minuto
 
 // Si el último token fue generado hace menos de 1 minuto, rechazamos la solicitud
 if ($last_token_time && ($current_time - $last_token_time < $cooldown)) {
-    http_response_code(429); // Too Many Requests
-    echo json_encode(["error" => "Se ha excedido el límite de peticiones. Intenta de nuevo más tarde."]);
+    http_response_code(409); // Too Many Requests
+    echo json_encode(["error" => "Este recurso ya existe. Intenta de nuevo más tarde."]);
     exit;
 }
 
@@ -85,18 +85,32 @@ $token = bin2hex(random_bytes(32));
 $hashed_token = password_hash($token, PASSWORD_BCRYPT);
 $expiracion = time() + 3600;
 
+// Insertar el nuevo token en la base de datos y obtener su ID
 $stmt = $conn->prepare("INSERT INTO TokenRestauracion (token, expiracion, fk_alumno)
-                        VALUES (?, ?, ?)
-                        ON DUPLICATE KEY UPDATE token = ?, expiracion = ?");
-$stmt->bind_param("sssss", $hashed_token, $expiracion, $id_alumno, $hashed_token, $expiracion);
+                        VALUES (?, ?, ?)");
+$stmt->bind_param("ssi", $hashed_token, $expiracion, $id_alumno);
 $stmt->execute();
+
+if ($stmt->affected_rows === 0) {
+    http_response_code(500);
+    echo json_encode(["error" => "Error al generar el token"]);
+    exit;
+}
+
+$id_token = $stmt->insert_id;
 $stmt->close();
+if (!$id_token) {
+    http_response_code(500);
+    echo json_encode(["error" => "Error al obtener el ID del token"]);
+    exit;
+}
 
 // Como ya validamos que el correo existe, podemos usarlo para enviar un correo con el token
 $to = $email;
 $subject = 'Restablecer contraseña en Collabtales';
 // El link debe contener el token generado y el correo del usuario
-$restore_link = "http://localhost:5173/restaurar_contrasena?token=$token&correo=$email";
+$FRONTEND_URL = getenv("FRONTEND_URL");
+$restore_link = $FRONTEND_URL . "/restaurar_contrasena?token=$token&correo=$email";
 $message = "Para restablecer tu contraseña, haz clic en el siguiente enlace: $restore_link. Expira en 1 hora. Si no solicitaste restablecer tu contraseña, ignora este mensaje.";
 $from = getenv("SMTP_USER");
 $reply_to = $from;
@@ -117,6 +131,8 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 $mail = new PHPMailer(true);
+$mail->CharSet = 'UTF-8';
+$mail->Encoding = 'base64';
 
 // Usar gmail para enviar el correo
 $mail->IsSMTP(); // telling the class to use SMTP
@@ -141,6 +157,14 @@ try {
     echo json_encode(["success" => "Correo enviado"]);
 } catch (Exception $e) {
     var_dump(getenv("SMTP_PASS"));
+
+    // Si falla el envío del correo, eliminamos el token de la base de datos
+    $stmt = $conn->prepare("DELETE FROM TokenRestauracion WHERE id_token = ?");
+    $stmt->bind_param("i", $id_token);
+    $stmt->execute();
+    $stmt->close();
+
+
     http_response_code(500);
     echo json_encode(["error" => "Error en el servidor"]);
     exit;  // Stop further execution after failure

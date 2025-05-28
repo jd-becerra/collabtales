@@ -9,6 +9,7 @@
         outlined
         required
         class="custom-input"
+        @keyup.enter="restorePassword"
       />
       <small class="result-msg" :style="{ color: popupValues.color }" v-if="popupValues.mensaje">
         {{ popupValues.mensaje }}
@@ -88,14 +89,17 @@ async function restorePassword() {
     } else {
       showPopup("Error", `No se pudo restaurar la contraseña`);
     }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.status === 404) {
       showPopup("Error", `El correo electrónico no está registrado.`);
-      return;
+    } else if (error.status === 409) {
+      showPopup("Error", `Ya existe una solicitud de restauración pendiente para este correo.`);
+    } else if (error.status === 429){
+      showPopup("Error", `Demasiadas solicitudes. Por favor, espera un momento antes de intentar nuevamente.`);
+    } else {
+      showPopup("Error", `Hubo un error en el servidor. Intente nuevamente más tarde.`);
     }
-
-    showPopup("Error", `Hubo un error en el servidor. Intente nuevamente más tarde.`);
   } finally {
     loading.value = false;
   }
