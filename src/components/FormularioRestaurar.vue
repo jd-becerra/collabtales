@@ -9,6 +9,7 @@
         outlined
         required
         class="custom-input"
+        @keyup.enter="restorePassword"
       />
       <small class="result-msg" :style="{ color: popupValues.color }" v-if="popupValues.mensaje">
         {{ popupValues.mensaje }}
