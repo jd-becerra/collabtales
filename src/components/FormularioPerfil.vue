@@ -1,5 +1,5 @@
 <template>
-    <v-form disabled="true">
+    <v-form>
       <v-container class="login-fields d-flex flex-column">
         <TextInputSmDisabled
           :label="$t('profile.username')"
