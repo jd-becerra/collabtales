@@ -13,7 +13,7 @@
         <span class="logo-collabtales-text">Collabtales</span><span class="copyright"> &copy;</span>
       </h1>
       <h3 class="slogan-collabtales">
-        <span class="logo-collabtales-text">¡Imagina, escribe, comparte, colabora!</span>
+        <span class="logo-collabtales-text">{{ $t('components.slogan') }}</span>
       </h3>
     </v-col>
   </v-container>

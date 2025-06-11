@@ -10,11 +10,15 @@
     <div class="main-container">
       <div>
         <div v-if="cuento">
-          <h2 class="cuento-titulo text-h4 font-weight-bold">Cuento: {{ cuento.nombre }}</h2>
-          <p class="text-body-1 mb-6">Descripción: {{ cuento.descripcion }}</p>
+          <h2 class="cuento-titulo text-h4 font-weight-bold">{{ $t('cuento_colaborador.tale', { title: cuento.nombre }) }}</h2>
+          <p class="text-body-1 mb-6">
+            {{  $t('cuento_colaborador.description', { description: cuento.descripcion }) }}
+          </p>
 
           <div class="d-flex justify-space-between align-center">
-            <h3 class="aportaciones-header text-h6">Aportaciones: </h3>
+            <h3 class="aportaciones-header text-h6">
+              {{ $t('cuento_colaborador.contributions') }}
+            </h3>
           </div>
         </div>
           <v-card class="aportaciones-card" flat>
@@ -37,14 +41,18 @@
                 />
               </div>
             </div>
-            <p v-else class="no-aportaciones">Actualmente no existen aportaciones en este cuento.</p>
+            <p v-else class="no-aportaciones">{{ $t('cuento_colaborador.no_contributions') }}</p>
           </v-card>
         </div>
       <div class="options-container">
-        <ReturnBtn @click="goToMisCuentos()">VOLVER A MIS CUENTOS</ReturnBtn>
+        <ReturnBtn @click="goToMisCuentos()">
+          {{ $t('cuento_colaborador.return') }}
+        </ReturnBtn>
 
         <v-card class="info-card" >
-          <h3 class="colaboradores-header">Colaboradores:</h3>
+          <h3 class="colaboradores-header">
+            {{ $t('cuento_colaborador.collaborators') }}
+          </h3>
           <ol class="colaboradores-list">
             <li class="colaboradores-item" v-for="(aportacion, idx) in aportaciones" :key="idx">
               {{ aportacion.autor }}
@@ -54,16 +62,21 @@
         </v-card>
 
         <div class="buttons-container">
-          <!-- <BotonSm class="cuento-btn" icon_path="/icons/visibility.svg">
-            Previsualizar cuento
-          </BotonSm> -->
+          <BotonSm
+            v-if="cuento?.publicado"
+            class="cuento-btn"
+            icon_path="/icons/visibility.svg"
+            @click="goToCuentoPublicoColaborador"
+            >
+            {{ $t('cuento_colaborador.view_tale_button') }}
+          </BotonSm>
           <BotonSm
             class="cuento-btn"
             icon_path="/icons/delete_forever.svg"
             color_type="white_red"
             @click="showAbandonarCuento = true"
           >
-            Abandonar cuento
+            {{ $t('cuento_colaborador.abandon_tale_button') }}
           </BotonSm>
         </div>
       </div>
@@ -123,6 +136,7 @@ export default defineComponent({
     const cuento = ref<{
       nombre: string;
       descripcion: string,
+      publicado: boolean;
       } | null>(null);
     const aportaciones = ref<Array<{ autor: string; contenido: string; es_autor: boolean }>>([]);
     const id_aportacion = ref<string | null>(null);
@@ -151,12 +165,11 @@ export default defineComponent({
       } catch (error: any) {
         router.push('/mis_cuentos');
         if (error.status === 404) {
-          alert("Cuento no encontrado.");
+          alert("Tale not found");
         } else if (error.status === 403) {
-          alert("No tienes permiso para ver este cuento.");
+          alert("You do not have permission to view this tale.");
         } else {
-          alert("Error al obtener el cuento. Por favor, inténtalo de nuevo más tarde.");
-          console.error("Error al obtener el cuento:", error);
+          alert("Error fetching tale data. Please try again later.");
         }
         return;
       }
@@ -165,12 +178,13 @@ export default defineComponent({
     const navegarAportacion = () => {
       try {
         if (aportaciones.value.length === 0) {
-          alert("No puedes editar una aportación que no existe.");
+          alert("You have not made any contributions to this tale.");
           return;
         }
         router.push('/editar_aportacion');
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.error("Error al obtener el ID de la aportación:", error);
+        console.error("An error occurred while navigating to the contribution");
       }
     }
 
@@ -178,10 +192,18 @@ export default defineComponent({
       router.push('/mis_cuentos');
     }
 
+    const goToCuentoPublicoColaborador = () => {
+      if (cuento.value && cuento.value.publicado) {
+        router.push(`/ver_cuento_publico_colaborador/${id_cuento}`);
+      } else {
+        alert("This tale is not published yet.");
+      }
+    }
+
     onMounted(() => {
       if (!props.id_cuento) {
         router.push('/mis_cuentos');
-        alert("No tienes permiso para ver este cuento.");
+        alert("You do not have permission to view this tale.");
         return;
       }
       loading.value = true;
@@ -198,6 +220,7 @@ export default defineComponent({
       obtenerCuentoPrivadoColaborador,
       navegarAportacion,
       goToMisCuentos,
+      goToCuentoPublicoColaborador
     };
   }
 });

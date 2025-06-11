@@ -9,9 +9,10 @@
         />
       </v-btn>
 
-      <h2 class="eliminar-cuento-header text-h6 my-3">BLOQUEAR USUARIO</h2>
-      <p class="eliminar-cuento-subheader text-caption mb-6">¿Estás seguro de querer bloquear al usuario "{{ nombre_usuario_bloquear }}”?  El usuario ya no podrá participar en este cuento ni visualizarlo.</p>
-
+      <h2 class="eliminar-cuento-header text-h6 my-3">{{ $t('manage_collaborators.confirm_block_title') }} </h2>
+      <p class="eliminar-cuento-subheader text-caption mb-6">
+        {{ $t('manage_collaborators.confirm_block_message', { username: nombre_usuario_bloquear }) }}
+      </p>
       <small
         v-if="popupValues.mensaje"
         class="result-msg"
@@ -26,7 +27,7 @@
             class="return-btn"
             @click="emit('close-popup')"
           >
-            Regresar
+            {{ $t('manage_collaborators.cancel_button') }}
           </BotonXs>
           <BotonXs
             class="eliminar-btn"
@@ -34,7 +35,7 @@
             @click="bloquarUsuario()"
             :disabled="disableBloquear"
           >
-            Bloquear
+            {{ $t('manage_collaborators.confirm_block_button') }}
           </BotonXs>
         </div>
 
@@ -48,7 +49,9 @@ import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import  BotonXs from '@/components/BotonXs.vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const router = useRouter();
 
 const emit = defineEmits(['close-popup']);
@@ -81,7 +84,7 @@ const disableBloquear = ref(false);
 const bloquarUsuario = async () => {
   if (!id_cuento.value) {
     // Regresamos a la página de cuentos si el ID no es válido (ya que hubo un error)
-    showPopup('Error', 'ID del cuento no válido.');
+    showPopup(t('message_headers.error'), t('manage_collaborators.invalid_id'));
     router.push('/mis_cuentos');
     return;
   }
@@ -104,7 +107,7 @@ const bloquarUsuario = async () => {
     );
 
     if (response.status === 200) {
-      showPopup('Éxito', 'Usuario bloqueado correctamente. Recargando página...');
+      showPopup(t('message_headers.success'), t('manage_collaborators.block_success'));
 
       setTimeout(() => {
         emit('close-popup');
@@ -114,15 +117,15 @@ const bloquarUsuario = async () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error?.response?.status === 400) {
-      showPopup('Error', 'Acción inválida. Intente recargar la página.');
+      showPopup(t('message_headers.error'), t('error_codes.400'));
     } else if (error?.response?.status === 403) {
-      showPopup('Error', 'No tienes permiso para bloquear usuarios en este cuento.');
+      showPopup(t('message_headers.error'), t('error_codes.403'));
     } else if (error?.response?.status === 404) {
-      showPopup('Error', 'Cuento no encontrado.');
+      showPopup(t('message_headers.error'), t('error_codes.404'));
     } else if (error?.response?.status === 500) {
-      showPopup('Error', 'Error en el servidor. Intenta más tarde.');
+      showPopup(t('message_headers.error'), t('error_codes.500'));
     } else {
-      showPopup('Error', 'Error inesperado al bloquear usuario.');
+      showPopup(t('message_headers.error'), t('error_codes.unknown'));
     }
     disableBloquear.value = false;
   }

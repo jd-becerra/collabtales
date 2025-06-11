@@ -2,40 +2,51 @@
   <v-form @submit.prevent="register">
     <v-container class="register-fields d-flex flex-column">
       <TextInputMd
-        label="Nombre de usuario  "
+        :label="$t('register.username')"
         v-model="registerData.nombre"
         type="text"
-        placeholder="Ejemplo: usuario123"
+        :placeholder="$t('register.username_placeholder')"
         outlined
         required
         class="custom-input"
         @keyup.enter="register"
       />
       <TextInputMd
-        label="Correo"
+        :label="$t('register.email')"
         v-model="registerData.correo"
         type="email"
-        placeholder="Ejemplo: correo@gmail.com"
+        :placeholder="$t('register.email_placeholder')"
         outlined
         required
         class="custom-input"
         @keyup.enter="register"
       />
       <TextInputMd
-        label="Contraseña (al menos 8 caracteres y un carácter especial)"
+        :label="$t('register.password')"
         v-model="registerData.contrasena"
         type="password"
-        placeholder="Escribe tu contraseña aquí"
+        :placeholder="$t('register.password_placeholder')"
         outlined
         required
         class="custom-input"
         @keyup.enter="register"
       />
+      <ul class="requirements_container">
+        <li :class="{ 'valid': has8Characters, 'invalid': !has8Characters }">
+          {{ $t('register.8_characters') }}
+        </li>
+        <li :class="{ 'valid': hasSpecialCharacter, 'invalid': !hasSpecialCharacter }">
+          {{ $t('register.special_character') }}
+        </li>
+        <li :class="{ 'valid': passwordMatch, 'invalid': !passwordMatch }">
+          {{ $t('register.password_match') }}
+        </li>
+      </ul>
       <TextInputMd
-        label="Repite tu contraseña"
+        :label="$t('register.confirm_password')"
         v-model="registerData.repetir_contrasena"
         type="password"
-        placeholder="Asegúrate que las contraseñas coincidan"
+        :placeholder="$t('register.confirm_password_placeholder')"
         outlined
         required
         class="custom-input"
@@ -48,26 +59,30 @@
 
     <v-container class="register-buttons d-flex flex-column">
       <small class="mb-1">
-        Ya tienes una cuenta <a class="goto-login" href="#" @click="$emit('show-login')">Inicia sesión aquí</a>
+        {{ $t('register.already_registered') }} <a class="goto-login" href="#" @click="$emit('show-login')">{{ $t('register.already_registered_link') }}</a>
       </small>
       <BotonMd :disabled="loading" @click="register">
         <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
-        Regístrate
+        {{ $t('register.register_button') }}
       </BotonMd>
     </v-container>
   </v-form>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import axios from 'axios';
 import TextInputMd from '@/components/TextInputMd.vue';
 import BotonMd from './BotonMd.vue';
+import { useI18n } from 'vue-i18n';
 
-
+const { t } = useI18n();
 
 const registerData = ref({ nombre: '', correo: '', contrasena: '', repetir_contrasena: '' });
 const loading = ref(false);
+const has8Characters = ref(false);
+const hasSpecialCharacter = ref(false);
+const passwordMatch = ref(false);
 
 const emit = defineEmits(['show-login']);
 
@@ -87,21 +102,32 @@ function showPopup(title: string, msg: string) {
   };
 }
 
+function checkPasswordRequirements() {
+  const password = registerData.value.contrasena;
+
+  has8Characters.value = password.length >= 8;
+  hasSpecialCharacter.value = /[!@#$%^&*+]/.test(password);
+  passwordMatch.value = registerData.value.contrasena === registerData.value.repetir_contrasena && registerData.value.contrasena.length > 0;
+}
+watchEffect(() => {
+  checkPasswordRequirements();
+});
+
 async function register() {
   if (!registerData.value.nombre || !registerData.value.correo || !registerData.value.contrasena || !registerData.value.repetir_contrasena) {
-    showPopup("Error", "Asegúrate de llenar todos los campos.");
+    showPopup(t("message_headers.error"), t("register.fill_fields"));
     return;
   }
 
   if (registerData.value.contrasena !== registerData.value.repetir_contrasena) {
-    showPopup("Error", "Las contraseñas no coinciden.");
+    showPopup(t("message_headers.error"), t("register.password_mismatch"));
     return;
   }
 
   // Validar que las contraseñas tengan al menos 8 caracteres (letras o numeros) y al menos un caracter especial
   const passwordRegex = /^(?=.*[!@#$%^&*+]).{8,}$/;
   if (!passwordRegex.test(registerData.value.contrasena)) {
-    showPopup("Error", "La contraseña debe tener al menos 8 caracteres y un carácter especial.");
+    showPopup(t("message_headers.error"), t("register.password_invalid"));
     return;
   }
 
@@ -114,13 +140,9 @@ async function register() {
     }, {
       headers: { 'Content-Type': 'application/json' }
     });
-    if (response.data.error) {
-      showPopup("Error", `${response.data.error}`);
-      return;
-    }
 
     if (response.data.id_alumno) {
-      showPopup("Éxito", `Usuario '${registerData.value.nombre}' creado correctamente. Inicia sesión para continuar.`);
+      showPopup(t("message_headers.success"), t("register.registration_successful", { username: registerData.value.nombre }));
       setTimeout(() => {
         emit('show-login');
       }, 2000);
@@ -128,13 +150,13 @@ async function register() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.status === 500) {
-      showPopup("Error", `Error en el servidor, intente nuevamente.`);
+      showPopup(t("message_headers.error"), t("error_codes.500"));
     } else if (error.status === 400) {
-      showPopup("Error", `Parametros incorrectos. Llena todos los campos correctamente.`);
+      showPopup(t("message_headers.error"), t("error_codes.400"));
     } else if (error.status === 409) {
-      showPopup("Error", `Usuario o correo ya registrados.`);
+      showPopup(t("message_headers.error"), t("register.user_already_exists"));
     } else if (error.status === 429) {
-      showPopup("Error", `Has excedido el límite de intentos permitido. Intenta más tarde.`);
+      showPopup(t("message_headers.error"), t("error_codes.429"));
     }
   } finally {
     loading.value = false;
@@ -166,4 +188,21 @@ async function register() {
   cursor: pointer;
   margin-bottom: 2px;
 }
+
+.requirements_container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+}
+.valid {
+  color: var(--color-save); /* or your green */
+  margin-left: 1.5rem;
+}
+.invalid {
+  color: var(--color-error); /* already used in your spans */
+  margin-left: 1.5rem;
+}
+
 </style>

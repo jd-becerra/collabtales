@@ -86,10 +86,12 @@ if ($result_bloqueado->num_rows > 0) {
 }
 $stmt_bloqueado->close();
 
-// Verificar si el alumno ya está unido al cuento
-$union_sql = "SELECT 1 FROM Relacion_Alumno_Cuento WHERE fk_cuento = ? AND fk_alumno = ?";
+// Verificar si el alumno ya está unido al cuento  (si existe en Relacion_Alumno_Cuento o Aportacion)
+$union_sql = "SELECT 1 FROM Relacion_Alumno_Cuento WHERE fk_cuento = ? AND fk_alumno = ?
+            UNION
+            SELECT 1 FROM Aportacion WHERE fk_cuento = ? AND fk_alumno = ?";
 $stmt_union = $conn->prepare($union_sql);
-$stmt_union->bind_param("ii", $id_cuento, $id_alumno);
+$stmt_union->bind_param("iiii", $id_cuento, $id_alumno, $id_cuento, $id_alumno);
 $stmt_union->execute();
 $result_union = $stmt_union->get_result();
 if ($result_union->num_rows > 0) {

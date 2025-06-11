@@ -56,14 +56,17 @@ $sql_cuento = $conn->prepare("
     SELECT 
         c.nombre, 
         c.descripcion,
-        GROUP_CONCAT(DISTINCT a.nombre ORDER BY a.nombre SEPARATOR ', ') AS autores
+        GROUP_CONCAT(DISTINCT a.nombre ORDER BY a.nombre SEPARATOR ', ') AS autores,
+        COUNT(DISTINCT lk.fk_alumno) AS likes,
+        IF(COUNT(lk.fk_alumno = ?) > 0, 1, 0) AS has_liked
     FROM Cuento c
     JOIN Relacion_Alumno_Cuento rac ON c.id_cuento = rac.fk_cuento
     JOIN Alumno a ON rac.fk_alumno = a.id_alumno
+    LEFT JOIN Likes lk ON c.id_cuento = lk.fk_cuento
     WHERE c.id_cuento = ?
     GROUP BY c.id_cuento, c.nombre, c.descripcion
 ");
-$sql_cuento->bind_param("i", $id_cuento);
+$sql_cuento->bind_param("ii", $user['id_alumno'], $id_cuento);
 $sql_cuento->execute();
 $result = $sql_cuento->get_result();
 if ($result->num_rows === 0) {

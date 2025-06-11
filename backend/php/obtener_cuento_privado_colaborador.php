@@ -49,7 +49,8 @@ if ($colaborador_result->num_rows === 0) {
 $sql_cuento = $conn->prepare("
     SELECT 
         c.nombre, 
-        c.descripcion
+        c.descripcion,
+        c.publicado,
     FROM Cuento c
     WHERE c.id_cuento = ?
 ");

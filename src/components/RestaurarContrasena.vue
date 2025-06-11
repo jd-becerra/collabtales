@@ -4,7 +4,8 @@
       <v-card-text>
         <v-form @submit.prevent="submitForm">
           <v-text-field
-            label="Nueva Contraseña"
+            :label="$t('reset_password.new_password')"
+            :placeholder="$t('reset_password.new_password_placeholder')"
             prepend-inner-icon="mdi-lock"
             v-model="password"
             type="password"
@@ -13,7 +14,8 @@
             class="custom-input"
           />
           <v-text-field
-            label="Repetir Contraseña"
+            :label="$t('reset_password.confirm_new_password')"
+            :placeholder="$t('reset_password.confirm_new_password_placeholder')"
             prepend-inner-icon="mdi-lock"
             v-model="repeatPassword"
             type="password"
@@ -23,7 +25,7 @@
           />
           <BotonXs block color_type="white_green" class="mt-3 rounded-lg" type="submit" :disabled="loading">
               <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
-              Cambiar Contraseña
+            {{ $t('reset_password.reset_button') }}
           </BotonXs>
         </v-form>
     </v-card-text>
@@ -49,8 +51,13 @@ const RestaurarContrasena = defineComponent({
     const loading = ref(false);
 
     const submitForm = async () => {
+      if (!password.value || !repeatPassword.value) {
+        alert('Please fill in both fields');
+        return;
+      }
+
       if (password.value !== repeatPassword.value) {
-        alert('Las contraseñas no coinciden');
+        alert('Paswords do not match');
         return;
       }
 
@@ -63,13 +70,14 @@ const RestaurarContrasena = defineComponent({
         });
 
         if (response.data.success) {
-          alert('Contraseña restaurada correctamente');
+          alert('Password has been reset successfully.');
           router.push('/');
         } else {
-          alert('Error: ' + response.data.error);
+          alert('An error occurred while resetting the password. Please try again.');
         }
       } catch (error) {
-        alert('Error: ' + error);
+        console.error(error);
+        alert('An error occurred while processing your request. Check that your new password is not the same as your previous password or try again later.');
       } finally {
         loading.value = false;
       }

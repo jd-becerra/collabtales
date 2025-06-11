@@ -10,15 +10,15 @@
         />
       </v-btn>
 
-      <h2 class="unirse-header text-h6 mt-3">UNIRSE A UN CUENTO</h2>
-      <p class="text-caption">Escribe la ID del cuento al que deseas unirte (consulta con el creador del cuento si no la sabes).</p>
+      <h2 class="unirse-header text-h6 mt-3">{{ t('join_tale.title') }}</h2>
+      <p class="text-caption">{{ t('join_tale.subtitle') }}</p>
 
       <div class="mt-4">
         <TextInputSm
           v-model="idCuentoUnirse"
-          label="ID del cuento"
+          :label="t('join_tale.tale_code')"
           type="text"
-          placeholder="Ejemplo: 44209"
+          :placeholder="t('join_tale.tale_code_placeholder')"
           required
           @keyup.enter="unirseCuento()"
         />
@@ -30,7 +30,7 @@
           >
             {{ popupValues.mensaje }}
           </small>
-          <BotonXs @click="unirseCuento()">Unirse</BotonXs>
+          <BotonXs @click="unirseCuento()">{{ t('join_tale.join_tale_button') }}</BotonXs>
         </v-container>
       </div>
     </v-container>
@@ -45,6 +45,8 @@ import axios from 'axios';
 import TextInputSm from '@/components/TextInputSm.vue';
 import  BotonXs from '@/components/BotonXs.vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 const router = useRouter();
 const idCuentoUnirse = ref('');
@@ -69,7 +71,7 @@ function showPopup(title: string, msg: string) {
 
 const unirseCuento = async () => {
   if (!idCuentoUnirse.value) {
-    showPopup('Error', 'Por favor, ingresa un ID de cuento válido.');
+    showPopup(t('message_headers.error'), t('join_tale.fill_fields'));
     return;
   }
 
@@ -80,27 +82,25 @@ const unirseCuento = async () => {
     });
 
     if (response.status === 200 && !response.data.error) {
-      showPopup('Éxito', 'Te has unido al cuento correctamente. Redirigiendo...');
+      showPopup(t('message_headers.success'), t('join_tale.tale_joined'));
       router.push('/ver_cuento_colaborador/' + response.data.id_cuento);
     } else {
-      showPopup('Error', 'No se pudo unir al cuento. Por favor, intenta más tarde.');
+      showPopup(t('message_headers.error'), response.data.error || t('join_tale.tale_error'));
     }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.status === 400) {
-      showPopup('Error',  'Asegúrate de que la ID proporcionada sea válida.');
+      showPopup(t('message_headers.error'), t('join_tale.fill_fields'));
     } else if (error.status === 403) {
-      showPopup('Error',  'No tienes permiso para unirte a este cuento.');
+      showPopup(t('message_headers.error'), t('join_tale.cannot_join'));
     } else if (error.status === 404) {
-      showPopup('Error', 'No se encontró el cuento con la ID proporcionada.');
+      showPopup(t('message_headers.error'), t('join_tale.tale_not_found'));
     } else if (error.status === 409) {
-      showPopup('Error', 'Ya estás unido a este cuento.');
-    } else if (error.status === 400) {
-      showPopup('Error', 'Error en la solicitud. Por favor, verifica los datos.');
+      showPopup(t('message_headers.error'), t('join_tale.already_joined'));
     } else if (error.status === 500) {
-      showPopup('Error', 'Error interno del servidor. Por favor, intenta más tarde.');
+      showPopup(t('message_headers.error'), t('error_codes.500'));
     } else {
-      showPopup('Error', 'Ocurrió un error inesperado. Por favor, intenta más tarde.');
+      showPopup(t('message_headers.error'), t('error_codes.tale_error'));
     }
   }
 };

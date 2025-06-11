@@ -4,7 +4,7 @@
     <ReturnBtn
       class="return-btn mb-0 pb-0"
       @click="goToCuento">
-      REGRESAR AL CUENTO
+      {{ $t('manage_collaborators.return') }}
     </ReturnBtn>
 
     <div class="d-flex flex-column align-start justify-start mb-0 py-0 mt-2">
@@ -12,22 +12,23 @@
         <v-img
           class="icon mr-2"
           src="/icons/groups_blue.svg"
-          alt="Ícono para cuentos públicos"
           contain
           width="24"
           height="24"
         />
-        <h1 class="collab-header">GESTIONAR COLABORADORES</h1>
+        <h1 class="collab-header">{{ $t('manage_collaborators.title') }}</h1>
       </div>
-      <p class="collab-subheader text-h6 mb-0 pb-0">Este es el estado de los usuarios que pueden colaborar en tu cuento.</p>
+      <p class="collab-subheader text-h6 mb-0 pb-0">
+        {{ $t('manage_collaborators.subtitle') }}
+      </p>
     </div>
 
-    <div v-if="loading">Cargando colaboradores...</div>
+    <div v-if="loading">Loading...</div>
     <div v-else>
       <div class="cuento-header my-2 d-flex flex-row">
         <div>
-          <h2 class="cuento-nombre">Cuento: {{ cuento.nombre }}</h2>
-          <h3>CÓDIGO PARA COMPARTIR: <b>{{ cuento.codigo_compartir }}</b></h3>
+          <h2 class="cuento-nombre">{{ $t('manage_collaborators.tale_title', { title: cuento.nombre }) }}</h2>
+          <h3>{{ $t('manage_collaborators.tale_code')}}<b>{{ cuento.codigo_compartir }}</b></h3>
         </div>
         <div class="switch-container">
           <v-switch
@@ -43,7 +44,7 @@
                   color: cuento.admite_colaboradores === 1 ? getCSSVar('--color-text-blue') : getCSSVar('--color-text-off'),
             }"
           >
-            <strong>PERMITIR NUEVOS COLABORADORES</strong>
+            <strong>{{ $t('manage_collaborators.allow_collaborators') }}</strong>
           </p>
         </div>
       </div>
@@ -51,13 +52,15 @@
       <v-list class="list">
         <v-list-item class="list-item-header">
           <v-row class="w-100">
-            <v-col cols="4"><strong>Nombre del colaborador</strong></v-col>
-            <v-col cols="4"><strong>Fecha de Registro</strong></v-col>
-            <v-col cols="4"><strong>Acciones</strong></v-col>
+            <v-col cols="4"><strong>{{ $t('manage_collaborators.collaborator_name') }}</strong></v-col>
+            <v-col cols="4"><strong>{{ $t('manage_collaborators.collaborator_date') }}</strong></v-col>
+            <v-col cols="4"><strong>{{ $t('manage_collaborators.actions') }}</strong></v-col>
           </v-row>
         </v-list-item>
         <v-divider></v-divider>
-        <p v-if="colaboradores.length === 0" class="pa-4 text-center">No hay colaboradores activos. Comparte tu código y asegúrate de activar la opción para añadir colaboradores.</p>
+        <p v-if="colaboradores.length === 0" class="pa-4 text-center">
+          {{ $t('manage_collaborators.no_collaborators') }}
+        </p>
         <v-list-item
           v-for="colaborador in colaboradores"
           :key="colaborador.id_alumno"
@@ -72,24 +75,26 @@
             </v-col>
             <v-col cols="4">
               <BotonXs color_type="white_red" @click="showBloquear(colaborador.id_alumno, colaborador.nombre)">
-                Bloquear
+                {{ $t('manage_collaborators.block_button') }}
               </BotonXs>
             </v-col>
           </v-row>
         </v-list-item>
       </v-list>
 
-      <h3 class="mt-6">USUARIOS BLOQUEADOS</h3>
+      <h3 class="mt-6">{{ $t('manage_collaborators.blocked_users') }}</h3>
       <v-list>
         <v-list-item class="list-item-header">
           <v-row class="w-100">
-            <v-col cols="4"><strong>Nombre del usuario</strong></v-col>
-            <v-col cols="4"><strong>Fecha de Bloqueo</strong></v-col>
-            <v-col cols="4"><strong>Acciones</strong></v-col>
+            <v-col cols="4"><strong>{{ $t('manage_collaborators.blocked_name') }}</strong></v-col>
+            <v-col cols="4"><strong>{{ $t('manage_collaborators.blocked_date') }}</strong></v-col>
+            <v-col cols="4"><strong>{{ $t('manage_collaborators.actions') }}</strong></v-col>
           </v-row>
         </v-list-item>
         <v-divider></v-divider>
-        <p v-if="bloqueados.length === 0" class="pa-4 text-center">No hay colaboradores bloqueados.</p>
+        <p v-if="bloqueados.length === 0" class="pa-4 text-center">
+          {{ $t('manage_collaborators.no_blocked_users') }}
+        </p>
         <v-list-item
           v-for="bloqueado in bloqueados"
           :key="bloqueado.id_alumno"
@@ -104,7 +109,7 @@
             </v-col>
             <v-col cols="4">
               <BotonXs color_type="white_purple" @click="showDesbloquear(bloqueado.id_alumno, bloqueado.nombre)">
-                Desbloquear
+                {{ $t('manage_collaborators.unblock_button') }}
               </BotonXs>
             </v-col>
           </v-row>
@@ -237,12 +242,13 @@ export default defineComponent({
           bloqueados.value = response.data.bloqueados || [];
 
         } else {
-          alert('Error al obtener los colaboradores del cuento.');
+          alert('An error occurred while fetching collaborators.');
           router.push('/mis_cuentos');
         }
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.error('Error al cargar los datos del cuento:', error);
+        console.error('An error occurred while fetching collaborators');
       }
     }
 

@@ -1,10 +1,14 @@
 <template>
  <v-container class="fill-height d-flex justify-center align-center">
   <v-card class="pa-6 rounded-lg elevation-10 login-card">
-    <v-card-title class="text-center text-h5 font-weight-bold">Restaurar contraseña</v-card-title>
+    <v-card-title class="text-center text-h6 font-weight-bold">
+      {{ $t('reset_password.title') }}
+    </v-card-title>
     <div v-if="loading" class="d-flex justify-center">
       <v-progress-circular indeterminate color="white" size="20" class="mr-2" />
-      <v-card-subtitle class="text-center text-body-2">Validando token</v-card-subtitle>
+      <v-card-subtitle class="text-center text-body-2">
+        {{ $t('reset_password.validating_token') }}
+      </v-card-subtitle>
     </div>
 
     <div v-if="mensaje_error">
@@ -63,7 +67,7 @@ export default defineComponent({
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        alert ('Error al validar token');
+        alert ('Error validating token. Please try again later.');
         router.push('/');
       } finally {
         loading.value = false;
@@ -73,7 +77,7 @@ export default defineComponent({
     onMounted(() => {
       // Check if the token and correo are provided
       if (!props.token || !props.correo) {
-        alert('Datos no válidos.');
+        alert('Invalid data provided. Check your link and try again.');
         router.push('/');
         return;
       }

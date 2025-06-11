@@ -6,8 +6,8 @@ import VerCuentoCreadoView from '@/views/VerCuentoCreadoView.vue';
 import VerCuentoColaboradorView from '@/views/VerCuentoColaboradorView.vue';
 import RestaurarContraseña from '@/views/ValidarTokenRestauracionView.vue';
 import EditarAportacionView from '@/views/EditarAportacionView.vue';
-import Descarga from '@/views/VerPDF.vue'
 import VerCuentoPublicoView from '@/views/VerCuentoPublicoView.vue';
+import VerCuentoPublicoColaboradorView from '@/views/VerCuentoPublicoColaboradorView.vue';
 import MisCuentosView from '@/views/MisCuentosView.vue';
 import PrevisualizarCuentoCreador from '@/views/PrevisualizarCuentoCreador.vue';
 import VisualizarCuentoCreador from '@/views/VisualizarCuentoCreador.vue';
@@ -22,13 +22,18 @@ const router = createRouter({
       component: Inicio_Sesion
     },
     {
+      path: '/:catchAll(.*)',
+      name: 'not_found',
+      component: Inicio_Sesion // Redirigir a la página de inicio de sesión si la ruta no existe
+    },
+    {
       path: '/perfil_usuario',
       name: 'perfil_usuario',
       component: Perfil_Usuario
     },
     {
-      path: '/panel_inicio',
-      name: 'panel_inicio',
+      path: '/cuentos_publicados',
+      name: 'cuentos_publicados',
       component: Panel_Inicio
     },
     {
@@ -55,6 +60,13 @@ const router = createRouter({
       props: true
     },
     {
+      // Visualizar cuento como si fuera público, pero para la ruta de colaboradores
+      path: '/ver_cuento_publico_colaborador/:id_cuento',
+      name: 'ver_cuento_publico_colaborador',
+      component: VerCuentoPublicoColaboradorView,
+      props: true
+    },
+    {
       path: '/previsualizar_cuento_creador/:id_cuento',
       name: 'previsualizar_cuento_creador',
       component: PrevisualizarCuentoCreador,
@@ -77,11 +89,6 @@ const router = createRouter({
       name: 'gestion_colaboradores',
       component: GestionColaboradoresView,
       props: true
-    },
-    {
-      path: '/descarga',
-      name: 'descarga',
-      component: Descarga
     },
     {
       path: '/restaurar_contrasena',  // NOTA: contrasena no lleva "ñ"

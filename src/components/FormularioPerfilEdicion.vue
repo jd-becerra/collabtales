@@ -2,7 +2,8 @@
     <v-form @submit.prevent="editarAlumno">
       <v-container class="login-fields d-flex flex-column">
         <TextInputSm
-          label="Nombre de usuario"
+          :label="$t('profile.username')"
+          :placeholder="$t('profile.username_placeholder')"
           v-model="localDatosAlumno.nombre"
           type="text"
           outlined
@@ -10,7 +11,8 @@
           class="custom-input"
         />
         <TextInputSm
-          label="Correo electronico"
+          :label="$t('profile.email')"
+          :placeholder="$t('profile.email_placeholder')"
           v-model="localDatosAlumno.correo"
           type="text"
           outlined
@@ -24,12 +26,21 @@
       </small>
 
       <v-container class="login-buttons d-flex justify-space-between align-center">
-        <BotonWideXs type="submit" class="mt-3" color_type="white_green">
-          Guardar cambios
+        <BotonWideXs
+          @click="$emit('show-perfil')"
+          color_type="white_red"
+          class="actions"
+          :disabled="disabled"
+          >
+          {{ $t('profile.cancel') }}
         </BotonWideXs>
-
-        <BotonWideXs @click="$emit('show-perfil')" class="mt-3" color_type="white_red">
-          Cancelar
+        <BotonWideXs
+          type="submit"
+          color_type="white_green"
+          class="actions"
+          :disabled="disabled"
+          >
+          {{ $t('profile.save_changes') }}
         </BotonWideXs>
       </v-container>
     </v-form>
@@ -42,6 +53,7 @@ import TextInputSm from './TextInputSm.vue';
 import BotonWideXs from './BotonWideXs.vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   datosAlumno: {
@@ -51,8 +63,10 @@ const props = defineProps<{
   };
 }>();
 
+const { t } = useI18n();
 const router = useRouter();
 const localDatosAlumno = ref({ ...props.datosAlumno });
+const disabled = ref(false); // Para deshabilitar el botón si es necesario
 
 const popupValues = ref({ mensaje: '', color: '' });
 
@@ -95,24 +109,22 @@ function editarAlumno() {
     })
     .then((response) => {
       if (response.data.success) {  // Si hay un mensaje de éxito
-        alert('Datos actualizados correctamente.');
-        router.push('/panel_inicio');
-      } else if (response.data.error) {  // Si hay un mensaje de error
-        alert(response.data.error);
-      } else {
-        alert('Error desconocido al actualizar datos.');
+        showPopup(t('message_headers.success'), t('profile.update_success'));
+        disabled.value = true;
+        setTimeout(() => {
+          router.go(0);
+        }, 1000);
       }
     })
     .catch((error) => {
-      console.error('Error al editar:', error);
       if (error.status === 500) {
-        showPopup("Error", `Error en el servidor, intente nuevamente.`);
+        showPopup(t('message_headers.error'), t('error_codes.500'));
       } else if (error.status === 400) {
-        showPopup("Error", `Parametros incorrectos. Llena todos los campos correctamente.`);
+        showPopup(t('message_headers.error'), t('error_codes.400'));
       } else if (error.status === 409) {
-        showPopup("Error", `Usuario o correo ya registrados.`);
+        showPopup(t('message_headers.error'), t('profile.already_exists'));
       } else if (error.status === 429) {
-        showPopup("Error", `Has excedido el límite de intentos permitido. Intenta más tarde.`);
+        showPopup(t('message_headers.error'), t('error_codes.429'));
       }
     });
 }
@@ -141,5 +153,8 @@ function editarAlumno() {
   text-decoration: underline;
   cursor: pointer;
   margin-bottom: 2px;
+}
+.actions {
+  width: 12rem;
 }
 </style>

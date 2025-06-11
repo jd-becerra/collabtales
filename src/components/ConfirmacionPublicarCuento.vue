@@ -9,8 +9,10 @@
         />
       </v-btn>
 
-      <h2 class="publicar-cuento-header text-h6 my-3">PUBLICAR CUENTO: "{{ nombre_cuento }}"</h2>
-      <p class="publicar-cuento-subheader text-caption mb-6">¿Estás seguro de querer publicar este cuento? El cuento podrá ser visto por todos los usuarios en la plataforma tal y como se muestra en esta sección.</p>
+      <h2 class="publicar-cuento-header text-h6 my-3">{{ t('publish_tale.confirm_publish_title', { title: nombre_cuento }) }}</h2>
+      <p class="publicar-cuento-subheader text-caption mb-6">
+        {{ t('publish_tale.confirm_publish_message') }}
+      </p>
 
       <small
         class="result-msg"
@@ -28,7 +30,7 @@
             @click="publicarCuento()"
             :disabled="disableEliminar"
           >
-            Confirmar
+            {{ t('publish_tale.confirm_publish_button') }}
           </BotonXs>
         </v-container>
 
@@ -42,7 +44,9 @@ import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import  BotonXs from '@/components/BotonXs.vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const router = useRouter();
 
 const emit = defineEmits(['close-popup']);
@@ -74,7 +78,7 @@ const disableEliminar = ref(false);
 const publicarCuento = async () => {
   if (!id_cuento.value) {
     // Regresamos a la página de cuentos si el ID no es válido (ya que hubo un error)
-    showPopup('Error', 'ID del cuento no válido.');
+    showPopup(t('message_headers.error'), t('publish_tale.invalid_id'));
     router.push('/mis_cuentos');
     return;
   }
@@ -96,7 +100,7 @@ const publicarCuento = async () => {
     );
 
     if (response.status === 200) {
-      showPopup('Éxito', 'Cuento publicado correctamente. Redirigiendo a tu cuento...');
+      showPopup(t('message_headers.success'), t('publish_tale.publish_success'));
 
       setTimeout(() => {
         emit('close-popup');
@@ -106,15 +110,15 @@ const publicarCuento = async () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error?.response?.status === 400) {
-      showPopup('Error', 'Acción inválida. Intente recargar la página.');
+      showPopup(t('message_headers.error'), t('error_codes.400'));
     } else if (error?.response?.status === 403) {
-      showPopup('Error', 'No tienes permiso para publicar este cuento.');
+      showPopup(t('message_headers.error'), t('error_codes.403'));
     } else if (error?.response?.status === 404) {
-      showPopup('Error', 'Cuento no encontrado.');
+      showPopup(t('message_headers.error'), t('error_codes.404'));
     } else if (error?.response?.status === 500) {
-      showPopup('Error', 'Error en el servidor. Intenta más tarde.');
+      showPopup(t('message_headers.error'), t('error_codes.500'));
     } else {
-      showPopup('Error', 'Error inesperado al crear cuento.');
+      showPopup(t('message_headers.error'), t('error_codes.unknown'));
     }
     disableEliminar.value = false;
   }

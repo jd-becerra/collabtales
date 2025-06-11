@@ -9,11 +9,13 @@
     <div class="main-container">
       <div>
         <div v-if="cuento">
-          <h2 class="cuento-titulo text-h4 font-weight-bold">Cuento: {{ cuento.nombre }}</h2>
-          <p class="text-body-1 mb-6">Descripción: {{ cuento.descripcion }}</p>
+          <h2 class="cuento-titulo text-h4 font-weight-bold">{{ $t('cuento_creador.tale', { title: cuento.nombre }) }}</h2>
+          <p class="text-body-1 mb-6">
+            {{ $t('cuento_creador.description', { description: cuento.descripcion }) }}
+          </p>
 
           <div class="d-flex justify-space-between align-center">
-            <h3 class="aportaciones-header text-h6">Aportaciones: </h3>
+            <h3 class="aportaciones-header text-h6">{{ $t('cuento_creador.contributions') }}</h3>
             <h2
               class="publicado-header d-flex align-center"
               :style="{
@@ -27,7 +29,7 @@
                 width="16"
                 height="16"
               />
-              {{ cuento.publicado === 1 ? 'TU CUENTO ES PÚBLICO' : 'TU CUENTO ES PRIVADO' }}
+              {{ cuento.publicado === 1 ? $t('cuento_creador.published') : $t('cuento_creador.not_published') }}
             </h2>
           </div>
         </div>
@@ -51,20 +53,21 @@
                 />
               </div>
             </div>
-            <p v-else class="no-aportaciones">Actualmente no existen aportaciones en este cuento.</p>
+            <p v-else class="no-aportaciones">
+              {{ $t('cuento_creador.no_contributions') }}
+            </p>
           </v-card>
         </div>
       <div class="options-container">
-        <ReturnBtn @click="goToMisCuentos()">VOLVER A MIS CUENTOS</ReturnBtn>
+        <ReturnBtn @click="goToMisCuentos()">{{ $t('cuento_creador.return') }}</ReturnBtn>
 
         <v-card class="info-card" >
-          <h3 class="codigo-header">CÓDIGO: {{ cuento?.codigo_compartir }}</h3>
-          <p class="codigo-subheader">Comparte este código para añadir colaboradores. Modifica esta opción en “Gestionar colaboradores".</p>
+          <h3 class="codigo-header">{{ $t('cuento_creador.code', { code: cuento?.codigo_compartir }) }}</h3>
+          <p class="codigo-subheader">
+            {{ $t('cuento_creador.code_description') }}
+          </p>
           <div class="divider"></div>
-
-
-
-          <h3 class="colaboradores-header">Colaboradores:</h3>
+          <h3 class="colaboradores-header">{{ $t('cuento_creador.collaborators') }}</h3>
           <ol class="colaboradores-list">
             <li class="colaboradores-item" v-for="(aportacion, idx) in aportaciones" :key="idx">
               {{ aportacion.autor }}
@@ -80,7 +83,7 @@
             icon_path="/icons/visibility.svg"
             @click="goToVisualizarCuentoCreador"
           >
-            Visualizar cuento
+            {{ $t('cuento_creador.view_tale') }}
           </BotonSm>
           <BotonSm
             v-else
@@ -89,7 +92,7 @@
             icon_path="/icons/share.svg"
             @click="goToPrevisualizarCuento"
           >
-            Publicar cuento
+            {{ $t('cuento_creador.publish_tale') }}
           </BotonSm>
           <BotonSm
             class="cuento-btn"
@@ -97,7 +100,7 @@
             color_type="white_purple"
             @click="showEditarCuento = true"
           >
-            Modificar cuento
+            {{  $t('cuento_creador.modify_tale') }}
           </BotonSm>
           <BotonSm
             class="cuento-btn"
@@ -107,14 +110,14 @@
             gap="0.5rem"
             @click="goToColaboradores"
           >
-            Gestionar colaboradores
+            {{ $t('cuento_creador.manage_collaborators') }}
           </BotonSm>
           <BotonSm
             class="cuento-btn"
             icon_path="/icons/delete_forever.svg"
             color_type="white_red"
             @click="showEliminarCuento = true">
-            Eliminar cuento
+            {{ $t('cuento_creador.delete_tale') }}
           </BotonSm>
         </div>
       </div>
@@ -213,17 +216,16 @@ export default defineComponent({
             contenido: convertDeltaToHtml(aportacion.contenido)
           }));
           id_aportacion.value = response.data.id_aportacion || null;
-          console.log("id_aportacion:", id_aportacion.value);
         }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         router.push('/mis_cuentos');
         if (error.status === 404) {
-          alert("Cuento no encontrado.");
+          alert("Tale not found.");
         } else if (error.status === 403) {
-          alert("No tienes permiso para ver este cuento.");
+          alert("You do not have permission to view this tale.");
         } else {
-          alert("Error al obtener el cuento. Por favor, inténtalo de nuevo más tarde.");
+          alert("Error fetching tale data. Please try again later.");
         }
         return;
       }
@@ -232,12 +234,13 @@ export default defineComponent({
     const navegarAportacion = () => {
       try {
         if (aportaciones.value.length === 0) {
-          alert("No puedes editar una aportación que no existe.");
+          alert("You can't edit this tale because it has no contributions.");
           return;
         }
         router.push('/editar_aportacion');
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.error("Error al obtener el ID de la aportación:", error);
+        alert("An error occurred while navigating to the contribution. Please try again later.");
       }
     }
 
@@ -264,7 +267,7 @@ export default defineComponent({
     onMounted(() => {
       if (!props.id_cuento) {
         router.push('/mis_cuentos');
-        alert("No tienes permiso para ver este cuento.");
+        alert("You do not have permission to view this tale.");
         return;
       }
       loading.value = true;

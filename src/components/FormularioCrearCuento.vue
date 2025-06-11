@@ -10,25 +10,25 @@
         />
       </v-btn>
 
-      <h2 class="unirse-header text-h6 mt-3">CREAR UN CUENTO</h2>
-      <p class="text-caption">Escribe el nombre de tu cuento y cuéntanos brevemente de qué tratará en la descripción.</p>
+      <h2 class="unirse-header text-h6 mt-3">{{ $t('create_tale.title') }}</h2>
+      <p class="text-caption">
+        {{ $t('create_tale.subtitle') }}
+      </p>
 
-      <div class="mt-4">
+      <form class="mt-4" @submit.prevent="crearCuento">
         <TextInputSm
           v-model="nuevo_cuento.nombre"
-          label="Nombre del cuento"
+          :label="$t('create_tale.tale_title')"
           type="text"
-          placeholder="Ejemplo: El Lago de los Sueños"
+          :placeholder="$t('create_tale.tale_title_placeholder')"
           required
-          @keyup.enter="crearCuento()"
         />
         <TextInputSmWide class="mt-3"
           v-model="nuevo_cuento.descripcion"
-          label="Descripción"
+          :label="$t('create_tale.tale_description')"
           type="text"
-          placeholder="Escribe una breve descripción del cuento"
+          :placeholder="$t('create_tale.tale_description_placeholder')"
           required
-          @keyup.enter="crearCuento()"
         />
 
         <v-container class="d-flex justify-space-between align-start pa-0 mt-5">
@@ -38,9 +38,11 @@
           >
             {{ popupValues.mensaje }}
           </small>
-          <BotonXs @click="crearCuento()">Crear Cuento</BotonXs>
+          <BotonXs @click="crearCuento()" :disabled="disableGuardar">
+            {{ $t('create_tale.create_tale_button') }}
+          </BotonXs>
         </v-container>
-      </div>
+      </form>
     </v-container>
   </v-card>
 </template>
@@ -54,10 +56,13 @@ import TextInputSm from '@/components/TextInputSm.vue';
 import TextInputSmWide from './TextAreaSmWide.vue';
 import  BotonXs from '@/components/BotonXs.vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 const router = useRouter();
 
 const nuevo_cuento = ref({nombre: '', descripcion: ''});
+const disableGuardar = ref(false);
 
 defineEmits(['close-popup']);
 
@@ -79,11 +84,13 @@ function showPopup(title: string, msg: string) {
 
 const crearCuento = async () => {
   if (!nuevo_cuento.value.nombre.trim() || !nuevo_cuento.value.descripcion.trim()) {
-    showPopup('Error', 'Por favor, completa todos los campos.');
+    showPopup(t('message_headers.error'), t('create_tale.fill_fields'));
     return;
   }
 
   try {
+    disableGuardar.value = true;
+
     const response = await axios.post(
       `https://collabtalesserver.avaldez0.com/php/crear_cuento.php`,
       JSON.stringify({
@@ -99,7 +106,7 @@ const crearCuento = async () => {
     );
 
     if (response.status === 201) {
-      showPopup('Éxito', 'Cuento creado exitosamente. Redirigiendo...');
+      showPopup(t('message_headers.success'), t('create_tale.tale_created', { title: nuevo_cuento.value.nombre }));
     }
     setTimeout(() => {
       localStorage.setItem('id_cuento', response.data.id_cuento_creado);
@@ -107,12 +114,13 @@ const crearCuento = async () => {
     }, 2000); // Redirige después de 2 segundos
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
+    disableGuardar.value = false;
     if (error?.response?.status === 400) {
-      showPopup('Error', 'Comprueba que los campos sean válidos.');
+      showPopup(t('message_headers.error'), t('error_codes.400'));
     } else if (error?.response?.status === 500) {
-      showPopup('Error', 'Error en el servidor. Intenta más tarde.');
+      showPopup(t('message_headers.error'), t('error_codes.500'));
     } else {
-      showPopup('Error', 'Error inesperado al crear cuento.');
+      showPopup(t('message_headers.error'), t('create_tale.unexpected_error'));
     }
   }
 };

@@ -1,21 +1,19 @@
 <template>
-    <v-form>
+    <v-form disabled="true">
       <v-container class="login-fields d-flex flex-column">
-        <TextInputSm
-          label="Nombre de usuario"
+        <TextInputSmDisabled
+          :label="$t('profile.username')"
           v-model="localDatosAlumno.nombre"
           type="text"
           outlined
-          required
           class="custom-input"
           readonly
         />
-        <TextInputSm
-          label="Correo electronico"
+        <TextInputSmDisabled
+          :label="$t('profile.email')"
           v-model="localDatosAlumno.correo"
           type="text"
           outlined
-          required
           class="custom-input"
           readonly
         />
@@ -23,7 +21,7 @@
 
       <v-container class="login-buttons text-right">
         <BotonWideXs @click="$emit('show-perfil-edicion')" class="mt-3">
-          Editar perfil
+          {{ $t('profile.edit_profile') }}
         </BotonWideXs>
       </v-container>
     </v-form>
@@ -32,9 +30,9 @@
 <script lang="ts" setup>
 import { ref, defineProps, watch } from 'vue';
 // Componentes
-import TextInputSm from './TextInputSm.vue';
+import TextInputSmDisabled from './TextInputSmDisabled.vue';
 import BotonWideXs from './BotonWideXs.vue';
-const emit = defineEmits(['show-perfil-edicion']);
+defineEmits(['show-perfil-edicion']);
 
 const props = defineProps<{
   datosAlumno: {
@@ -60,6 +58,9 @@ watch(
   margin-left: 0;
   padding-left: 0;
   gap: 0.5rem;
+}
+.custom-input {
+  pointer-events: none;
 }
 
 .login-buttons {

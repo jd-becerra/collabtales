@@ -10,23 +10,25 @@
         />
       </v-btn>
 
-      <h2 class="unirse-header text-h6 mt-3">EDITAR CUENTO</h2>
-      <p class="text-caption">Escribe el nombre y la descripción de tu cuento. Asegúrate de no dejar campos vacíos</p>
+      <h2 class="unirse-header text-h6 mt-3">{{ $t('modify_tale.title') }}</h2>
+      <p class="text-caption">
+        {{ $t('modify_tale.subtitle') }}
+      </p>
 
       <v-form class="mt-4" @submit.prevent="editarCuento">
         <TextInputSm
           v-model="editar_cuento.nombre"
-          label="Nombre del cuento"
+          :label="$t('modify_tale.tale_title')"
+          :placeholder="$t('modify_tale.tale_title_placeholder')"
           type="text"
           required
-          @keydown.enter="handleEnter"
         />
         <TextInputSmWide class="mt-3"
           v-model="editar_cuento.descripcion"
-          label="Descripción"
+          :label="$t('modify_tale.tale_description')"
+          :placeholder="$t('modify_tale.tale_description_placeholder')"
           type="text"
           required
-          @keydown.enter="handleEnter"
         />
 
         <v-container class="d-flex justify-space-between align-start pa-0 mt-5">
@@ -39,7 +41,9 @@
           <BotonXs
             color_type="white_green"
             :disabled="disableGuardar"
-            >Guardar cambios
+            type="submit"
+            >
+            {{ $t('modify_tale.save_changes_button') }}
           </BotonXs>
         </v-container>
       </v-form>
@@ -56,9 +60,10 @@ import TextInputSm from '@/components/TextInputSm.vue';
 import TextInputSmWide from './TextAreaSmWide.vue';
 import  BotonXs from '@/components/BotonXs.vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const router = useRouter();
-
 const emit = defineEmits(['close-popup']);
 
 const props = defineProps<{
@@ -90,7 +95,7 @@ const disableGuardar = ref(false);
 
 const editarCuento = async () => {
   if (!editar_cuento.value.nombre.trim() || !editar_cuento.value.descripcion.trim()) {
-    showPopup('Error', 'Por favor, completa todos los campos.');
+    showPopup(t('message_headers.error'), t('modify_tale.fill_fields'));
     return;
   }
   disableGuardar.value = true;
@@ -112,7 +117,7 @@ const editarCuento = async () => {
     );
 
     if (response.status === 200) {
-      showPopup('Éxito', 'Cuento editado correctamente. Redigiriendo a tu cuento...');
+      showPopup(t('message_headers.success'), t('modify_tale.tale_modified', { title: editar_cuento.value.nombre }));
       setTimeout(() => {
         emit('close-popup');
         router.go(0);
@@ -121,28 +126,17 @@ const editarCuento = async () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error?.response?.status === 400) {
-      showPopup('Error', 'Comprueba que los campos sean válidos.');
+      showPopup(t('message_headers.error'), t('error_codes.400'));
     } else if (error?.response?.status === 403) {
-      showPopup('Error', 'No tienes permiso para editar este cuento.');
+      showPopup(t('message_headers.error'), t('modify_tale.unauthorized'));
     } else if (error?.response?.status === 404) {
-      showPopup('Error', 'Cuento no encontrado.');
+      showPopup(t('message_headers.error'), t('modify_tale.not_found'));
     } else if (error?.response?.status === 500) {
-      showPopup('Error', 'Error en el servidor. Intenta más tarde.');
+      showPopup(t('message_headers.error'), t('error_codes.500'));
     } else {
-      showPopup('Error', 'Error inesperado al crear cuento.');
+      showPopup(t('message_headers.error'), t('modify_tale.unexpected_error'));
     }
   }
-};
-
-const handleEnter = (event: KeyboardEvent) => {
-  if (event.shiftKey) {
-    // Shift+Enter → Permitir salto de línea (no hacer nada)
-    return;
-  }
-
-  // Solo Enter → Evita el salto de línea, y ejecuta submit
-  event.preventDefault(); // Prevenir el comportamiento por defecto
-  editarCuento(); // Llamar la función de envío
 };
 
 onMounted(() => {

@@ -26,7 +26,7 @@
         <v-img
           class="logo-image"
           src="/img/logo_inicio.png"
-          alt="Logo de Collabtales, con dos personas enmarcados por un libro de donde sale una planta."
+          :alt="$t('home.logo_alt')"
         />
     </v-container>
   </div>

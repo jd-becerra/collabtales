@@ -50,15 +50,37 @@ if ($result->num_rows === 0) {
     exit;
 }
 
-// Finalmente, eliminar la aportación del usuario
-$stmt = $conn->prepare("CALL EliminarAlumnoCuento(?, ?)");
+// Eliminar las aportaciones del usuario en el cuento
+$stmt_aportacion = $conn->prepare("DELETE FROM Aportacion WHERE fk_cuento = ? AND fk_alumno = ?");
+if (!$stmt_aportacion) {
+    http_response_code(500);
+    echo json_encode(["error" => "Error de servidor"]);
+    exit;
+}
+$stmt_aportacion->bind_param("ii", $id_cuento, $id_alumno);
+
+if (!$stmt_aportacion->execute()) {
+    http_response_code(500);
+    echo json_encode(["error" => "Error de servidor"]);
+    $stmt_aportacion->close();
+    exit;
+}
+$stmt_aportacion->close();
+
+// Finalmente, eliminar la relación del usuario con el cuento
+$stmt = $conn->prepare("DELETE FROM Relacion_Alumno_Cuento WHERE fk_cuento = ? AND fk_alumno = ?");
+if (!$stmt) {
+    http_response_code(500);
+    echo json_encode(["error" => "Error de servidor"]);
+    exit;
+}
 $stmt->bind_param("ii", $id_cuento, $id_alumno);
 
 if ($stmt->execute()) {
-    echo json_encode(["message" => "Aportación eliminada correctamente"]);
+    echo json_encode(["message" => "Aportación y relación eliminadas correctamente"]);
 } else {
     http_response_code(500);
-    echo json_encode(["error" => "Error al eliminar la aportación: " . $stmt->error]);
+    echo json_encode(["error" => "Error al eliminar la relación: " . $stmt->error]);
 }
 
 

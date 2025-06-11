@@ -3,11 +3,13 @@
   class="aportacion-item"
   :style="first_in_list ? 'margin-top: 0;' : 'margin-top: 1.5rem;'"
   >
-    <p class="autor-header">Colaborador: {{ autor }} </p>
+    <p class="autor-header">{{ $t('contribution.collaborator', {username: autor}) }}</p>
     <v-card flat class="aportacion-card">
       <v-card-text class="mt-2">
         <div v-html="contenido" v-if="contenido != ''"></div>
-        <div v-else class="empty-contenido text-center">Esta aportación está vacía.</div>
+        <div v-else class="empty-contenido text-center">
+          {{ $t('contribution.empty') }}
+        </div>
       </v-card-text>
     </v-card>
   </div>

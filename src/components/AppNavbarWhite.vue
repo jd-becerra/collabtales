@@ -4,6 +4,7 @@
 
     <v-spacer></v-spacer>
 
+    <LangBtn class="lang_navbar"/>
     <PerfilBtn/>
   </v-app-bar>
 </template>
@@ -12,6 +13,8 @@
 import { ref, onMounted } from 'vue';
 import LogoCollabtalesSm from '@/components/icons/LogoCollabtalesSm.vue';
 import PerfilBtn from '@/components/PerfilBtn.vue';
+import LangBtn from '@/components/LangBtn.vue';
+
 
 const backgroundColor = ref('');
 
@@ -21,3 +24,9 @@ onMounted(() => {
 });
 
 </script>
+
+<style scoped>
+.lang_navbar {
+  margin-right: 1rem;
+}
+</style>

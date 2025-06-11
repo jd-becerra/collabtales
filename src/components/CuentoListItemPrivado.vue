@@ -10,16 +10,16 @@
       {{ nombre }}
     </a>
     <div v-if="es_dueño" class="es_dueno-header">
-      CREADO POR MÍ
+      {{ $t('mis_cuentos.created_by_me') }}
     </div>
     <p v-if="autores && autores.length > 0" class="autores-header">
       <span>
-        Autores:
+        {{ autores.length === 1 ? $t('mis_cuentos.author') : $t('mis_cuentos.authors') }}:
       </span>
-      <span> {{ autores.join('     |     ') }} </span>
+      <span> {{ autores.join(',     ') }} </span>
     </p>
     <p v-else>
-      Autores: Información no disponible
+      {{ $t('mis_cuentos.no_authors') }}
     </p>
     <p class="descripcion-header">
       {{ descripcion }}

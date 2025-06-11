@@ -2,6 +2,7 @@
 import './assets/base.css'
 import { ref, onMounted, watchEffect } from 'vue'
 import { RouterView } from 'vue-router'
+import LangBtn from './components/LangBtn.vue'
 
 const idAlumno = ref<string | null>(null)
 
@@ -22,11 +23,24 @@ watchEffect(() => {
 <template>
   <v-app>
     <v-main>
+      <LangBtn class="lang_btn_main ma-4" />
       <RouterView />
     </v-main>
 
     <v-footer app>
-      <span id="footer-info">Collabtales - 2025 - Github: @jd-becerra  |  @aldo  |  @moctezuma</span>
+      <span id="footer-info">Collabtales - 2025 - Github:
+        <a href="https://github.com/jd-becerra" target="_blank" rel="noopener noreferrer" class="github-link">
+          @<u>jd-becerra</u>
+        </a>
+        <span> &#x2022; </span>
+        <a href="https://github.com/Aval0G" target="_blank" rel="noopener noreferrer" class="github-link">
+          @<u>Aval0G</u>
+        </a>
+        <span> &#x2022; </span>
+        <a href="https://github.com/Gaia74" target="_blank" rel="noopener noreferrer" class="github-link">
+          @<u>Gaia74</u>
+        </a>
+      </span>
     </v-footer>
   </v-app>
 </template>
@@ -57,5 +71,21 @@ watchEffect(() => {
 .v-footer {
   background-color: var(--color-background-padding);
   height: var(--background-padding-height);
+}
+
+.github-link {
+  color: var(--color-text-input-fg-default);
+  text-decoration: none;
+
+  &:hover {
+    background-color: transparent;
+  }
+}
+
+.lang_btn_main {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
 }
 </style>

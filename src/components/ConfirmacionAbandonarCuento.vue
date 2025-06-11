@@ -9,8 +9,12 @@
         />
       </v-btn>
 
-      <h2 class="abandonar-cuento-header text-h6 my-3">ABANDONAR CUENTO: "{{ nombre_cuento }}"</h2>
-      <p class="abandonar-cuento-subheader text-caption mb-6">¿Estás seguro de querer abandonar este cuento? Tu aportación se eliminará permanentemente, y sólo podrás regresar si el creador del cuento lo permite.</p>
+      <h2 class="abandonar-cuento-header text-h6 my-3">
+        {{ $t('cuento_colaborador.confirm_abandon_title', { title: nombre_cuento }) }}
+      </h2>
+      <p class="abandonar-cuento-subheader text-caption mb-6">
+        {{ $t('cuento_colaborador.confirm_abandon_message') }}
+      </p>
 
       <small
         v-if="popupValues.mensaje"
@@ -26,7 +30,7 @@
             class="return-btn"
             @click="emit('close-popup')"
           >
-            Regresar
+            {{ $t('cuento_colaborador.cancel_button') }}
           </BotonXs>
           <BotonXs
             class="abandonar-btn"
@@ -34,7 +38,7 @@
             @click="abandonarCuento()"
             :disabled="disableEliminar"
           >
-            Abandonar cuento
+            {{ $t('cuento_colaborador.confirm_abandon_button') }}
           </BotonXs>
         </div>
 
@@ -48,7 +52,9 @@ import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import  BotonXs from '@/components/BotonXs.vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const router = useRouter();
 
 const emit = defineEmits(['close-popup']);
@@ -80,7 +86,7 @@ const disableEliminar = ref(false);
 const abandonarCuento = async () => {
   if (!id_cuento.value) {
     // Regresamos a la página de cuentos si el ID no es válido (ya que hubo un error)
-    showPopup('Error', 'ID del cuento no válido.');
+    showPopup(t('message_headers.error'), t('cuento_colaborador.invalid_id'));
     router.push('/mis_cuentos');
     return;
   }
@@ -102,7 +108,7 @@ const abandonarCuento = async () => {
     );
 
     if (response.status === 200) {
-      showPopup('Éxito', 'Has abandonado este cuento correctamente. Redirigiendo a "Mis cuentos"...');
+      showPopup(t('message_headers.success'), t('cuento_colaborador.abandon_success'));
 
       setTimeout(() => {
         emit('close-popup');
@@ -112,15 +118,15 @@ const abandonarCuento = async () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error?.response?.status === 400) {
-      showPopup('Error', 'Acción inválida. Intente recargar la página.');
+      showPopup(t('message_headers.error'), t('error_codes.400'));
     } else if (error?.response?.status === 403) {
-      showPopup('Error', 'No tienes permiso para abandonar este cuento.');
+      showPopup(t('message_headers.error'), t('error_codes.403'));
     } else if (error?.response?.status === 404) {
-      showPopup('Error', 'Cuento no encontrado.');
+      showPopup(t('message_headers.error'), t('error_codes.404'));
     } else if (error?.response?.status === 500) {
-      showPopup('Error', 'Error en el servidor. Intenta más tarde.');
+      showPopup(t('message_headers.error'), t('error_codes.500'));
     } else {
-      showPopup('Error', 'Error inesperado al crear cuento.');
+      showPopup(t('message_headers.error'), t('cuento_colaborador.abandon_error'));
     }
     disableEliminar.value = false;
   }

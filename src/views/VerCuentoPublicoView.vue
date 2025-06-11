@@ -10,10 +10,22 @@
     <div class="vista-cuento d-flex" v-if="!loading">
       <v-card class="cuento-card pa-4 aportaciones-card" elevation="6" v-if="cuento">
         <h4 class="cuento-nombre text-h4 font-weight-bold"> {{ cuento.nombre }}</h4>
+        <v-chip
+          class="like-chip mt-4"
+          label
+        >
+          <v-img
+            src="/icons/like_filled.svg"
+            width="16"
+            height="16"
+            class="mr-2"
+          ></v-img>
+          <strong>{{ cuento?.likes }}</strong> &nbsp; {{ cuento?.likes === 1 ? $t('cuento_publico.like_count_1') : $t('cuento_publico.like_count') }}
+        </v-chip>
         <p class="autores-header mb-3" v-if="cuento.autores">
-          Autores:
+          {{ cuento.autores.length === 1 ? $t('cuento_publico.author') : $t('cuento_publico.authors') }}:
           <span v-for="(autor, index) in cuento.autores" :key="index">
-            {{ autor }}{{ index < cuento.autores.length - 1 ? '  |  ' : '' }}
+            {{ autor }}{{ index < cuento.autores.length - 1 ? '  &#x2022;  ' : '' }}
           </span>
         </p>
         <div class="divider"></div>
@@ -22,22 +34,59 @@
               <v-list-item-title v-html="aportacion.contenido" class="text-wrap"></v-list-item-title>
           </v-list-item>
         </v-list>
-        <p v-else class="no-aportaciones">El cuento se encuentra vacío actualmente.</p>
+        <p v-else class="no-aportaciones">{{ $t('cuento_publico.empty') }}</p>
       </v-card>
 
       <div class="options-container d-flex flex-column">
-        <ReturnBtn @click="gotoPanelInicio">VOLVER A PANEL DE INICIO</ReturnBtn>
-        <p class="cuento-descripcion" v-if="cuento">
-          <strong>Descripción:</strong> <i> {{ cuento.descripcion }} </i>
-        </p>
+        <ReturnBtn @click="gotoPanelInicio">
+          {{ $t('cuento_publico.return') }}
+        </ReturnBtn>
+        <div class="text-left">
+          <p class="cuento-descripcion" v-if="cuento">
+            <strong>{{ $t('cuento_publico.description') }}:</strong> <i> {{ cuento.descripcion }} </i>
+          </p>
+        </div>
         <div class="move-bottom">
+          <p v-if="errorMsg && errorMsg.length > 0" class="error-msg">
+            {{ errorMsg }}
+          </p>
+          <div class="likes-container">
+            <v-btn
+              v-if="!cuento?.has_liked"
+              variant="text"
+              class="like-btn"
+              @click="giveLike"
+            >
+              <v-img
+                src="/icons/like_empty.svg"
+                width="24"
+                height="24"
+                class="mr-2"
+              ></v-img>
+              <b>{{ $t('cuento_publico.like') }}</b>
+            </v-btn>
+            <v-btn
+              v-else
+              variant="text"
+              class="like-btn"
+              @click="removeLike"
+            >
+              <v-img
+                src="/icons/like_filled.svg"
+                width="24"
+                height="24"
+                class="mr-2"
+              ></v-img>
+              <b>{{ $t('cuento_publico.unlike') }}</b>
+            </v-btn>
+          </div>
           <BotonSm
             class="download-btn w-100"
             @click="descargarPdf() "
             icon_path="/icons/download.svg"
             :disabled="aportaciones.length === 0"
             >
-            Descargar en PDF
+            {{ $t('cuento_publico.download_pdf') }}
           </BotonSm>
         </div>
       </div>
@@ -54,6 +103,8 @@ import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 import html2pdf from "html2pdf.js/dist/html2pdf.bundle.min.js"
 import { ref, onMounted, defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+
 import AppNavbarWhite from '@/components/AppNavbarWhite.vue';
 import BotonSm from '@/components/BotonSm.vue';
 import ReturnBtn from '@/components/ReturnBtn.vue';
@@ -83,10 +134,18 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const cuento = ref<{ nombre: string; descripcion: string, autores: string[] } | null>(null);
+    const cuento = ref<{
+      nombre: string;
+      descripcion: string,
+      autores: string[],
+      likes: number,
+      has_liked: boolean
+    } | null>(null);
     const aportaciones = ref<Array<{ contenido: string }>>([]);
     const loading = ref(false);
+    const errorMsg = ref('');
     const route = useRouter();
+    const { t } = useI18n();
 
     const obtenerCuentoPublico = async () => {
       try {
@@ -102,20 +161,20 @@ export default defineComponent({
             }))
             .filter((aport: { contenido: string }) => aport.contenido.trim() !== '');
         } else {
-          alert("No se pudo obtener el cuento.");
+          alert("Could not fetch this tale. Please try again later.");
           return
         }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         if (error.status === 404) {
-          alert("Cuento no encontrado.");
+          alert("Resource not found");
         } else if (error.status === 403) {
-          alert("No tienes permiso para ver este cuento.");
+          alert("You do not have permission to access this resource.");
         } else {
-          alert("Error al obtener el cuento. Por favor, inténtalo de nuevo más tarde.");
+          alert("Am unexpected error occurred while fetching this tale. Please try again later.");
         }
         // Redirigir al usuario al panel de inicio
-        route.push('/panel_inicio');
+        route.push('/cuentos_publicados');
         return;
       }
     }
@@ -123,12 +182,12 @@ export default defineComponent({
     const descargarPdf = async () => {
       try {
         if (!cuento.value) {
-          alert("No hay cuento para descargar.");
+          alert("No tale data available to download.");
           return;
         }
 
         if (aportaciones.value.length === 0) {
-          alert("No puedes descargar un cuento sin ninguna aportación!");
+          alert("You cannot download a tale without contributions.");
           return;
         }
 
@@ -138,8 +197,9 @@ export default defineComponent({
           contenidoHTML.innerHTML = `
             <div style="font-family: Arial, sans-serif; color: #000; background: #fff; padding: 20px; max-width: 800px; margin: auto;">
               <h1 style="color: #333;">${cuento.value?.nombre}</h1>
-              <p style="font-size: 14px; line-height: 1.6;">${cuento.value?.descripcion}</p>
-              <hr style="border: 1px solid #ccc;">
+              <p style="font-size: 14px; color: #555;">${cuento.value?.autores.length === 1 ? t('publish_tale.author') : t('publish_tale.authors')}:
+              ${cuento.value?.autores.join(', ')}</p>
+              <hr style="border: 1px solid #ccc; margin: 20px 0;">
               ${aportaciones.value.map(aport => `
                 <div style="margin-bottom: 15px; padding: 10px; solid #ddd">
                   <p style="font-size: 14px; color: #555;">${aport.contenido}</p>
@@ -149,16 +209,87 @@ export default defineComponent({
           `;
 
         html2pdf().from(contenidoHTML).save(`${cuento.value?.nombre || 'cuento'}.pdf`);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.error("Error descargando", error);
-      } finally {
-        alert("Cuento descargado");
+        console.error("An unexpected error occurred while downloading the tale");
       }
       loading.value = false;
     }
 
+    const giveLike = async () => {
+      if (!cuento.value) return;
+
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post(
+          `https://collabtalesserver.avaldez0.com/php/dar_like_cuento.php`,
+          {
+            id_cuento: props.id_cuento
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        if (response.status === 201) {
+          route.go(0);
+        } else {
+          alert("Could not give like. Please try again later.");
+        }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        if (error.status === 403) {
+          errorMsg.value = t('error_codes.403');
+        } else if (error.status === 404) {
+          errorMsg.value = t('error_codes.404');
+        } else if (error.status === 409) {
+          errorMsg.value = t('cuento_publico.already_liked');
+        } else if (error.status === 500) {
+          errorMsg.value = t('error_codes.500');
+        } else {
+          errorMsg.value = t('error_codes.unknown');
+      }
+    }}
+
+    const removeLike = async () => {
+      if (!cuento.value) return;
+
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.delete(
+          `https://collabtalesserver.avaldez0.com/php/eliminar_like_cuento.php`,
+          {
+            data: {
+              id_cuento: props.id_cuento
+            },
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        if (response.status === 200) {
+          route.go(0);
+        } else {
+          alert("Could not remove like. Please try again later.");
+        }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        if (error.status === 403) {
+          errorMsg.value = t('error_codes.403');
+        } else if (error.status === 404) {
+          errorMsg.value = t('error_codes.404');
+        } else if (error.status === 500) {
+          errorMsg.value = t('error_codes.500');
+        } else {
+          errorMsg.value = t('error_codes.unknown');
+      }
+    }}
+
     const  gotoPanelInicio = () => {
-      route.push('/panel_inicio');
+      route.push('/cuentos_publicados');
     }
 
     onMounted(() => {
@@ -174,8 +305,11 @@ export default defineComponent({
       cuento,
       aportaciones,
       loading,
+      errorMsg,
       descargarPdf,
-      gotoPanelInicio
+      gotoPanelInicio,
+      giveLike,
+      removeLike,
     };
   }
 });
@@ -217,6 +351,7 @@ export default defineComponent({
 
 .cuento-nombre {
   color: var(--color-text-blue);
+  width: 85%;
 }
 
 .no-aportaciones {
@@ -227,16 +362,28 @@ export default defineComponent({
 
 .options-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   height: 70vh;
+  max-width: 30%;
+  min-width: 30%;
 
   padding: 0;
   margin: 0;
 
 }
 
+.likes-container {
+  display: inline-flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
 
+.like-btn {
+  width: 100%;
+  color: var(--color-text-input-fg-default);
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
 
 .move-bottom {
   width: 100%;
@@ -251,5 +398,17 @@ export default defineComponent({
   border: 1px solid var(--vt-c-gray-soft);
   margin-top: 1rem;
   margin-bottom: 1rem;
+}
+
+.error-msg {
+  color: var(--color-error);
+  margin-bottom: 0.5rem;
+}
+
+.like-chip {
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  z-index: 10;
 }
 </style>

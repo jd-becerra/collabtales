@@ -7,14 +7,15 @@
         <v-img
           class="icon mr-2"
           src="/icons/public.svg"
-          alt="Ícono para cuentos públicos"
           contain
           width="24"
           height="24"
         />
-        <h1 class="home-header">BIBLIOTECA DE CUENTOS</h1>
+        <h1 class="home-header">{{ t('published_tales.title') }}</h1>
       </div>
-      <p class="home-subheader text-h6">Explora e interactúa con las historias que han escrito otros usuarios.</p>
+      <p class="home-subheader text-h6">
+        {{ t('published_tales.subtitle') }}
+      </p>
     </v-container>
 
     <v-container class="home-main-container d-flex flex-row">
@@ -27,6 +28,7 @@
             :nombre="cuento.nombre"
             :descripcion="cuento.descripcion"
             :autores="cuento.autores"
+            :likes="cuento.likes"
             :ultimo="index === cuentosGlobales.length - 1"
           />
         </v-list>
@@ -38,15 +40,21 @@
       <div  class="d-flex flex-column align-center ">
         <TextInputSearch
           class="mb-6"
-          placeholder="Buscar cuento por título"
+          :placeholder="t('published_tales.search_placeholder')"
           v-model="searchQuery"
           :searchFunction="filterCuentosServer"
           @input="filterCuentos"
         />
         <v-container class="home-options d-flex flex-column align-center justify-center">
-          <BotonSm icon_path="/icons/edit_text.svg" @click="showCrearCuentoDialog()">Crear un cuento</BotonSm>
-          <BotonSm icon_path="/icons/group_add.svg" @click="showUnirseDialog()">Unirse a un cuento</BotonSm>
-          <BotonSm icon_path="/icons/description.svg" @click="redirectMisCuentos()">Ver mis cuentos</BotonSm>
+          <BotonSm icon_path="/icons/edit_text.svg" @click="showCrearCuentoDialog()">
+            {{ t('published_tales.create_tale_button') }}
+          </BotonSm>
+          <BotonSm icon_path="/icons/group_add.svg" @click="showUnirseDialog()">
+            {{ t('published_tales.join_tale_button') }}
+          </BotonSm>
+          <BotonSm icon_path="/icons/description.svg" @click="redirectMisCuentos()">
+            {{ t('published_tales.my_tales_button') }}
+          </BotonSm>
         </v-container>
       </div>
     </v-container>
@@ -68,6 +76,7 @@ import '../assets/base.css';
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import { useI18n } from 'vue-i18n';
 
 // Componentes
 import AppNavbar from '@/components/AppNavbar.vue';
@@ -82,8 +91,10 @@ interface Cuento {
   nombre: string;
   descripcion: string;
   autores?: string[];
+  likes?: number;
 }
 
+const { t } = useI18n();
 const cuentosGlobales = ref<Cuento[]>([]);
 
 const router = useRouter();
@@ -111,7 +122,7 @@ const getCuentosGlobal = async () => {
     const id_alumno = localStorage.getItem('id_alumno');
     if (!id_alumno) {
       console.error('No id_alumno found in localStorage');
-      alert('No tienes acceso a esta seccion.');
+      alert('You must be logged in to view this page.');
       router.push('/');
       return;
     }
@@ -123,9 +134,9 @@ const getCuentosGlobal = async () => {
       params: { id_alumno }
     });
 
-    if (!response.data || !response.data.length) {
+    if (!response.data || !response.data.length || response.data.length === 0) {
       cuentosGlobales.value = [];
-      errorMsg.value = 'No se encontraron cuentos publicados.';
+      errorMsg.value =  t('published_tales.no_published_tales');
       return;
     }
 
@@ -134,7 +145,7 @@ const getCuentosGlobal = async () => {
     }));
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    errorMsg.value = 'Error al obtener los cuentos. Por favor, inténtalo de nuevo más tarde.';
+    errorMsg.value = t('published_tales.published_error');
     return;
   }
 };
@@ -173,7 +184,7 @@ const filterCuentosServer = async () => {
     }));
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    errorMsg.value = 'Error al filtrar los cuentos. Por favor, inténtalo de nuevo más tarde.';
+    errorMsg.value = t('published_tales.filter_error');
     return;
   }
 };

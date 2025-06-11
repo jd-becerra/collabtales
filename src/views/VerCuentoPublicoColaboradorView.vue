@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-v-text-v-html-on-component -->
 <template>
-  <div class="previsualizar-creador-view">
+  <div class="ver-cuento-publico-view">
     <AppNavbarWhite />
     <v-overlay :value="loading" absolute>
       <p>Loading</p>
@@ -10,8 +10,20 @@
     <div class="vista-cuento d-flex" v-if="!loading">
       <v-card class="cuento-card pa-4 aportaciones-card" elevation="6" v-if="cuento">
         <h4 class="cuento-nombre text-h4 font-weight-bold"> {{ cuento.nombre }}</h4>
+        <v-chip
+          class="like-chip mt-4"
+          label
+        >
+          <v-img
+            src="/icons/like_filled.svg"
+            width="16"
+            height="16"
+            class="mr-2"
+          ></v-img>
+          <strong>{{ cuento?.likes }}</strong> &nbsp; {{ cuento?.likes === 1 ? $t('cuento_publico.like_count_1') : $t('cuento_publico.like_count') }}
+        </v-chip>
         <p class="autores-header mb-3" v-if="cuento.autores">
-          {{  cuento.autores.length === 1 ? $t('publish_tale.author') : $t('publish_tale.authors') }}:
+          {{ cuento.autores.length === 1 ? $t('cuento_publico.author') : $t('cuento_publico.authors') }}:
           <span v-for="(autor, index) in cuento.autores" :key="index">
             {{ autor }}{{ index < cuento.autores.length - 1 ? '  &#x2022;  ' : '' }}
           </span>
@@ -22,45 +34,30 @@
               <v-list-item-title v-html="aportacion.contenido" class="text-wrap"></v-list-item-title>
           </v-list-item>
         </v-list>
-        <p v-else class="no-aportaciones">
-          {{ $t('publish_tale.no_contributions') }}
-        </p>
+        <p v-else class="no-aportaciones">{{ $t('cuento_publico.empty') }}</p>
       </v-card>
 
       <div class="options-container d-flex flex-column">
-        <ReturnBtn @click="gotoCuento"> {{ $t('publish_tale.return') }}</ReturnBtn>
-        <p class="cuento-descripcion" v-if="cuento">
-          <strong>{{ $t('publish_tale.description') }}</strong> <i> {{ cuento.descripcion }} </i>
-        </p>
+        <ReturnBtn @click="goToCuento">
+          {{ $t('cuento_publico.return_colaborador') }}
+        </ReturnBtn>
+        <div class="text-left">
+          <p class="cuento-descripcion" v-if="cuento">
+            <strong>{{ $t('cuento_publico.description') }}:</strong> <i> {{ cuento.descripcion }} </i>
+          </p>
+        </div>
         <div class="move-bottom">
-          <BotonSm
-            class="return-btn w-100"
-            @click="showConfirmarPublicarCuento = true"
-            icon_path="/icons/share_green.svg"
-            color_type="white_green"
-          >
-            {{ $t('publish_tale.publish_button') }}
-          </BotonSm>
           <BotonSm
             class="download-btn w-100"
             @click="descargarPdf() "
             icon_path="/icons/download.svg"
             :disabled="aportaciones.length === 0"
             >
-            {{ $t('publish_tale.download_button') }}
+            {{ $t('cuento_publico.download_pdf') }}
           </BotonSm>
         </div>
       </div>
     </div>
-
-    <v-dialog v-model="showConfirmarPublicarCuento" max-width="400" class="options-dialog">
-      <ConfirmacionPublicarCuento
-        v-if="showConfirmarPublicarCuento"
-        :id_cuento="Number(id_cuento)"
-        :nombre_cuento="cuento?.nombre || ''"
-        @close-popup="showConfirmarPublicarCuento = false"
-      />
-    </v-dialog>
   </div>
 </template>
 
@@ -78,7 +75,6 @@ import { useI18n } from 'vue-i18n';
 import AppNavbarWhite from '@/components/AppNavbarWhite.vue';
 import BotonSm from '@/components/BotonSm.vue';
 import ReturnBtn from '@/components/ReturnBtn.vue';
-import ConfirmacionPublicarCuento from '@/components/ConfirmacionPublicarCuento.vue';
 import DOMPurify from 'dompurify';
 
 function convertDeltaToHtml(contenido: string | object): string {
@@ -92,30 +88,35 @@ function convertDeltaToHtml(contenido: string | object): string {
 }
 
 export default defineComponent({
-  name: 'PrevisualizarCuentoCreador',
+  name: 'VerCuentoPublicoView',
   components: {
     AppNavbarWhite,
     BotonSm,
-    ReturnBtn,
-    ConfirmacionPublicarCuento
+    ReturnBtn
   },
   props: {
     id_cuento: {
       type: String,
       required: true
-    },
+    }
   },
   setup(props) {
-    const cuento = ref<{ nombre: string; descripcion: string, autores: string[] } | null>(null);
+    const cuento = ref<{
+      nombre: string;
+      descripcion: string,
+      autores: string[],
+      likes: number,
+      has_liked: boolean
+    } | null>(null);
     const aportaciones = ref<Array<{ contenido: string }>>([]);
     const loading = ref(false);
-    const showConfirmarPublicarCuento = ref(false);
+    const errorMsg = ref('');
     const route = useRouter();
     const { t } = useI18n();
 
-    const obtenerCuentoPrevisualizar = async () => {
+    const obtenerCuentoPublico = async () => {
       try {
-        const response = await axios.get(`https://collabtalesserver.avaldez0.com/php/obtener_cuento_previsualizar.php`, {
+        const response = await axios.get(`https://collabtalesserver.avaldez0.com/php/obtener_cuento_publico.php`, {
           params: { id_cuento: props.id_cuento }
         });
         if (response.status === 200) {
@@ -127,29 +128,33 @@ export default defineComponent({
             }))
             .filter((aport: { contenido: string }) => aport.contenido.trim() !== '');
         } else {
-          alert("Could not fetch tale data.");
-          route.push('/mis_cuentos');
+          alert("Could not fetch this tale. Please try again later.");
           return
         }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         if (error.status === 404) {
-          alert("Tale not found.");
+          alert("Resource not found");
         } else if (error.status === 403) {
-          alert("You do not have permission to view this tale.");
+          alert("You do not have permission to access this resource.");
         } else {
-          alert("An error occurred while fetching the tale data.");
+          alert("Am unexpected error occurred while fetching this tale. Please try again later.");
         }
         // Redirigir al usuario al panel de inicio
-        route.push('/mis_cuentos');
+        route.push('/cuentos_publicados');
         return;
       }
     }
 
     const descargarPdf = async () => {
       try {
-        if (!cuento.value || aportaciones.value.length === 0) {
+        if (!cuento.value) {
           alert("No tale data available to download.");
+          return;
+        }
+
+        if (aportaciones.value.length === 0) {
+          alert("You cannot download a tale without contributions.");
           return;
         }
 
@@ -173,38 +178,39 @@ export default defineComponent({
         html2pdf().from(contenidoHTML).save(`${cuento.value?.nombre || 'cuento'}.pdf`);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.error("An error occurred while downloading the tale:");
+        console.error("An unexpected error occurred while downloading the tale");
       }
+
       loading.value = false;
     }
 
-    const  gotoCuento = () => {
-      route.push('/ver_cuento_creado/' + props.id_cuento);
+    const  goToCuento = () => {
+      route.push('/ver_cuento_colaborador/' + props.id_cuento);
     }
 
     onMounted(() => {
       if (!props.id_cuento) {
-        alert("Invalid tale ID.");
+        alert("You do not have permission to view this tale.");
         return;
       }
 
-      obtenerCuentoPrevisualizar();
+      obtenerCuentoPublico();
     });
 
     return {
       cuento,
       aportaciones,
       loading,
+      errorMsg,
       descargarPdf,
-      gotoCuento,
-      showConfirmarPublicarCuento,
+      goToCuento,
     };
   }
 });
 </script>
 
 <style scoped>
-.previsualizar-creador-view {
+.ver-cuento-publico-view {
   background-color: var(--color-background-padding);
   width: 100%;
   height: 100%;
@@ -239,6 +245,7 @@ export default defineComponent({
 
 .cuento-nombre {
   color: var(--color-text-blue);
+  width: 85%;
 }
 
 .no-aportaciones {
@@ -249,15 +256,27 @@ export default defineComponent({
 
 .options-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   height: 70vh;
-  min-width: 30%;
   max-width: 30%;
+  min-width: 30%;
 
   padding: 0;
   margin: 0;
 
+}
+
+.likes-container {
+  display: inline-flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.like-btn {
+  width: 100%;
+  color: var(--color-text-input-fg-default);
+  font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
 .move-bottom {
@@ -267,12 +286,23 @@ export default defineComponent({
   display: flex;
   flex-direction: column;       /* Stack children vertically */
   justify-content: flex-end;
-  gap: 1rem;
 }
 
 .divider {
   border: 1px solid var(--vt-c-gray-soft);
   margin-top: 1rem;
   margin-bottom: 1rem;
+}
+
+.error-msg {
+  color: var(--color-error);
+  margin-bottom: 0.5rem;
+}
+
+.like-chip {
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  z-index: 10;
 }
 </style>

@@ -9,8 +9,10 @@
         />
       </v-btn>
 
-      <h2 class="ocultar-cuento-header text-h6 my-3">RESTRINGIR COLABORADORES</h2>
-      <p class="ocultar-cuento-subheader text-caption mb-6">Esta acción impedirá que nuevos usuarios se unan al cuento con el código asignado. La única manera de volver a añadir usuarios es volviendo a habilitar esta opción</p>
+      <h2 class="ocultar-cuento-header text-h6 my-3">{{ $t('manage_collaborators.confirm_restrict_title') }}</h2>
+      <p class="ocultar-cuento-subheader text-caption mb-6">
+        {{ $t('manage_collaborators.confirm_restrict_message') }}
+      </p>
 
       <small
         class="result-msg"
@@ -28,7 +30,7 @@
             @click="restringirColaboradores()"
             :disabled="disableEliminar"
           >
-            Continuar
+            {{ $t('manage_collaborators.confirm_button') }}
           </BotonXs>
         </v-container>
 
@@ -42,7 +44,9 @@ import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import  BotonXs from '@/components/BotonXs.vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const router = useRouter();
 
 const emit = defineEmits(['close-popup']);
@@ -73,7 +77,7 @@ const disableEliminar = ref(false);
 const restringirColaboradores = async () => {
   if (!id_cuento.value) {
     // Regresamos a la página de cuentos si el ID no es válido (ya que hubo un error)
-    showPopup('Error', 'ID del cuento no válido.');
+    showPopup(t('message_headers.error'), t('manage_collaborators.invalid_id'));
     router.push('/mis_cuentos');
     return;
   }
@@ -95,7 +99,7 @@ const restringirColaboradores = async () => {
     );
 
     if (response.status === 200) {
-      showPopup('Éxito', 'Los usuarios ya no podrán unirse al cuento.');
+      showPopup(t('message_headers.success'), t('manage_collaborators.restrict_success'));
 
       setTimeout(() => {
         emit('close-popup');
@@ -105,15 +109,15 @@ const restringirColaboradores = async () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error?.response?.status === 400) {
-      showPopup('Error', 'Acción inválida. Intente recargar la página.');
+      showPopup(t('message_headers.error'), t('error_codes.400'));
     } else if (error?.response?.status === 403) {
-      showPopup('Error', 'No tienes permiso para realizar esta acción.');
+      showPopup(t('message_headers.error'), t('error_codes.403'));
     } else if (error?.response?.status === 404) {
-      showPopup('Error', 'Cuento no encontrado.');
+      showPopup(t('message_headers.error'), t('error_codes.404'));
     } else if (error?.response?.status === 500) {
-      showPopup('Error', 'Error en el servidor. Intenta más tarde.');
+      showPopup(t('message_headers.error'), t('error_codes.500'));
     } else {
-      showPopup('Error', 'Error inesperado al realizar la acción.');
+      showPopup(t('message_headers.error'), t('error_codes.unknown'));
     }
     disableEliminar.value = false;
   }

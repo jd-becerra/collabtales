@@ -14,9 +14,11 @@ $sql = "
         c.nombre, 
         c.descripcion, 
         GROUP_CONCAT(DISTINCT a.nombre ORDER BY a.nombre SEPARATOR ', ') AS autores
+        COUNT(DISTINCT like.fk_alumno) AS likes
     FROM Cuento c
     JOIN Relacion_Alumno_Cuento rac ON c.id_cuento = rac.fk_cuento
     JOIN Alumno a ON rac.fk_alumno = a.id_alumno
+    LEFT JOIN Likes like ON c.id_cuento = like.fk_cuento
     WHERE c.publicado = 1
       AND NOT EXISTS (
           SELECT 1 FROM ListaNegra ln 

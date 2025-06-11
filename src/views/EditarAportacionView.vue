@@ -1,20 +1,34 @@
 <template>
   <div class="root-editar">
     <AppNavbarWhite />
-    <ReturnBtn class="return-btn" @click="goToCuento">
-      REGRESAR AL CUENTO
-    </ReturnBtn>
+    <div class="d-inline-flex justify-between align-center mb-4">
+      <v-img
+        class="icon mr-2"
+        src="/icons/edit_blue.svg"
+        contain
+        width="24"
+        height="24"
+      />
+      <h1 class="text-h5 font-weight-bold w-100">
+        {{ $t('edit_contribution.title') }}
+      </h1>
+      <ReturnBtn class="return-btn" @click="goToCuento">
+        {{ $t('edit_contribution.return') }}
+      </ReturnBtn>
+    </div>
     <div class="editar-aportacion-view">
       <v-overlay :value="loading">
         <v-progress-circular indeterminate size="64"></v-progress-circular>
       </v-overlay>
       <!-- Sección con el cuento en su estado actual -->
       <div class="vista-cuento">
-        <p>El cuento hasta el momento:</p>
+        {{ $t('edit_contribution.current_tale') }}
         <v-card class="cuento-card">
           <v-card-text>
             <div id="lectura" v-if="aportaciones.length === 0">
-              <p class="no-aportaciones">El cuento se encuentra vacío actualmente.</p>
+              <p class="no-aportaciones">
+                {{ $t('edit_contribution.no_contributions') }}
+              </p>
             </div>
             <div id="lectura" v-else>
               <v-list>
@@ -23,14 +37,17 @@
                     v-if="aportacion.es_autor"
                     class="aportacion-autor"
                   >
-                    -- TU APORTACIÓN EMPIEZA AQUÍ --
+                    -- {{ $t('edit_contribution.contribution_start') }} --
                   </p>
-                  <div v-html="aportacion.contenido" class="text-wrap"></div>
+                  <div v-html="aportacion.contenido"
+                  class="text-wrap"
+                  v-if="aportacion.contenido"
+                  ></div>
                   <p
                     v-if="aportacion.es_autor"
                     class="aportacion-autor"
                   >
-                    -- TU APORTACIÓN TERMINA AQUÍ --
+                    -- {{ $t('edit_contribution.contribution_end') }} --
                   </p>
                 </v-list-item>
               </v-list>
@@ -40,7 +57,9 @@
       </div>
       <!-- Sección con el texto a editar usando Quill.js -->
       <div class="vista-editar-aportacion">
-        <p>Editar Aportación:</p>
+        <p>
+          {{ $t('edit_contribution.edit') }}
+        </p>
         <v-card class="editor-card">
           <v-card-text class="editor-card-text">
             <!-- Quill Editor Container -->
@@ -70,7 +89,7 @@
             @click="guardarCambios"
             :disabled="loading"
           >
-              Guardar Cambios
+              {{ $t('edit_contribution.save_changes') }}
           </BotonXs>
                 </div>
         </div>
@@ -89,6 +108,7 @@ import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 import 'quill/dist/quill.snow.css';
 import { useRouter } from 'vue-router';
 import DOMPurify from 'dompurify';
+import { useI18n } from 'vue-i18n';
 
 import AppNavbarWhite from '@/components/AppNavbarWhite.vue';
 import ReturnBtn from '@/components/ReturnBtn.vue';
@@ -103,7 +123,6 @@ function convertDeltaToHtml(contenido: string | object): string {
     ALLOWED_ATTR: ['href', 'style'],
   });
 }
-
 
 export default defineComponent({
   name: 'EditarAportacionView',
@@ -133,6 +152,7 @@ export default defineComponent({
     }]);
     const CHARACTER_MAX= 8000;
 
+    const { t } = useI18n();
     const router = useRouter();
 
     const destroyQuill = () => {
@@ -144,8 +164,9 @@ export default defineComponent({
             container.innerHTML = '';
           }
           quill.value = null;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
-          console.warn('Error destroying Quill instance:', error);
+          console.warn('Error destroying editor instance');
         }
       }
     };
@@ -182,7 +203,7 @@ export default defineComponent({
             }
           },
           theme: 'snow',
-          placeholder: 'Escribe tu aportación aquí...',
+          placeholder: t('edit_contribution.placeholder'),
           formats: ['bold', 'italic', 'underline', 'strike', 'color', 'background', 'list', 'align', 'link']
         });
 
@@ -193,9 +214,9 @@ export default defineComponent({
         if (quill.value && contenidoInicial.value && contenidoInicial.value.ops) {
           try {
             quill.value.setContents(contenidoInicial.value);
-            console.log(quill.value.getLength());
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch (error) {
-            console.warn('Error setting initial content:', error);
+            console.warn('Error setting initial content');
             // If there's an error with the delta, just insert as plain text
             const plainText = contenidoInicial.value.ops
               ?.map(op => typeof op.insert === 'string' ? op.insert : '')
@@ -211,14 +232,16 @@ export default defineComponent({
           if (quill.value) {
             try {
               quill.value.focus();
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (error) {
-              console.warn('Error focusing editor:', error);
+              console.warn('Error focusing editor');
             }
           }
         }, 500);
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.error('Error initializing Quill:', error);
+        console.error('Error initializing Quill editor');
       }
     };
 
@@ -243,7 +266,7 @@ export default defineComponent({
         if (response.status === 200) {
           aportaciones.value = response.data.aportaciones.map((aport: { contenido: string, es_autor: boolean }) => ({
             ...aport,
-            contenido: convertDeltaToHtml(aport.contenido),
+            contenido: isHtmlEmpty(convertDeltaToHtml(aport.contenido)) ? null : convertDeltaToHtml(aport.contenido)
           }));
           es_creador.value = response.data.es_creador;
 
@@ -252,8 +275,9 @@ export default defineComponent({
             contenidoInicial.value = response.data.contenido_autor
               ? JSON.parse(response.data.contenido_autor)
               : new Delta();
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch (parseError) {
-            console.warn('Error parsing contenido_autor:', parseError);
+            console.warn('Error parsing author content');
             contenidoInicial.value = new Delta();
           }
 
@@ -262,7 +286,7 @@ export default defineComponent({
           await nextTick();
           await initializeQuill();
         } else {
-          alert('No se pudo obtener la aportación. Por favor, inténtalo de nuevo.');
+          alert('Could not fetch author contribution. Please try again later.');
           router.push('/mis_cuentos');
         }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -270,24 +294,24 @@ export default defineComponent({
         console.error('Fetch error:', error);
         switch (error.status) {
           case 400:
-            alert('Error al mandar la petición. Por favor, inténtalo de nuevo.');
+            alert('Could not fetch author contribution. Please check the provided parameters.');
             break;
           case 401:
-            alert('Petición no autorizada. Por favor, inicia sesión de nuevo.');
+            alert('You are not authorized to edit this contribution. Please log in again.');
             localStorage.removeItem('token');
             router.push('/');
             break;
           case 403:
-            alert('No tienes permiso para editar esta aportación.');
+            alert('You do not have permission to edit this contribution.');
             break;
           case 404:
-            alert('Aportación no encontrada. Por favor, verifica el ID de la aportación.');
+            alert('Contribution not found. Please check the provided ID.');
             break;
           case 500:
-            alert('Error interno del servidor. Por favor, inténtalo de nuevo más tarde.');
+            alert('Internal server error. Please try again later.');
             break;
           default:
-            alert('Error inesperado. Por favor, inténtalo de nuevo.');
+            alert('An unexpected error occurred. Please try again later.');
             break;
         }
         router.push('/mis_cuentos');
@@ -300,46 +324,52 @@ export default defineComponent({
 
     const guardarCambios = async () => {
       if (!quill.value) {
-        console.error('Quill instance is not initialized.');
-        alert('El editor no está inicializado. Por favor, recarga la página.');
-        return;
+      console.error('Quill instance is not initialized.');
+      alert('Editor not initialized. Please try again later.');
+      return;
       }
 
       if (quill.value.getLength() <= 1) {
-        alert('El contenido de la aportación no puede estar vacío.');
-        return;
+      alert('The contribution content cannot be empty.');
+      return;
       }
       if (quill.value.getLength() > CHARACTER_MAX) {
-        alert(`El contenido excede el límite de ${CHARACTER_MAX} caracteres.`);
-        return;
+      alert(`The content exceeds the limit of ${CHARACTER_MAX} characters.`);
+      return;
       }
 
       loading.value = true;
 
       try {
-        const delta = quill.value.getContents();
-        const deltaString = JSON.stringify(delta);
+      const delta = quill.value.getContents();
+      const deltaString = JSON.stringify(delta);
 
-        await axios.put('https://collabtalesserver.avaldez0.com/php/editar_aportacion.php',
-          {
-            id_cuento: props.id_cuento,
-            id_aportacion: props.id_aportacion,
-            contenido: deltaString,
-          },
-          {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            },
-          }
-        );
-        goToCuento();
+      await axios.put('https://collabtalesserver.avaldez0.com/php/editar_aportacion.php',
+        {
+        id_cuento: props.id_cuento,
+        id_aportacion: props.id_aportacion,
+        contenido: deltaString,
+        },
+        {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        }
+      );
+      goToCuento();
       } catch (error) {
-        console.error('Error saving changes:', error);
-        alert('Error al guardar los cambios. Por favor, inténtalo de nuevo.');
+      console.error('Error saving changes:', error);
+      alert('Error saving changes. Please try again.');
       } finally {
-        loading.value = false;
+      loading.value = false;
       }
     };
+
+    const isHtmlEmpty = (html: string): boolean => {
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+      return temp.innerText.trim() === '';
+    }
 
     const goToCuento = () => {
       if (es_creador.value) {
@@ -362,6 +392,7 @@ export default defineComponent({
       guardarCambios,
       goToCuento,
       aportaciones,
+      isHtmlEmpty
     };
   },
 });

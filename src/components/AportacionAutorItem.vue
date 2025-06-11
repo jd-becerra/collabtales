@@ -3,11 +3,13 @@
     class="aportacion-item"
     :style="first_in_list ? 'margin-top: 0;' : 'margin-top: 1.5rem;'"
   >
-    <p class="aportacion-header">Tu aportación (Haz click para editarla)</p>
+    <p class="aportacion-header">{{ $t('contribution.your_contribution') }} </p>
     <v-card flat class="aportacion-card" @click="goToAportacion">
       <v-card-text class="mt-2">
         <div v-html="contenido" v-if="contenido != ''"></div>
-        <div v-else class="empty-contenido text-center">Tu aportación está vacía. Haz click para editarla.</div>
+        <div v-else class="empty-contenido text-center">
+          {{ $t('contribution.your_contribution_empty') }}
+        </div>
       </v-card-text>
       <div class="edit-btn-container">
         <v-btn

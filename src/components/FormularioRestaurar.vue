@@ -2,10 +2,10 @@
    <v-form @submit.prevent="restorePassword">
       <v-container class="restore-fields d-flex flex-column">
       <TextInputMd
-        label="Correo"
+        :label="$t('restore.email')"
         v-model="restoreData.correo"
         type="email"
-        placeholder="Ejemplo: micorreo@gmail.com"
+        :placeholder="$t('restore.email_placeholder')"
         outlined
         required
         class="custom-input"
@@ -17,15 +17,15 @@
 
     <v-container class="restore-buttons-container d-flex flex-column">
       <small class="restore-small">
-        ¿Ya tienes una cuenta? <a class="goto-login" href="#" @click="$emit('show-login')">Inicia sesión aquí</a>
+        {{ $t('restore.already_registered')}} <a class="goto-login" href="#" @click="$emit('show-login')"> {{ $t('restore.already_registered_link') }} </a>
       </small>
       <v-container class="restore-buttons d-flex flex-column">
         <BotonMd color_type="blue" :disabled="loading" type="submit">
           <v-progress-circular v-if="loading" indeterminate color="white" size="20" class="mr-2" />
-          Restaurar contraseña
+          {{ $t('restore.restore_button') }}
         </BotonMd>
         <BotonMd @click="$emit('show-register')">
-          Crea una cuenta
+          {{ $t('restore.register_button') }}
         </BotonMd>
       </v-container>
     </v-container>
@@ -36,10 +36,12 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
+
 // Componentes
 import TextInputMd from '@/components/TextInputMd.vue';
 import BotonMd from './BotonMd.vue';
-
 
 const restoreData = ref({ correo: '' });
 const loading = ref(false);
@@ -65,13 +67,13 @@ function showPopup(title: string, msg: string) {
 
 async function restorePassword() {
   if (!restoreData.value.correo) {
-    showPopup("Error", "Por favor, ingresa tu correo electrónico.");
+    showPopup(t("message_headers.error"), t("restore.fill_fields"));
     return;
   }
 
   // Si el correo no es válido, mostramos un mensaje de error
   if (!/\S+@\S+\.\S+/.test(restoreData.value.correo)) {
-    showPopup("Error", "Por favor, ingresa un correo electrónico válido.");
+    showPopup(t("message_headers.error"), t("restore.invalid_email"));
     return;
   }
 
@@ -83,24 +85,24 @@ async function restorePassword() {
     });
 
     if (response.data.success) {
-      showPopup("Éxito", `Correo enviado, revisa tu bandeja de entrada`);
+      showPopup(t("message_headers.success"), t("restore.restore_success"));
       setTimeout(() => {
         emit('show-login');
         loading.value = false;
       }, 1000);
     } else {
-      showPopup("Error", `No se pudo restaurar la contraseña`);
+      showPopup(t("message_headers.error"), t("restore.restore_error"));
     }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.status === 404) {
-      showPopup("Error", `El correo electrónico no está registrado.`);
+      showPopup(t("message_headers.error"), t("restore.email_not_found"));
     } else if (error.status === 409) {
-      showPopup("Error", `Ya existe una solicitud de restauración pendiente para este correo.`);
+      showPopup(t("message_headers.error"), t("restore.email_already_sent"));
     } else if (error.status === 429){
-      showPopup("Error", `Demasiadas solicitudes. Por favor, espera un momento antes de intentar nuevamente.`);
+      showPopup(t("message_headers.error"), t("error_codes.429"));
     } else {
-      showPopup("Error", `Hubo un error en el servidor. Intente nuevamente más tarde.`);
+      showPopup(t("message_headers.error"), t("error_codes.500"));
     }
   } finally {
     loading.value = false;

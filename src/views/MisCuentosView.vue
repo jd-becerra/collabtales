@@ -11,22 +11,22 @@
           width="24"
           height="24"
         />
-        <h1 class="home-header">MIS CUENTOS</h1>
+        <h1 class="home-header">{{ $t('mis_cuentos.title') }}</h1>
       </div>
-      <p class="home-subheader text-h6 mb-0 pb-0">Estos son los cuentos que has creado o en los que estás participando.</p>
+      <p class="home-subheader text-h6 mb-0 pb-0">{{ $t('mis_cuentos.subtitle') }}</p>
     </v-container>
 
     <v-container class="home-main-container d-flex flex-row justify-space-between">
       <div class="list-cuentos-main-container d-flex flex-column mt-0 py-0">
         <div class="d-flex justify-end align-center pa-0 ma-0 ">
           <v-switch class="filter-owner-switch"
-            label="Filtrar cuentos creados por mí"
+            :label="$t('mis_cuentos.filter_by_owner')"
             color="info"
             v-model="toggleFilterByOwner"
           ></v-switch>
         </div>
         <v-card class="lista-cuentos-container">
-          <v-list>
+          <v-list v-if="cuentosListados.length > 0">
             <CuentoListItemPrivado
               v-for="(cuento, index) in cuentosListados"
               :id_cuento="Number(cuento.id_cuento)"
@@ -38,19 +38,24 @@
               :ultimo="index === cuentosListados.length - 1"
             />
           </v-list>
+          <p v-else class="text-center mt-4">
+            {{ $t('mis_cuentos.no_tales') }}
+          </p>
         </v-card>
       </div>
 
       <div  class="d-flex flex-column align-center ">
         <TextInputSearch
           class="mb-6"
-          placeholder="Buscar cuento por título"
+          :placeholder="$t('mis_cuentos.search_placeholder')"
           v-model="searchQuery"
         />
         <v-container class="home-options d-flex flex-column align-center justify-center">
-          <BotonSm icon_path="/icons/edit_text.svg" @click="showCrearCuentoDialog()">Crear un cuento</BotonSm>
-          <BotonSm icon_path="/icons/group_add.svg" @click="showUnirseDialog()">Unirse a un cuento</BotonSm>
-          <BotonSm icon_path="/icons/public.svg" @click="redirectCuentosPublicos()">Cuentos publicados</BotonSm>
+          <BotonSm icon_path="/icons/edit_text.svg" @click="showCrearCuentoDialog()">{{ $t('mis_cuentos.create_tale_button') }}</BotonSm>
+          <BotonSm icon_path="/icons/group_add.svg" @click="showUnirseDialog()">{{ $t('mis_cuentos.join_tale_button') }}</BotonSm>
+          <BotonSm icon_path="/icons/public.svg" @click="redirectCuentosPublicos()">
+            {{ $t('mis_cuentos.published_tales_button') }}
+          </BotonSm>
         </v-container>
       </div>
     </v-container>
@@ -109,7 +114,7 @@ const showUnirseDialog = () => {
 };
 
 const redirectCuentosPublicos = () => {
-  router.push('/panel_inicio');
+  router.push('/cuentos_publicados');
 };
 
 const getCuentosUsuario = async () => {
@@ -140,8 +145,9 @@ const getCuentosUsuario = async () => {
 
     // Filtrar los cuentos según sea necesario
     applyFilters();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
-    console.error('Error fetching global cuentos:', error);
+    alert('Error fetching my tales. Please try again later.');
   }
 };
 

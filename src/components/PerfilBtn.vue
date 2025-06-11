@@ -16,10 +16,12 @@
 
     <v-list>
       <v-list-item @click="router.push('/perfil_usuario')">
-        <v-list-item-title class="font-weight-bold">Ver Mi Perfil</v-list-item-title>
+        <v-list-item-title class="font-weight-bold">{{ $t('profile.profile_button') }}</v-list-item-title>
       </v-list-item>
       <v-list-item @click="logout" class="logout-text">
-        <v-list-item-title>Cerrar Sesión</v-list-item-title>
+        <v-list-item-title>
+          {{ $t('profile.logout') }}
+        </v-list-item-title>
       </v-list-item>
     </v-list>
   </v-menu>
@@ -27,13 +29,16 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 const router = useRouter();
 
 function logout() {
-  localStorage.removeItem('token'); // Elimina el token de sesión
+  localStorage.removeItem('token');
 
   router.push('/'); // Redirect to login page
-  alert('Has cerrado sesión.');
+  alert(t('profile.logout_success'));
 }
 </script>
 

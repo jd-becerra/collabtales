@@ -9,8 +9,10 @@
         />
       </v-btn>
 
-      <h2 class="eliminar-cuento-header text-h6 my-3">ELIMINAR CUENTO: "{{ nombre_cuento }}"</h2>
-      <p class="eliminar-cuento-subheader text-caption mb-6">¿Estás seguro de querer eliminar este cuento? Los colaboradores ya no podrán acceder a este cuento, y su contenido no se podrá recuperar.</p>
+      <h2 class="eliminar-cuento-header text-h6 my-3">{{ $t('delete_tale.title', { title: nombre_cuento }) }}</h2>
+      <p class="eliminar-cuento-subheader text-caption mb-6">
+        {{ $t('delete_tale.subtitle') }}
+      </p>
 
       <small
         v-if="popupValues.mensaje"
@@ -26,7 +28,7 @@
             class="return-btn"
             @click="emit('close-popup')"
           >
-            Regresar
+            {{ $t('delete_tale.cancel_button') }}
           </BotonXs>
           <BotonXs
             class="eliminar-btn"
@@ -34,7 +36,7 @@
             @click="eliminarCuento()"
             :disabled="disableEliminar"
           >
-            Eliminar cuento
+            {{ $t('delete_tale.delete_button') }}
           </BotonXs>
         </div>
 
@@ -48,7 +50,9 @@ import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import  BotonXs from '@/components/BotonXs.vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const router = useRouter();
 
 const emit = defineEmits(['close-popup']);
@@ -80,7 +84,7 @@ const disableEliminar = ref(false);
 const eliminarCuento = async () => {
   if (!id_cuento.value) {
     // Regresamos a la página de cuentos si el ID no es válido (ya que hubo un error)
-    showPopup('Error', 'ID del cuento no válido.');
+    showPopup(t('message_headers.error'), t('delete_tale.invalid_id'));
     router.push('/mis_cuentos');
     return;
   }
@@ -102,7 +106,7 @@ const eliminarCuento = async () => {
     );
 
     if (response.status === 200) {
-      showPopup('Éxito', 'Cuento eliminado correctamente. Redirigiendo a "Mis cuentos"...');
+      showPopup(t('message_headers.success'), t('delete_tale.success'));
 
       setTimeout(() => {
         emit('close-popup');
@@ -112,15 +116,15 @@ const eliminarCuento = async () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error?.response?.status === 400) {
-      showPopup('Error', 'Acción inválida. Intente recargar la página.');
+      showPopup(t('message_headers.error'), t('error_codes.400'));
     } else if (error?.response?.status === 403) {
-      showPopup('Error', 'No tienes permiso para eliminar este cuento.');
+      showPopup(t('message_headers.error'), t('delete_tale.unauthorized'));
     } else if (error?.response?.status === 404) {
-      showPopup('Error', 'Cuento no encontrado.');
+      showPopup(t('message_headers.error'), t('delete_tale.not_found'));
     } else if (error?.response?.status === 500) {
-      showPopup('Error', 'Error en el servidor. Intenta más tarde.');
+      showPopup(t('message_headers.error'), t('error_codes.500'));
     } else {
-      showPopup('Error', 'Error inesperado al crear cuento.');
+      showPopup(t('message_headers.error'), t('delete_tale.error'));
     }
     disableEliminar.value = false;
   }

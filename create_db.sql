@@ -50,7 +50,7 @@ CREATE TABLE `Cuento` (
         `descripcion` VARCHAR(511) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
         `codigo_compartir` VARCHAR(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
         `publicado` TINYINT(1) DEFAULT 0,
-        `admite_colaboradores` TINYINT(1) DEFAULT 0,
+        `admite_colaboradores` TINYINT(1) DEFAULT 1,
         `fk_owner` INT(11) NULL DEFAULT NULL,
         PRIMARY KEY (`id_cuento`),
         CONSTRAINT `fk_cuento_owner` FOREIGN KEY (`fk_owner`) REFERENCES `Alumno` (`id_alumno`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -362,7 +362,6 @@ CREATE PROCEDURE `EliminarAlumnoCuento`(
 BEGIN
                 DELETE FROM Relacion_Alumno_Cuento
                 WHERE fk_alumno = id_alumno_param AND fk_cuento = id_cuento_param;
-                
                 DELETE FROM Aportacion
                 WHERE fk_alumno = id_alumno_param AND fk_cuento = id_cuento_param;
 END$$
@@ -432,5 +431,60 @@ DO
 BEGIN
     DELETE FROM API_RATE_LIMIT
     WHERE request_time < UNIX_TIMESTAMP(NOW()) - 3600;
+END$$
+DELIMITER ;
+
+-- Table: Likes ("me gusta" que pueden dar los usuarios a los cuentos donde no han colaborado)
+CREATE TABLE `Likes` (
+    `id_like` INT(11) NOT NULL AUTO_INCREMENT,
+    `fk_alumno` INT(11) NOT NULL,
+    `fk_cuento` INT(11) NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id_like`),
+    FOREIGN KEY (`fk_alumno`) REFERENCES `Alumno`(`id_alumno`) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (`fk_cuento`) REFERENCES `Cuento`(`id_cuento`) ON DELETE CASCADE ON UPDATE CASCADE,
+    UNIQUE KEY `unique_like` (`fk_alumno`, `fk_cuento`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Procedure: DarLikeCuento
+DELIMITER $$
+
+CREATE PROCEDURE `DarLikeCuento`(
+    IN id_alumno_param INT,
+    IN id_cuento_param INT
+)
+BEGIN
+    DECLARE existe_like INT;
+    DECLARE alumno_existe INT;
+    DECLARE cuento_existe INT;
+
+    -- Verificar si el alumno existe
+    SELECT COUNT(*) INTO alumno_existe
+    FROM Alumno
+    WHERE id_alumno = id_alumno_param;
+
+    -- Verificar si el cuento existe
+    SELECT COUNT(*) INTO cuento_existe
+    FROM Cuento
+    WHERE id_cuento = id_cuento_param;
+
+    IF alumno_existe = 0 THEN
+        SELECT 'El alumno no existe' AS result;
+    ELSEIF cuento_existe = 0 THEN
+        SELECT 'El cuento no existe' AS result;
+    ELSE
+        -- Verificar si ya existe el like
+        SELECT COUNT(*) INTO existe_like
+        FROM Likes
+        WHERE fk_alumno = id_alumno_param AND fk_cuento = id_cuento_param;
+
+        IF existe_like = 0 THEN
+            INSERT INTO Likes (fk_alumno, fk_cuento)
+            VALUES (id_alumno_param, id_cuento_param);
+            SELECT 'Like añadido' AS result;
+        ELSE
+            SELECT 'El alumno ya dio like a este cuento' AS result;
+        END IF;
+    END IF;
 END$$
 DELIMITER ;

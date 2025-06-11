@@ -10,10 +10,22 @@
     <div class="vista-cuento d-flex" v-if="!loading">
       <v-card class="cuento-card pa-4 aportaciones-card" elevation="6" v-if="cuento">
         <h4 class="cuento-nombre text-h4 font-weight-bold"> {{ cuento.nombre }}</h4>
+          <v-chip
+            class="like-chip mt-4"
+            label
+          >
+            <v-img
+              src="/icons/like_filled.svg"
+              width="16"
+              height="16"
+              class="mr-2"
+            ></v-img>
+            <strong>{{ cuento?.likes }}</strong> &nbsp; {{ cuento?.likes === 1 ? $t('cuento_publico.like_count_1') : $t('cuento_publico.like_count') }}
+          </v-chip>
         <p class="autores-header mb-3" v-if="cuento.autores">
-          Autores:
+          {{ cuento.autores.length === 1 ? $t('publish_tale.author') : $t('publish_tale.authors') }}:
           <span v-for="(autor, index) in cuento.autores" :key="index">
-            {{ autor }}{{ index < cuento.autores.length - 1 ? '  |  ' : '' }}
+            {{ autor }}{{ index < cuento.autores.length - 1 ? '  &#x2022;  ' : '' }}
           </span>
         </p>
         <div class="divider"></div>
@@ -22,14 +34,18 @@
               <v-list-item-title v-html="aportacion.contenido" class="text-wrap"></v-list-item-title>
           </v-list-item>
         </v-list>
-        <p v-else class="no-aportaciones">El cuento se encuentra vacío actualmente.</p>
+        <p v-else class="no-aportaciones">
+          {{ $t('publish_tale.no_contributions') }}
+        </p>
       </v-card>
 
       <div class="options-container d-flex flex-column">
-        <ReturnBtn @click="gotoCuento">VOLVER A PANEL DE INICIO</ReturnBtn>
-        <p class="cuento-descripcion" v-if="cuento">
-          <strong>Descripción:</strong> <i> {{ cuento.descripcion }} </i>
-        </p>
+        <ReturnBtn @click="gotoCuento"> {{ $t('publish_tale.return') }}</ReturnBtn>
+         <div class="text-left">
+          <p class="cuento-descripcion" v-if="cuento">
+            <strong>{{ $t('cuento_publico.description') }}:</strong> <i> {{ cuento.descripcion }} </i>
+          </p>
+        </div>
         <div class="move-bottom">
           <BotonSm
             class="return-btn w-100"
@@ -37,7 +53,7 @@
             icon_path="/icons/public_off.svg"
             color_type="white_gray"
           >
-            Ocultar Cuento
+            {{ $t('publish_tale.hide_button') }}
           </BotonSm>
           <BotonSm
             class="download-btn w-100"
@@ -45,7 +61,7 @@
             icon_path="/icons/download.svg"
             :disabled="aportaciones.length === 0"
             >
-            Descargar en PDF
+            {{ $t('publish_tale.download_button') }}
           </BotonSm>
         </div>
       </div>
@@ -71,6 +87,8 @@ import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 import html2pdf from "html2pdf.js/dist/html2pdf.bundle.min.js"
 import { ref, onMounted, defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+
 import AppNavbarWhite from '@/components/AppNavbarWhite.vue';
 import BotonSm from '@/components/BotonSm.vue';
 import ReturnBtn from '@/components/ReturnBtn.vue';
@@ -102,11 +120,17 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const cuento = ref<{ nombre: string; descripcion: string, autores: string[] } | null>(null);
+    const cuento = ref<{
+      nombre: string;
+      descripcion: string,
+      autores: string[],
+      likes: number,
+    } | null>(null);
     const aportaciones = ref<Array<{ contenido: string }>>([]);
     const loading = ref(false);
     const showConfirmarOcultarCuento = ref(false);
     const route = useRouter();
+    const { t } = useI18n();
 
     const obtenerCuentoPrevisualizar = async () => {
       try {
@@ -122,18 +146,18 @@ export default defineComponent({
             }))
             .filter((aport: { contenido: string }) => aport.contenido.trim() !== '');
         } else {
-          alert("No se pudo obtener el cuento.");
+          alert("Error retrieving story data.");
           route.push('/mis_cuentos');
           return
         }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         if (error.status === 404) {
-          alert("Cuento no encontrado.");
+          alert("Resource not found.");
         } else if (error.status === 403) {
-          alert("No tienes permiso para ver este cuento.");
+          alert("You don't have permission to view this tale.");
         } else {
-          alert("Error al obtener el cuento. Por favor, inténtalo de nuevo más tarde.");
+          alert("An unexpected error occurred while retrieving this tale.");
         }
         // Redirigir al usuario al panel de inicio
         route.push('/mis_cuentos');
@@ -144,7 +168,7 @@ export default defineComponent({
     const descargarPdf = async () => {
       try {
         if (!cuento.value || aportaciones.value.length === 0) {
-          alert("Cuento no disponible para descargar.");
+          alert("You cannot download a tale without content.");
           return;
         }
 
@@ -154,8 +178,9 @@ export default defineComponent({
           contenidoHTML.innerHTML = `
             <div style="font-family: Arial, sans-serif; color: #000; background: #fff; padding: 20px; max-width: 800px; margin: auto;">
               <h1 style="color: #333;">${cuento.value?.nombre}</h1>
-              <p style="font-size: 14px; line-height: 1.6;">${cuento.value?.descripcion}</p>
-              <hr style="border: 1px solid #ccc;">
+              <p style="font-size: 14px; color: #555;">${cuento.value?.autores.length === 1 ? t('publish_tale.author') : t('publish_tale.authors')}:
+              ${cuento.value?.autores.join(', ')}</p>
+              <hr style="border: 1px solid #ccc; margin: 20px 0;">
               ${aportaciones.value.map(aport => `
                 <div style="margin-bottom: 15px; padding: 10px; solid #ddd">
                   <p style="font-size: 14px; color: #555;">${aport.contenido}</p>
@@ -165,10 +190,10 @@ export default defineComponent({
           `;
 
         html2pdf().from(contenidoHTML).save(`${cuento.value?.nombre || 'cuento'}.pdf`);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.error("Error descargando", error);
+        console.error("Error downloading tale");
       } finally {
-        alert("Cuento descargado");
       }
       loading.value = false;
     }
@@ -179,7 +204,7 @@ export default defineComponent({
 
     onMounted(() => {
       if (!props.id_cuento) {
-        alert("No tienes permiso para ver este cuento.");
+        alert("You don't have permission to view this tale.");
         return;
       }
 
@@ -234,6 +259,7 @@ export default defineComponent({
 
 .cuento-nombre {
   color: var(--color-text-blue);
+  width: 85%;
 }
 
 .no-aportaciones {
@@ -247,6 +273,8 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   height: 70vh;
+  min-width: 30%;
+  max-width: 30%;
 
   padding: 0;
   margin: 0;
@@ -267,5 +295,12 @@ export default defineComponent({
   border: 1px solid var(--vt-c-gray-soft);
   margin-top: 1rem;
   margin-bottom: 1rem;
+}
+
+.like-chip {
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  z-index: 10;
 }
 </style>

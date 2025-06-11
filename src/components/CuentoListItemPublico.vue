@@ -4,19 +4,27 @@
       <v-img
         class="icon mr-2"
         src="/icons/book.svg"
-        alt="Ícono para un cuento"
         contain
       />
       {{ nombre }}
     </a>
-      <p v-if="autores && autores.length > 0" class="autores-header">
-        <span>
-          Autores:
-        </span>
-        <span> {{ autores.join('     |     ') }} </span>
-      </p>
+    <div class="likes">
+      <v-img
+        size="16"
+        src="/icons/like_filled.svg"
+        contain
+        :alt="$t('published_tales.likes')"
+      />
+      {{ likes }}
+    </div>
+    <p v-if="autores && autores.length > 0" class="autores-header">
+      <span>
+        {{ autores.length === 1 ? $t('published_tales.author') : $t('published_tales.authors') }}:
+      </span>
+      <span> {{ autores.join(',     ') }} </span>
+    </p>
     <p v-else>
-      Autores: Información no disponible
+      {{  $t('published_tales.no_authors') }}
     </p>
     <p class="descripcion-header">
       {{ descripcion }}
@@ -40,6 +48,7 @@ defineProps<{
   nombre: string;
   descripcion: string;
   autores?: string[];
+  likes?: number;
   ultimo: boolean;
 }>();
 </script>
@@ -89,5 +98,18 @@ defineProps<{
 .descripcion-header {
   color: var(--color-text-input-fg-default);
   font-weight: 600;;
+}
+
+.likes {
+  color: var(--color-text-input-fg-default);
+  font-weight: bold;
+
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  width: 30px;
+  gap: 0.3rem;
 }
 </style>
