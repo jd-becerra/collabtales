@@ -7,7 +7,7 @@
       class="text-input"
       :value="modelValue"
       :placeholder="placeholder"
-      @input="$emit('update:modelValue', ($event.target as HTMLInputElement)?.value)"
+      @input="onInput"
     />
     <small v-if="small" class="text-caption font-weight-medium mb-1">
       {{ small }}
@@ -29,7 +29,12 @@ defineProps<{
   small?: string
 }>()
 
-defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue'])
+
+function onInput(event: Event) {
+  const target = event.target as HTMLInputElement
+  emit('update:modelValue', target.value)
+}
 </script>
 
 <style scoped>
