@@ -112,7 +112,6 @@ import { Color } from '@tiptap/extension-color'
 import TextStyle from '@tiptap/extension-text-style'
 import { Editor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit';
-import Heading from '@tiptap/extension-heading'
 import Underline from '@tiptap/extension-underline';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextAlign from '@tiptap/extension-text-align';
@@ -152,7 +151,7 @@ export default defineComponent({
       contenido: '',
       es_autor: false,
     }]);
-    const contenidoInicial = ref<string>('<p></p>'); // Default to empty content
+    const contenidoInicial = ref<string>(''); // Default to empty content
     const CHARACTER_MAX= 8000;
 
     const router = useRouter();
@@ -163,11 +162,14 @@ export default defineComponent({
         editorProps: {
           attributes: {
             class: 'tiptap-editor h-100',
-            style: 'overflow-y: auto; padding: 0.5rem; background-color: white; border: 1px solid #ccc; margin: 5px; border-radius: 5px; overflow-y: scroll;',
+            style: 'overflow-y: auto; padding: 0.5rem; background-color: white; border: 1px solid #ccc; margin: 5px; border-radius: 5px; overflow-y: scroll; height: 6rem;',
           },
         },
 
         extensions: [
+          Placeholder.configure({
+            placeholder: t('edit_contribution.placeholder'),
+          }),
           StarterKit,
           CharacterCount.configure({
             limit: CHARACTER_MAX,
@@ -175,17 +177,19 @@ export default defineComponent({
           TextStyle,
           Color,
           Underline,
-          Heading,
           TextAlign.configure({
             types: ['heading', 'paragraph'],
           }),
-          Placeholder.configure({
-            placeholder: t('edit_contribution.placeholder'),
-            emptyEditorClass: 'ql-blank',
-          }),
         ],
-        content: contenidoInicial.value, // <-- now this has actual content
       });
+      if (
+        contenidoInicial.value &&
+        contenidoInicial.value.trim() !== '' &&
+        contenidoInicial.value.trim() !== '<p></p>'
+      ) {
+        editor.value.commands.setContent(contenidoInicial.value);
+      }
+      console.log(editor.value?.getHTML());
     };
 
     const fetchAportacion = async () => {
@@ -219,7 +223,7 @@ export default defineComponent({
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch (parseError) {
             console.warn('Error parsing author content');
-            contenidoInicial.value = '<p></p>'; // Default to empty content if parsing fails
+            contenidoInicial.value = ''; // Default to empty content if parsing fails
           }
 
           loading.value = false;
@@ -429,4 +433,12 @@ export default defineComponent({
   margin: 0.5rem 0;
   text-align: center;
 }
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  float: left;
+  color: black;
+  pointer-events: none;
+  height: 0;
+}
+
 </style>
