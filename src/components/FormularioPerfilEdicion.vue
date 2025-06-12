@@ -12,7 +12,7 @@
         />
         <TextInputSm
           :label="$t('profile.email')"
-          :placeholder="$t('profile.email_placeholder')"
+          :placeholder="$t('profile.email_placeholder', { email: 'john_doe@gmail.com'})"
           v-model="localDatosAlumno.correo"
           type="text"
           outlined

@@ -15,7 +15,7 @@
         :label="$t('register.email')"
         v-model="registerData.correo"
         type="email"
-        :placeholder="$t('register.email_placeholder')"
+        :placeholder="$t('register.email_placeholder', { email: 'john_doe@gmail.com' })"
         outlined
         required
         class="custom-input"

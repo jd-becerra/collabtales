@@ -5,7 +5,7 @@
         :label="$t('restore.email')"
         v-model="restoreData.correo"
         type="email"
-        :placeholder="$t('restore.email_placeholder')"
+        :placeholder="$t('restore.email_placeholder', { email: 'john_doe@gmail.com'})"
         outlined
         required
         class="custom-input"
