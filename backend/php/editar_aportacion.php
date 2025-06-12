@@ -17,7 +17,7 @@ if (!is_array($data) || count($data) !== 3) {
 // Validate input
 if (!isset($data['id_aportacion']) || !isset($data['contenido']) || !isset($data['id_cuento'])) {
     http_response_code(400);
-    echo json_encode(["error" => "Parámetros inválidos 2"]);
+    echo json_encode(["error" => "Parámetros inválidos"]);
     exit();
 }
 
@@ -42,6 +42,7 @@ if ($result_bloqueado->num_rows > 0) {
     echo json_encode(["error" => "No tienes permiso para realizar esta acción"]);
     exit();
 }
+$sql_bloqueado->close();
 
 // Verificar que el usuario está en el cuento
 $stmt = $conn->prepare("SELECT fk_alumno FROM Relacion_Alumno_Cuento WHERE fk_alumno = ? AND fk_cuento = ?");
@@ -73,21 +74,19 @@ if ($row['fk_alumno'] !== $id_alumno) {
 }
 $stmt->close();
 
-// Prepare the SQL query
-$sql = $conn->prepare("CALL EditarAportacion(?, ?)");
-$sql->bind_param("is", $id_aportacion, $contenido);
-
-// Execute query
-if ($sql->execute()) {
-    echo json_encode(["success" => true, "message" => "Aportación actualizada"]);
-} else {
-    echo json_encode(["error" => "Error en el servidor"]);
+// Checar si la aportación ya existe (no importa si no se afecta el contenido)
+$sql = $conn->prepare("UPDATE Aportacion SET contenido = ? WHERE id_aportacion = ? AND fk_cuento = ?");
+$sql->bind_param("sii", $contenido, $id_aportacion, $id_cuento);
+if (!$sql->execute()) {
+    http_response_code(500);
+    echo json_encode(["error" => "Error de servidor."]);
+    exit();
 }
+// Si la actualización fue exitosa
+http_response_code(200);
+echo json_encode(["message" => "Aportación actualizada correctamente"]);
 
-// Close connections
-$sql_bloqueado->close();
-
+// Cerrar conexiones
 $sql->close();
-
 $conn->close();
 ?>

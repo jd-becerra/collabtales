@@ -98,7 +98,6 @@
 import '../assets/base.css';
 
 import axios from 'axios';
-import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 // @ts-expect-error: TypeScript cannot find module definitions for html2pdf.js
 import html2pdf from "html2pdf.js/dist/html2pdf.bundle.min.js"
 import { ref, onMounted, defineComponent } from 'vue';
@@ -110,12 +109,9 @@ import BotonSm from '@/components/BotonSm.vue';
 import ReturnBtn from '@/components/ReturnBtn.vue';
 import DOMPurify from 'dompurify';
 
-function convertDeltaToHtml(contenido: string | object): string {
-  const delta = typeof contenido === 'string' ? JSON.parse(contenido) : contenido;
-  const converter = new QuillDeltaToHtmlConverter(delta.ops, {});
-  const html = converter.convert();
+function sanitizeHtml(html: string): string {
   return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: ['b', 'i', 'u', 'strike', 'span', 'ul', 'ol', 'li', 'a'],
+    ALLOWED_TAGS: ['b', 'i', 'u', 'strike', 'span', 'ul', 'ol', 'li', 'a', 'p', 'br', 'strong', 'em'],
     ALLOWED_ATTR: ['href', 'style'],
   });
 }
@@ -157,7 +153,7 @@ export default defineComponent({
           aportaciones.value = response.data.aportaciones
             .map((aport: { contenido: string }) => ({
               ...aport,
-              contenido: convertDeltaToHtml(aport.contenido)
+              contenido: sanitizeHtml(aport.contenido.trim())
             }))
             .filter((aport: { contenido: string }) => aport.contenido.trim() !== '');
         } else {

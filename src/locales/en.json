@@ -246,7 +246,9 @@
         "placeholder": "Your contribution is empty. Write here...",
         "contribution_start": "YOUR CONTRIBUTION STARTS HERE",
         "contribution_end": "YOUR CONTRIBUTION ENDS HERE",
-        "save_changes": "Save Changes"
+        "save_changes": "Save Changes",
+        "success": "Your contribution has been updated successfully.",
+        "characters": "characters"
     },
     "profile": {
         "title": "MI PROFILE",

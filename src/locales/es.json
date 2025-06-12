@@ -246,7 +246,9 @@
         "placeholder": "Tu aportación está vacía. Escribe aquí...",
         "contribution_start": "TU APORTACIÓN EMPIEZA AQUÍ",
         "contribution_end": "TU APORTACIÓN TERMINA AQUÍ",
-        "save_changes": "Guardar Cambios"
+        "save_changes": "Guardar Cambios",
+        "success": "Tu aportación ha sido actualizada correctamente.",
+        "characters": "caracteres"
     },
     "profile": {
         "title": "MI PERFIL",

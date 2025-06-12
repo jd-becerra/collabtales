@@ -55,44 +55,40 @@
           </v-card-text>
         </v-card>
       </div>
-      <!-- Sección con el texto a editar usando Quill.js -->
+      <!-- Sección con el texto a editar usando TipTap -->
       <div class="vista-editar-aportacion">
         <p>
           {{ $t('edit_contribution.edit') }}
         </p>
         <v-card class="editor-card">
           <v-card-text class="editor-card-text">
-            <!-- Quill Editor Container -->
-            <div id="quill-container" v-show="!loading">
-              <!-- Toolbar for Quill.js -->
-              <div id="toolbar">
-                  <button class="ql-bold" aria-label="Negrita" title="Negrita"></button>
-                  <button class="ql-italic" aria-label="Cursiva" title="Cursiva"></button>
-                  <button class="ql-underline" aria-label="Subrayado" title="Subrayado"></button>
-                  <button class="ql-strike" aria-label="Tachado" title="Tachado"></button>
-                  <select class="ql-color" aria-label="Color de texto" title="Color de texto"></select>
-                  <select class="ql-background" aria-label="Color de fondo" title="Color de fondo"></select>
-                  <button class="ql-list" value="ordered" aria-label="Lista ordenada" title="Lista ordenada"></button>
-                  <button class="ql-list" value="bullet" aria-label="Lista con viñetas" title="Lista con viñetas"></button>
-                  <select class="ql-align" aria-label="Alinear texto" title="Alinear texto"></select>
-                  <button class="ql-link" aria-label="Insertar enlace" title="Insertar enlace"></button>
-              </div>
-              <div id="editor"></div>
-            </div>
+            <!-- Tip Tap Editor -->
+            <template v-if="editor">
+              <EditorMenuBar :editor="editor!" />
+
+              <EditorContent
+                id="editor"
+                :editor="editor!"
+              />
+
+            </template>
           </v-card-text>
         </v-card>
 
         <!-- Botón para guardar cambios -->
-        <div class="d-flex justify-end">
-          <BotonXs
-            color_type="white_green"
-            @click="guardarCambios"
-            :disabled="loading"
-          >
-              {{ $t('edit_contribution.save_changes') }}
-          </BotonXs>
-                </div>
+        <div class="d-inline-flex justify-space-between">
+          <p>{{ editor?.storage.characterCount.characters() }}/{{ CHARACTER_MAX }} {{ $t('edit_contribution.characters') }}</p>
+          <div class="d-inline-flex justify-end">
+            <BotonXs
+              color_type="white_green"
+              @click="guardarCambios"
+              :disabled="loading"
+            >
+                {{ $t('edit_contribution.save_changes') }}
+            </BotonXs>
+          </div>
         </div>
+      </div>
     </div>
   </div>
 </template>
@@ -100,12 +96,8 @@
 <script lang="ts">
 import '../assets/base.css';
 
-import { defineComponent, ref, onMounted, nextTick, onBeforeUnmount } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import axios from 'axios';
-import Quill from 'quill';
-import Delta from 'quill-delta';
-import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
-import 'quill/dist/quill.snow.css';
 import { useRouter } from 'vue-router';
 import DOMPurify from 'dompurify';
 import { useI18n } from 'vue-i18n';
@@ -113,13 +105,22 @@ import { useI18n } from 'vue-i18n';
 import AppNavbarWhite from '@/components/AppNavbarWhite.vue';
 import ReturnBtn from '@/components/ReturnBtn.vue';
 import BotonXs from '@/components/BotonSm.vue';
+import EditorMenuBar from '@/components/EditorMenuBar.vue';
 
-function convertDeltaToHtml(contenido: string | object): string {
-  const delta = typeof contenido === 'string' ? JSON.parse(contenido) : contenido;
-  const converter = new QuillDeltaToHtmlConverter(delta.ops, {});
-  const html = converter.convert();
+// TipTap
+import { Color } from '@tiptap/extension-color'
+import TextStyle from '@tiptap/extension-text-style'
+import { Editor, EditorContent } from '@tiptap/vue-3'
+import StarterKit from '@tiptap/starter-kit';
+import Heading from '@tiptap/extension-heading'
+import Underline from '@tiptap/extension-underline';
+import Placeholder from '@tiptap/extension-placeholder';
+import TextAlign from '@tiptap/extension-text-align';
+import CharacterCount from '@tiptap/extension-character-count';
+
+function sanitizeHtml(html: string): string {
   return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: ['b', 'i', 'u', 'strike', 'span', 'ul', 'ol', 'li', 'a'],
+    ALLOWED_TAGS: ['b', 'i', 'u', 'strike', 'span', 'ul', 'ol', 'li', 'a', 'p', 'br', 'strong', 'em'],
     ALLOWED_ATTR: ['href', 'style'],
   });
 }
@@ -130,6 +131,8 @@ export default defineComponent({
     AppNavbarWhite,
     ReturnBtn,
     BotonXs,
+    EditorContent,
+    EditorMenuBar,
   },
   props: {
     id_aportacion: {
@@ -143,111 +146,51 @@ export default defineComponent({
   },
   setup(props) {
     const loading = ref(false);
-    const quill = ref<Quill | null>(null);
-    const contenidoInicial = ref<Delta>(new Delta());
+    const editor = ref<Editor>();
     const es_creador = ref<boolean>(false);
     const aportaciones = ref([{
       contenido: '',
       es_autor: false,
     }]);
+    const contenidoInicial = ref<string>('<p></p>'); // Default to empty content
     const CHARACTER_MAX= 8000;
 
-    const { t } = useI18n();
     const router = useRouter();
+    const { t } = useI18n();
 
-    const destroyQuill = () => {
-      if (quill.value) {
-        try {
-          // Remove all event listeners and clean up
-          const container = quill.value.container;
-          if (container) {
-            container.innerHTML = '';
-          }
-          quill.value = null;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {
-          console.warn('Error destroying editor instance');
-        }
-      }
-    };
-
-    const initializeQuill = async () => {
-      // Clean up any existing instance
-      destroyQuill();
-
-      await nextTick();
-
-      // Wait a bit more to ensure DOM is fully ready
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      const editorElement = document.getElementById('editor');
-      const toolbarElement = document.getElementById('toolbar');
-
-      if (!editorElement || !toolbarElement) {
-        console.error('Editor or toolbar element not found');
-        return;
-      }
-
-      // Clear the editor element completely
-      editorElement.innerHTML = '';
-
-      try {
-        // Initialize Quill with a clean state
-        quill.value = new Quill(editorElement, {
-          modules: {
-            toolbar: {
-              container: toolbarElement,
-              handlers: {
-                // Custom handlers to prevent issues
-              }
-            }
+    const initEditor = () => {
+      editor.value = new Editor({
+        editorProps: {
+          attributes: {
+            class: 'tiptap-editor h-100',
+            style: 'overflow-y: auto; padding: 0.5rem; background-color: white; border: 1px solid #ccc; margin: 5px; border-radius: 5px; overflow-y: scroll;',
           },
-          theme: 'snow',
-          placeholder: t('edit_contribution.placeholder'),
-          formats: ['bold', 'italic', 'underline', 'strike', 'color', 'background', 'list', 'align', 'link']
-        });
+        },
 
-        // Wait for Quill to be fully initialized
-        await nextTick();
-
-        // Set initial content if available
-        if (quill.value && contenidoInicial.value && contenidoInicial.value.ops) {
-          try {
-            quill.value.setContents(contenidoInicial.value);
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          } catch (error) {
-            console.warn('Error setting initial content');
-            // If there's an error with the delta, just insert as plain text
-            const plainText = contenidoInicial.value.ops
-              ?.map(op => typeof op.insert === 'string' ? op.insert : '')
-              .join('') || '';
-            if (plainText) {
-              quill.value.setText(plainText);
-            }
-          }
-        }
-
-        // Focus after a short delay
-        setTimeout(() => {
-          if (quill.value) {
-            try {
-              quill.value.focus();
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            } catch (error) {
-              console.warn('Error focusing editor');
-            }
-          }
-        }, 500);
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (error) {
-        console.error('Error initializing Quill editor');
-      }
+        extensions: [
+          StarterKit,
+          CharacterCount.configure({
+            limit: CHARACTER_MAX,
+          }),
+          TextStyle,
+          Color,
+          Underline,
+          Heading,
+          TextAlign.configure({
+            types: ['heading', 'paragraph'],
+          }),
+          Placeholder.configure({
+            placeholder: t('edit_contribution.placeholder'),
+            emptyEditorClass: 'ql-blank',
+          }),
+        ],
+        content: contenidoInicial.value, // <-- now this has actual content
+      });
     };
 
     const fetchAportacion = async () => {
       if (!props.id_cuento || !props.id_aportacion) {
-        alert('No hay aportación seleccionada.');
+        alert('Invalid parameters provided for fetching contribution.');
         router.push('/mis_cuentos');
         return;
       }
@@ -266,25 +209,20 @@ export default defineComponent({
         if (response.status === 200) {
           aportaciones.value = response.data.aportaciones.map((aport: { contenido: string, es_autor: boolean }) => ({
             ...aport,
-            contenido: isHtmlEmpty(convertDeltaToHtml(aport.contenido)) ? null : convertDeltaToHtml(aport.contenido)
+            contenido: sanitizeHtml(aport.contenido.trim()),
           }));
           es_creador.value = response.data.es_creador;
 
           // Parse contenido_autor safely
           try {
-            contenidoInicial.value = response.data.contenido_autor
-              ? JSON.parse(response.data.contenido_autor)
-              : new Delta();
+            contenidoInicial.value = sanitizeHtml(response.data.contenido_autor.trim());
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch (parseError) {
             console.warn('Error parsing author content');
-            contenidoInicial.value = new Delta();
+            contenidoInicial.value = '<p></p>'; // Default to empty content if parsing fails
           }
 
-          // Initialize Quill after all data is processed
           loading.value = false;
-          await nextTick();
-          await initializeQuill();
         } else {
           alert('Could not fetch author contribution. Please try again later.');
           router.push('/mis_cuentos');
@@ -316,24 +254,24 @@ export default defineComponent({
         }
         router.push('/mis_cuentos');
       } finally {
-        if (loading.value) {
-          loading.value = false;
-        }
+        loading.value = false;
+        initEditor();
       }
     };
 
     const guardarCambios = async () => {
-      if (!quill.value) {
-      console.error('Quill instance is not initialized.');
+      if (!editor.value) {
+      console.error('TipTap editor instance is not initialized.');
       alert('Editor not initialized. Please try again later.');
       return;
       }
 
-      if (quill.value.getLength() <= 1) {
+      const htmlContent = editor.value.getHTML();
+      if (isHtmlEmpty(htmlContent)) {
       alert('The contribution content cannot be empty.');
       return;
       }
-      if (quill.value.getLength() > CHARACTER_MAX) {
+      if (htmlContent.length > CHARACTER_MAX) {
       alert(`The content exceeds the limit of ${CHARACTER_MAX} characters.`);
       return;
       }
@@ -341,25 +279,27 @@ export default defineComponent({
       loading.value = true;
 
       try {
-      const delta = quill.value.getContents();
-      const deltaString = JSON.stringify(delta);
-
-      await axios.put('https://collabtalesserver.avaldez0.com/php/editar_aportacion.php',
+      const response = await axios.put('https://collabtalesserver.avaldez0.com/php/editar_aportacion.php',
         {
-        id_cuento: props.id_cuento,
-        id_aportacion: props.id_aportacion,
-        contenido: deltaString,
+          id_cuento: props.id_cuento,
+          id_aportacion: props.id_aportacion,
+          contenido: htmlContent,
         },
         {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
         }
       );
-      goToCuento();
+
+        if (response.status === 200) {
+          alert(t('edit_contribution.success'));
+          router.go(0);
+        }
       } catch (error) {
-      console.error('Error saving changes:', error);
-      alert('Error saving changes. Please try again.');
+        console.error('Error saving changes:', error);
+        alert('Error saving changes. Please try again.');
+        router.go(0);
       } finally {
       loading.value = false;
       }
@@ -383,16 +323,14 @@ export default defineComponent({
       fetchAportacion();
     });
 
-    onBeforeUnmount(() => {
-      destroyQuill();
-    });
-
     return {
       loading,
       guardarCambios,
       goToCuento,
       aportaciones,
-      isHtmlEmpty
+      isHtmlEmpty,
+      editor,
+      CHARACTER_MAX,
     };
   },
 });
@@ -404,18 +342,12 @@ export default defineComponent({
   height: 100%;
 }
 
-#quill-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-#editor {
+.tiptap-editor {
   flex: 1;
-  min-height: 300px;
+  min-height: 100%;
+  height: 100%;
   border: 1px solid #ccc;
   border-top: none;
-  background: white;
 }
 
 #lectura {
@@ -424,54 +356,6 @@ export default defineComponent({
   padding: 15px;
   overflow-y: auto;
   background: white;
-}
-
-.ql-toolbar {
-  border: 1px solid #ccc !important;
-  border-bottom: none !important;
-  background: #f8f9fa;
-  padding: 8px;
-  flex-shrink: 0;
-}
-
-.ql-container {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 14px;
-  line-height: 1.42;
-  border: 1px solid #ccc !important;
-  border-top: none !important;
-}
-
-.ql-editor {
-  padding: 12px 15px;
-  line-height: 1.42;
-  font-size: 14px;
-}
-
-.ql-editor p {
-  margin-bottom: 0.5em;
-}
-
-.ql-editor.ql-blank::before {
-  font-style: italic;
-  color: #aaa;
-}
-
-.ql-toolbar svg {
-  width: 16px;
-  height: 16px;
-}
-
-.ql-picker-label,
-.ql-picker-options {
-  font-size: 14px;
-}
-
-.ql-toolbar button,
-.ql-toolbar .ql-picker {
-  min-width: 30px;
-  height: 30px;
-  margin: 2px;
 }
 
 .editar-aportacion-view {
@@ -520,6 +404,7 @@ export default defineComponent({
 
   background-color: var(--vt-c-white-mute);
   border: 1px solid var(--color-text-input-fg-default);
+  overflow-y: scroll;
 }
 
 .return-btn {

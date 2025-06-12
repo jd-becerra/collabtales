@@ -1,139 +1,51 @@
-# Collabtales
+# Collabtales: https://collabtales.avaldez0.com/
 
-Collab Tales es una plataforma web diseñada para que todas las personas puedan crear y desarrollar cuentos de manera colaborativa. Cada usuario puede iniciar un cuento y generar un código único que permitirá invitar a otros participantes para continuar la historia. El objetivo es fomentar la creatividad, el trabajo en equipo, la escritura y la lectura.
+Collabtales is a web platform designed for everyone to collaboratively create and develop stories. Each user can start a story and generate a unique code to invite other participants to continue the narrative. The goal is to foster creativity, teamwork, writing, and reading.
 
-## Contenido
+## Contents
 
-- [Características](#características)
-- [Requisitos previos](#requisitos-previos)
-- [Instalación](#instalación)
-- [Uso](#uso)
-- [Scripts disponibles](#scripts-disponibles)
-- [Configuración del entorno de desarrollo](#configuración-del-entorno-de-desarrollo)
-- [Personalización de la configuración](#personalización-de-la-configuración)
-- [Funcionalidades](#funcionalidades)
-- [Contribuir](#contribuir)
-- [Recursos](#recursos)
-- [Licencia](#licencia)
+- [Collabtales: https://collabtales.avaldez0.com/](#collabtales-httpscollabtalesavaldez0com)
+  - [Contents](#contents)
+  - [Technology Stack](#technology-stack)
+  - [Features](#features)
+  - [How to Start?](#how-to-start)
+## Technology Stack
 
-## Características
+- **Vue 3** as the frontend framework, providing a reactive and component-based architecture. Some techniques used were: 
+  - **Composition API** for better organization of logic and reusability of components.
+  - **Vue Router** for managing navigation between different views in the application.
+  - **VueUse** for utility functions that enhance the functionality of Vue applications.
+  - **VueEmit** for event handling, allowing components to communicate effectively.
+- **Vuetify and CSS** for styling, ensuring a modern and responsive design. CSS was used to allow for global styles and Vuetify for a rich UI component library.
+- **Vite** as the bundling tool, enabling fast startup and instant reloads during development.
+- **TypeScript** (support via `vue-tsc`) to improve code quality and developer experience. Some packages used were:
+  - **I18n** for internationalization, allowing the application to support English and Spanish languages, enhancing accessibility for a wider audience.
+  - **Axios** for making HTTP requests to the backend API, facilitating communication between the frontend and backend.
+  - **Quill** for rich text editing, allowing users to format their contributions with ease.
+  - **html2pdf** for generating PDF files from the tales, enabling users to download stories in a portable format.
+- **PHP** for the backend, providing a RESTful API that handles server logic and data persistence. In addition, we used PHP packages to enhance functionality such as:
+  - **Firebase JWT** for secure user authentication, allowing users to log in and manage their sessions.
+  - **PHP Mailer** for sending emails, enabling password recovery for users.
+- **MySQL** as the database to store stories, users, and their interactions.
 
-- **Vue 3** para crear interfaces de usuario reactivas.
-- **Vite** como herramienta de bundling, lo que permite un arranque rápido y recargas instantáneas durante el desarrollo.
-- **TypeScript** (soporte mediante `vue-tsc`) para mejorar la calidad del código y la experiencia del desarrollador.
-- Configuración básica de ESLint para mantener un código limpio y consistente.
-- Plantilla lista para incorporar pruebas unitarias utilizando **Vitest**.
+## Features
+- **User Registration and Login**: Users can create accounts and log in to access their stories using: a username, email, and password (which is hashed for security and can be retrieved via the user's email).
+- **Tale Creation**: Users can create new stories (called "tales"), which are stored in the database and associated with their accounts. The creator can: 
+  - See the unique code given to the tale, which can be shared with other users in order to invite them to collaborate.
+  - Edit the tale's title and description.
+  - Manage collaborators and allowing/restricting the option to join the tale.
+  - Delete their own tale (removing every contribution made by other users).
+  - Publish the tale, making it visible to all users in the application, so they can read it and vote for it.
+- **Collaborative Writing**: Users can join existing tales using the unique code provided by the tale creator. They can:
+  - Read the tale's content.
+  - Add their own contributions to the tale, which are stored in the database and associated with their user account.
+  - Edit their own contributions, allowing for corrections and improvements.
+  - Abandon the tale, which removes their contributions from the tale but does not delete the tale itself.
+- **Story Voting**: Users can check published tales and vote for the ones they like. In addition, they are able to download the tale in a PDF format.
+- **Account Management**: Users can manage their accounts and change their data if needed. They can also recover their password via email if they forget it.
+- **Internationalization**: The application supports both English and Spanish languages, allowing users to switch between them for a better user experience.
 
-## Requisitos previos
-
-- Php para backend (local)
-- [npm](https://www.npmjs.com/) o [Yarn](https://yarnpkg.com/)
-
-## Instalación
-
-1. Clona el repositorio:
-
-   ```bash
-   git clone https://github.com/jd-becerra/collabtales.git
-   cd collabtales
-   ```
-
-2. Instala las dependencias:
-
-   ```bash
-   npm install
-   ```
-
-## Uso
-
-### Desarrollo
-
-Para iniciar el servidor de desarrollo y ver la aplicación en el navegador:
-
-```bash
-npm run dev
-```
-
-La aplicación se ejecutará en [http://localhost:3000](http://localhost:3000) (o en el puerto configurado por Vite).
-
-### Construcción para producción
-
-Para compilar la aplicación y generar los archivos optimizados:
-
-```bash
-npm run build
-```
-
-### Pruebas unitarias
-
-Para ejecutar las pruebas unitarias con **Vitest**:
-
-```bash
-npm run test:unit
-```
-
-### Linting
-
-Para revisar el código y asegurarte de que sigue las convenciones establecidas:
-
-```bash
-npm run lint
-```
-
-## Scripts disponibles
-
-- **npm run dev**: Inicia el servidor de desarrollo con recarga en caliente.
-- **npm run build**: Compila la aplicación para producción.
-- **npm run test:unit**: Ejecuta pruebas unitarias utilizando Vitest.
-- **npm run lint**: Realiza análisis estático del código con ESLint.
-
-## Configuración del entorno de desarrollo
-
-Se recomienda utilizar [Visual Studio Code (VSCode)](https://code.visualstudio.com/) junto con la extensión [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) para aprovechar al máximo el soporte de Vue 3 y TypeScript.
-
-> **Nota:** TypeScript no maneja de forma nativa la información de tipos para archivos `.vue`, por lo que se utiliza `vue-tsc` para el chequeo de tipos.
-
-## Personalización de la configuración
-
-- **Vite:** Puedes personalizar la configuración de Vite según las necesidades de tu proyecto. Consulta la [documentación de Vite](https://vite.dev) para más detalles.
-- **ESLint:** La configuración de ESLint se encuentra en el archivo `eslint.config.ts`. Puedes modificarla para adaptarla a tu estilo de codificación.
-- **TypeScript:** La configuración de TypeScript se encuentra en los archivos `tsconfig.json`, `tsconfig.app.json`, etc.
-
-## Funcionalidades
-
-Collabtales incluye las siguientes funcionalidades:
-
-- **Creación y edición de historias**: Permite a los usuarios escribir y modificar historias colaborativas.
-- **Colaboración en tiempo real**: Múltiples usuarios pueden contribuir a la misma historia simultáneamente.
-- **Autenticación de usuarios**: Registro e inicio de sesión mediante autenticación segura.
-- **Gestor de roles y permisos**: Asigna diferentes niveles de acceso a los usuarios.
-- **Interfaz amigable y responsiva**: Diseño moderno y adaptable a dispositivos móviles..
-
-## Contribuir
-
-Si deseas contribuir al proyecto, sigue estos pasos:
-
-1. Haz un fork del repositorio.
-2. Crea una nueva rama para tu funcionalidad o arreglo:
-   ```bash
-   git checkout -b mi-nueva-funcionalidad
-   ```
-3. Realiza los cambios y haz commit:
-   ```bash
-   git commit -m "Agrega nueva funcionalidad X"
-   ```
-4. Envía un pull request para revisión.
-
-Cualquier contribución es bienvenida.
-
-## Recursos
-
-- [Documentación de Vue 3](https://vuejs.org/)
-- [Guía de Vite](https://vite.dev)
-- [Vitest](https://vitest.dev)
-- [ESLint](https://eslint.org/)
-- [Volar para VSCode](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
-
-## Licencia
-
-*Este proyecto no especifica una licencia. Revisa el repositorio para más información o contacta al autor para definir los términos de uso.*
+## How to Start?
+1. First, visit the [Collabtales website](https://collabtales.avaldez0.com/) to see the application in action.
+2. Make an account or log in if you already have one. You will need a username, email, and password to register (make sure your email exists, as you will need it to recover your password if necessary).
+3. Create a new tale or join an existing one using the unique code provided by the tale creator. 

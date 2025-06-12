@@ -152,17 +152,13 @@ import BotonSm from '@/components/BotonSm.vue';
 import ReturnBtn from '@/components/ReturnBtn.vue';
 import AportacionItem from '@/components/AportacionItem.vue';
 import AportacionAutorItem from '@/components/AportacionAutorItem.vue';
-import { QuillDeltaToHtmlConverter } from 'quill-delta-to-html';
 import FormularioEditarCuento from '@/components/FormularioEditarCuento.vue';
 import ConfirmacionEliminarCuento from '@/components/ConfirmacionEliminarCuento.vue';
 import DOMPurify from 'dompurify';
 
-function convertDeltaToHtml(contenido: string | object): string {
-  const delta = typeof contenido === 'string' ? JSON.parse(contenido) : contenido;
-  const converter = new QuillDeltaToHtmlConverter(delta.ops, {});
-  const html = converter.convert();
+function sanitizeHtml(html: string): string {
   return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: ['b', 'i', 'u', 'strike', 'span', 'ul', 'ol', 'li', 'a'],
+    ALLOWED_TAGS: ['b', 'i', 'u', 'strike', 'span', 'ul', 'ol', 'li', 'a', 'p', 'br', 'strong', 'em'],
     ALLOWED_ATTR: ['href', 'style'],
   });
 }
@@ -213,7 +209,7 @@ export default defineComponent({
           cuento.value = response.data.cuento;
           aportaciones.value = response.data.aportaciones.map((aportacion: { autor: string, contenido: string}) => ({
             ...aportacion,
-            contenido: convertDeltaToHtml(aportacion.contenido)
+            contenido: sanitizeHtml(aportacion.contenido),
           }));
           id_aportacion.value = response.data.id_aportacion || null;
         }

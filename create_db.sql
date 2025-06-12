@@ -322,34 +322,34 @@ DELIMITER ;
 -- Procedure: EditarAportacion
 DELIMITER $$
 CREATE PROCEDURE `EditarAportacion`(
-                IN id_aportacion_param INT,
-                IN nuevo_contenido VARCHAR(2047)
+    IN id_aportacion_param INT,
+    IN nuevo_contenido VARCHAR(2047)
 )
 BEGIN
-                DECLARE aportacion_existente INT;
+    DECLARE aportacion_existente INT;
 
-                -- Verificar si la aportación existe
-                SELECT COUNT(*) INTO aportacion_existente 
-                FROM Aportacion 
-                WHERE id_aportacion = id_aportacion_param;
+    -- Verificar si la aportación existe
+    SELECT COUNT(*) INTO aportacion_existente 
+    FROM Aportacion 
+    WHERE id_aportacion = id_aportacion_param;
 
-                IF aportacion_existente > 0 THEN
-                                -- Si existe, actualizar la aportación
-                                UPDATE Aportacion
-                                SET contenido = nuevo_contenido
-                                WHERE id_aportacion = id_aportacion_param;
-                                
-                                -- Registrar la acción en el historial
-                                INSERT INTO Historial (fk_alumno, fk_cuento, accion) 
-                                SELECT fk_alumno, fk_cuento, 'Actualizó una aportación'
-                                FROM Aportacion
-                                WHERE id_aportacion = id_aportacion_param;
-                                
-                                SELECT 'Aportación actualizada correctamente' AS result;
-                ELSE
-                                -- Si no existe la aportación, mostrar error
-                                SELECT 'La aportación no existe para el ID especificado' AS result;
-                END IF;
+    IF aportacion_existente > 0 THEN
+        -- Si existe, actualizar la aportación
+        UPDATE Aportacion
+        SET contenido = nuevo_contenido
+        WHERE id_aportacion = id_aportacion_param;
+        
+        -- Registrar la acción en el historial
+        INSERT INTO Historial (fk_alumno, fk_cuento, accion) 
+        SELECT fk_alumno, fk_cuento, 'Actualizó una aportación'
+        FROM Aportacion
+        WHERE id_aportacion = id_aportacion_param;
+        
+        SELECT 'Aportación actualizada correctamente' AS result;
+    ELSE
+        -- Si no existe la aportación, mostrar error
+        SELECT 'La aportación no existe para el ID especificado' AS result;
+    END IF;
 END$$
 DELIMITER ;
 
