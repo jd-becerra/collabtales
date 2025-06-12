@@ -27,7 +27,7 @@ watchEffect(() => {
       <RouterView />
     </v-main>
 
-    <v-footer app>
+    <v-footer app class="d-flex justify-space-between align-center">
       <span id="footer-info">Collabtales - 2025 - Github:
         <a href="https://github.com/jd-becerra" target="_blank" rel="noopener noreferrer" class="github-link">
           @<u>jd-becerra</u>
@@ -39,6 +39,13 @@ watchEffect(() => {
         <span> &#x2022; </span>
         <a href="https://github.com/Gaia74" target="_blank" rel="noopener noreferrer" class="github-link">
           @<u>Gaia74</u>
+        </a>
+      </span>
+      <span class="gh-project-link">
+        For more information, visit our
+        <a href="https://github.com/jd-becerra/collabtales"
+            target="_blank" rel="noopener noreferrer" class="github-link">
+            <u>GitHub project page</u>
         </a>
       </span>
     </v-footer>
